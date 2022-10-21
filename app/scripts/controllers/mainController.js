@@ -11,7 +11,10 @@ angular.module('ethExplorer')
 	// get latest 50 blocks
 	$scope.blocks = [];
 	for (var i = 0; i < maxBlocks; ++i) {
-	    $scope.blocks.push(web3.eth.getBlock(blockNum - i));
+		var blockInfo = web3.eth.getBlock(blockNum - i);
+		blockInfo.time_localestring = new Date(blockInfo.timestamp * 1000).toLocaleString('zh-CN', { timezone: 'UTC', timeZoneName: 'short' });
+
+	    $scope.blocks.push(blockInfo);
 	}
 	
         $scope.processRequest = function() {
@@ -40,7 +43,7 @@ angular.module('ethExplorer')
         }
 
          function goToTxInfos (requestStr) {
-             $location.path('/transaction/'+requestStr);
+             $location.path('/tx/'+requestStr);
         }
 
     });

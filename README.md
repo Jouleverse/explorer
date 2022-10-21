@@ -27,3 +27,13 @@ Then visit http://localhost:8000 in your browser of choice. You might get an err
 Install [geth](https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum "Geth install") if you don't already have it, then run the above command.
 
 Then refresh the page in your browser 
+
+## Change Log
+
+Curated by blockcoach.com
+
+1. 中文翻译
+2. /transaction 改为 /tx 以与metamask更好地兼容
+3. 解决 # 和 html5Mode 问题
+4. 添加浏览上一区块
+

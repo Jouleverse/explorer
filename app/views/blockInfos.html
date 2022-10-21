@@ -1,7 +1,7 @@
 <div class="container" style="padding-top: 50px;">
 
-    <h1>Block
-        <small>View information about an Ethereum Block</small>
+    <h1>区块 
+        <small>查看区块信息</small>
     </h1>
 
     <div id="block-97785883" class="blockdiv">
@@ -14,51 +14,57 @@
         </table>
         <div style="padding-bottom:30px;width:100%;text-align:right;clear:both">
             <button class="btn btn-primary">{{conf}}</button>
-            <button class="btn btn-success cb"><span>{{gasUsed}} Gas Used</span></button>
+            <button class="btn btn-success cb"><span>{{gasUsed}} Gas单位</span></button>
         </div>
         <table class="table table-striped">
             <tbody><tr>
-                <th colspan="2" style="text-align:left">Summary</th>
+                <th colspan="2" style="text-align:left">概要</th>
             </tr>
             <tr>
-                <td>Block Number</td>
+                <td>区块高度</td>
                 <td><a href="./#/block/{{blockNumber}}">{{number}}</a></td>
             </tr>
             <tr>
-                <td>Received Time</td>
+                <td>上一区块</td>
                 <td>
-                    {{timestamp}}
+					<a href="./#/block/{{number-1}}">{{parentHash}}</a>
                 </td>
             </tr>
             <tr>
-                <td>Difficulty</td>
+                <td>时间戳</td>
+                <td>
+					{{timestamp}}，即 {{timestamp_localestring}}
+                </td>
+            </tr>
+            <tr>
+                <td>难度</td>
                 <td>
                     {{difficulty}}
                 </td>
             </tr>
-            <tr>
+            <!--tr>
                 <td>Nonce</td>
                 <td>{{nonce}}</td>
-            </tr>
+            </tr-->
             <tr>
-                <td>Size</td>
-                <td>{{size}}</td>
+                <td>尺寸</td>
+                <td>{{size}} 字节</td>
             </tr>
-            <tr>
+            <!--tr>
                 <td>Miner</td>
                 <td><a href="./#/address/{{miner}}">{{miner}}</a></td>
+            </tr-->
+            <tr>
+                <td>Gas上限</td>
+                <td>{{gasLimit}} 单位</td>
             </tr>
             <tr>
-                <td>Gas Limit</td>
-                <td>{{gasLimit}}</td>
-            </tr>
-            <tr>
-                <td>Data</td>
+                <td>附加数据</td>
                 <td>{{extraData}}</td>
             </tr>
 
             <tr>
-                <td>Data (Translated)</td>
+                <td nowrap>附加数据(转换后)</td>
                 <td>{{dataFromHex}}</td>
             </tr>
 
@@ -67,39 +73,39 @@
     </div>
 
     <h2 style="margin-top: 30px;">
-      Transactions
-      <small>- contained in current block</small>
+      交易
+      <small>- 包含于当前区块中</small>
     </h2>
 
     <div ng-repeat="tx in transactions">
       <table class="table table-striped">
           <tbody>
           <tr>
-              <th colspan="2" style="text-align:left">Transaction #{{$index+1}}</th>
+              <th colspan="2" style="text-align:left">交易 #{{$index+1}}</th>
           </tr>
           <tr>
-              <td>Hash #</td>
-              <td><a href="./#/transaction/{{tx.hash}}">{{tx.hash}}</a></td>
+              <td>哈希 #</td>
+              <td><a href="./#/tx/{{tx.hash}}">{{tx.hash}}</a></td>
           </tr>
           <tr>
-              <td>From</td>
+              <td>从</td>
               <td><a href="./#/address/{{tx.from}}">{{tx.from}}</a></td>
           </tr>
           <tr>
-              <td>To</td>
+              <td>至</td>
               <td><a href="./#/address/{{tx.to}}">{{tx.to}}</a></td>
           </tr>
           <tr>
-              <td>Gas</td>
-              <td>{{tx.gas}}</a></td>
+              <td>Gas消耗量</td>
+              <td>{{tx.gas}} 单位</a></td>
           </tr>
           <tr>
-              <td>Input</td>
+              <td>输入数据</td>
               <td>{{tx.input}}</a></td>
           </tr>
           <tr>
-              <td>Value</td>
-              <td>{{tx.value}}</a></td>
+              <td>发送价值</td>
+			  <td>{{tx.valueEP}} EP，即 {{tx.value}} 能量</a></td>
           </tr>
           </tbody>
       </table>

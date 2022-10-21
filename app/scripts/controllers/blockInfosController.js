@@ -20,13 +20,13 @@ angular.module('ethExplorer')
                         $scope.hash = result.hash;
                     }
                     else{
-                        $scope.hash ='pending';
+                        $scope.hash ='等待中';
                     }
                     if(result.miner!==undefined){
                         $scope.miner = result.miner;
                     }
                     else{
-                        $scope.miner ='pending';
+                        $scope.miner ='等待中';
                     }
                     $scope.gasLimit = result.gasLimit;
                     $scope.gasUsed = result.gasUsed;
@@ -38,13 +38,14 @@ angular.module('ethExplorer')
                     $scope.parentHash = result.parentHash;
                     $scope.blockNumber = result.number;
                     $scope.timestamp = result.timestamp;
+                    $scope.timestamp_localestring = new Date(result.timestamp * 1000).toLocaleString('zh-CN', { timezone: 'UTC', timeZoneName: 'short' });
                     $scope.extraData = result.extraData;
                     $scope.dataFromHex = hex2a(result.extraData);
                     $scope.size = result.size;
                     if($scope.blockNumber!==undefined){
-                        $scope.conf = number - $scope.blockNumber + " Confirmations";
-                        if($scope.conf===0 + " Confirmations"){
-                            $scope.conf='Unconfirmed';
+                        $scope.conf = number - $scope.blockNumber + " 确认数";
+                        if($scope.conf===0 + " 确认数"){
+                            $scope.conf='未确认';
                         }
                     }
                     if($scope.blockNumber!==undefined){
@@ -98,7 +99,8 @@ angular.module('ethExplorer')
                 to: result.to,
                 gas: result.gas,
                 input: result.input,
-                value: result.value
+                value: result.value + "",
+				valueEP: result.value / 10**18 + ""
               }
               $scope.$apply(
                 $scope.transactions.push(transaction)
