@@ -47,7 +47,9 @@ angular.module('ethExplorer')
                         $scope.conf = number - $scope.blockNumber;
                         if($scope.conf===0){
                             $scope.conf='未确认'; //TODO change color button when unconfirmed... ng-if or ng-class
-                        }
+                        } else {
+							$scope.conf += ' 确认数';
+						}
                     }
                         //TODO Refactor this logic, asynchron calls + services....
                     if($scope.blockNumber!==undefined){
