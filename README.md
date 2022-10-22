@@ -39,9 +39,10 @@ DONE:
 4. 添加浏览上一区块
 5. 完全去除对外部js的依赖，尤其是一些访问不畅通的比如googleapis
 6. 支持nginx proxy 8501 to 8502
+7. Fixed: 打开tx/等页面时，仍然会执行mainController中的循环读取区块列表的代码，造成加载速度慢。Root Cause: searchbox在其他页面也出现，而它bind到了main controller. Fix: 重写searchbox.
 
 TODO:
 1. 在区块信息插入clique的signer信息（以取代miner）
-2. 打开tx/等页面时，仍然会执行mainController中的循环读取区块列表的代码，造成加载速度慢
+2. searchbox遗留问题：无法区分搜索 交易 和 区块哈希（都是0x...且无法通过长度区分？）
 
 

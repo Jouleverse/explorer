@@ -14,6 +14,36 @@
   <link rel="stylesheet" href="mirror/bootstrap/3.3.5/css/bootstrap.min.css">
   <script src="bower_components/web3/dist/web3.min.js"></script>
 
+	<script>
+        function processRequest() {
+             var requestStr = $("#query")[0].value.split('0x').join('');
+
+            if (requestStr.length === 40)
+              return goToAddrInfos('0x'+requestStr)
+            else if(requestStr.length === 64) {
+              if(/[0-9a-zA-Z]{64}?/.test(requestStr))
+                return goToTxInfos('0x'+requestStr)
+              else if(/[0-9]{1,7}?/.test(requestStr))
+                return goToBlockInfos(requestStr)
+            }else if(parseInt(requestStr) > 0)
+              return goToBlockInfos(parseInt(requestStr))
+
+            alert('Don\'t know how to handle '+ requestStr)
+        };
+
+
+        function goToBlockInfos(requestStr) {
+            location.pathname = '/block/'+requestStr;
+        }
+
+        function goToAddrInfos(requestStr) {
+            location.pathname = '/address/'+requestStr;
+        }
+
+         function goToTxInfos (requestStr) {
+             location.pathname = '/tx/'+requestStr;
+        }
+	</script>
 </head>
 <body>
   
@@ -24,9 +54,9 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-            <form  name="search_form" ng-controller="mainCtrl" ng-submit="processRequest()"  class="navbar-form navbar-right">
+            <form  name="search_form" onsubmit="processRequest()"  class="navbar-form navbar-right">
             <div class="form-group">
-            <input type="text" placeholder="交易哈希/地址/区块高度" name="requestType" required  ng-model="ethRequest"  class="form-control"><br>
+            <input type="text" placeholder="交易哈希/地址/区块高度" name="requestType" required  id="query"  class="form-control"><br>
             </div>
             <button type="submit" class="btn btn-success">搜索</button></form>
             </ul>
