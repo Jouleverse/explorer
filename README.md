@@ -1,32 +1,21 @@
-# EthExplorer (In Progress)
+# 元码链区块浏览器
 
-![EthExplorer Screenshot](http://i.imgur.com/NHFYq0x.png)
+由blockcoach.com curated，基于etherparty/explorer。
 
-##License
+## Original License
 
 GPL (see LICENSE)
 
-##Installation
+## Develop
 
-Install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git "Git installation") if you haven't already
+前置准备：
+- 运行本地geth节点，配置rpc服务（且允许CORS）监听127.0.0.1:8501
 
-Clone the repo
+开始：
+1. git clone the repo.
+2. npm start.
+3. 浏览器打开 http://localhost:8000
 
-`git clone https://github.com/etherparty/explorer`
-
-Download [Nodejs and npm](https://docs.npmjs.com/getting-started/installing-node "Nodejs install") if you don't have them
-
-Start the program. All dependencies will be automatically downloaded
-
-`npm start`
-
-Then visit http://localhost:8000 in your browser of choice. You might get an error message:
-
-`geth --rpc --rpccorsdomain "http://localhost:8000"`
-
-Install [geth](https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum "Geth install") if you don't already have it, then run the above command.
-
-Then refresh the page in your browser 
 
 ## Change Log
 
