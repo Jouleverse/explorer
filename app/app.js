@@ -29,7 +29,11 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
     })
     .run(function($rootScope) {
         var web3 = new Web3();
-        var eth_node_url = 'http://localhost:8501'; // TODO: remote URL (changed to yuanma rpc port 8501)
+
+		var hostname = location.hostname;
+		var port = (hostname == 'localhost' || hostname == '127.0.0.1')? 8501 : 8502; //XXX yuanma rpc, geth:8501, nginx:8502
+        var eth_node_url = 'http://' + hostname + ':' + port;
+
 		web3.setProvider(new web3.providers.HttpProvider(eth_node_url));
         $rootScope.web3 = web3;
 		window.web3 = web3; //XXX inject it to console for debugging
