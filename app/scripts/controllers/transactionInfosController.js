@@ -30,7 +30,7 @@ angular.module('ethExplorer')
                     }
                     $scope.from = result.from;
                     $scope.gas = result.gas;
-                    $scope.gasPrice = result.gasPrice.c[0] + " 能量";
+                    $scope.gasPrice = result.gasPrice.c[0] + " e";
 					var gasPriceGwei = result.gasPrice.c[0] / 10**9;
                     $scope.gasPriceGwei = gasPriceGwei < 10 ? parseInt(gasPriceGwei * 10)/10 : parseInt(gasPriceGwei);
                     $scope.hash = result.hash;
@@ -39,7 +39,7 @@ angular.module('ethExplorer')
                     $scope.to = result.to;
                     $scope.transactionIndex = result.transactionIndex;
                     $scope.ethValue = result.value.c[0] / 10000; 
-                    $scope.txprice = (result.gas * result.gasPrice)/1000000000000000000 + " EP";
+                    $scope.txprice = (result.gas * result.gasPrice)/1000000000000000000 + " J";
 					var txfee = result.gas * result.gasPrice / 10**9;
 					$scope.txfeeGwei = txfee < 10 ? parseInt(txfee * 10)/10 : parseInt(txfee);
 

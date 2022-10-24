@@ -21,7 +21,7 @@
                 <td class="">
                     <a href="./#/address/{{to}}">{{to}}</a>
                     <span class="pull-right">
-                        <span>{{ethValue}} EP</span>
+                        <span>{{ethValue}} J</span>
                     </span>
                     <br>
                 </td>
@@ -30,7 +30,7 @@
         </table>
         <div style="padding-bottom:30px;width:100%;text-align:right;clear:both">   <!--TODO no style tags...-->
             <button class="btn btn-primary">{{conf}}</button>
-            <button class="btn btn-success cb"><span>{{ethValue}} EP</span></button>
+            <button class="btn btn-success cb"><span>{{ethValue}} J</span></button>
         </div>
         <table class="table table-striped">
             <tbody><tr>
@@ -58,7 +58,7 @@
             </tr>
             <tr>
                 <td>Gas单价 (每单位包含能量值)</td>
-				<td>{{gasPrice}}，即约 {{gasPriceGwei}} G能量</td>
+				<td>{{gasPrice}}，即约 {{gasPriceGwei}} Ge</td>
             </tr>
             <tr>
                 <td>Nonce (该地址此前交易数)</td>
@@ -66,7 +66,7 @@
             </tr>
             <tr>
                 <td>交易手续费</td>
-				<td>{{txprice}}，即约 {{txfeeGwei}} G能量</td>
+				<td>{{txprice}}，即约 {{txfeeGwei}} Ge</td>
             </tr>
             <tr>
                 <td>输入数据</td>
@@ -76,7 +76,7 @@
 
             </tbody>
         </table>
-		<small>* 注：<br/>(1) 交易手续费 = Gas消耗量 * Gas单价；<br/>(2) 1 EP = 1 E能量 = 10^9 G能量 = 10^18 能量(Power)。</small>
+		<small>* 注：<br/>(1) 交易手续费 = Gas消耗量 * Gas单价；<br/>(2) 1 J = 1 Ee = 10^9 Ge = 10^18 e。</small>
     </div>
 
 </div>

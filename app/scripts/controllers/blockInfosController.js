@@ -100,7 +100,7 @@ angular.module('ethExplorer')
                 gas: result.gas,
                 input: result.input,
                 value: result.value + "",
-				valueEP: result.value / 10**18 + ""
+				valueJ: result.value / 10**18 + ""
               }
               $scope.$apply(
                 $scope.transactions.push(transaction)
