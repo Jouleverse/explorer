@@ -30,9 +30,11 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
     .run(function($rootScope) {
         var web3 = new Web3();
 
+	    	var protocol = location.protocol;
 		var hostname = location.hostname;
-		var port = (hostname == 'localhost' || hostname == '127.0.0.1')? 8501 : 8502; //XXX yuanma rpc, geth:8501, nginx:8502
-        var eth_node_url = 'http://' + hostname + ':' + port;
+		var port = (hostname == 'localhost' || hostname == '127.0.0.1')? 8501 : (protocol == 'http' ? 8502 : 8503); //XXX yuanma rpc, geth:8501, nginx:8502, nginx-https:8503
+	        //var eth_node_url = 'http://' + hostname + ':' + port;
+	        var eth_node_url = protocol + '//' + hostname + ':' + port; // adaptive to http & https
 
 		web3.setProvider(new web3.providers.HttpProvider(eth_node_url));
         $rootScope.web3 = web3;
