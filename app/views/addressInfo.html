@@ -15,12 +15,20 @@
         <tbody>
         <tr>
             <td>余额 (e, 能量)</td>
-            <td>{{balance}}</a></td>
+            <td>{{balance}}</td>
         </tr>
         <tr>
             <td>余额 (J)</td>
-            <td>{{balanceInEther}}</a></td>
+            <td>{{balanceInEther}}</td>
         </tr>
+        <tr>
+			<td><b>藏品和徽章：</b></td>
+			<td>{{NFTs.length}}</td>
+        </tr>
+		<tr data-ng-repeat="i in NFTs">
+		  <td>{{i.tag}}</td>
+		  <td><image height="64px" src="{{i.tokenInfo.image}}"></image></td>
+		</tr>
         </tbody>
     </table>
 	<small>* 注：J（焦耳）是能量单位。定义 1 J = 1 Ee（E能量）= 10^9 Ge（G能量）= 10^18 e，即 1,000,000,000,000,000,000 e（能量）。</small>
