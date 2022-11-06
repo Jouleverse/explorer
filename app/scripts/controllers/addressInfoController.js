@@ -54,13 +54,13 @@ angular.module('ethExplorer')
 
 			  var list = [];
 
-			  console.log(flyingj_ABI);
+			  //console.log(flyingj_ABI);
 
 			  var addr = $scope.addressId;
 			  var contract = web3.eth.contract(flyingj_ABI).at(flyingj_contract_address);
 			  var balance = await contract.balanceOf.call(addr).toString();
 
-			  console.log(balance);
+			  //console.log(balance);
 
 			  if (balance > 0) {
 				  var token_name = await contract.name.call();
@@ -68,16 +68,16 @@ angular.module('ethExplorer')
 				  var tag = token_name + ' #' + token_id;
 				  var tokenURI = await contract.tokenURI.call(token_id);
 
-				  console.log(tag);
+				  //console.log(tag);
 
 				  var tokenInfo = parseTokenURI(tokenURI);
 
-				  console.log(tokenInfo);
+				  //console.log(tokenInfo);
 
 				  list.push({'tag': tag, 'tokenInfo': tokenInfo});
 			  }
 
-			  console.log(list);
+			  //console.log(list);
 
 			  deferred.resolve(list);
 
