@@ -33,15 +33,15 @@
 
 
         function goToBlockInfos(requestStr) {
-            location.pathname = '/block/'+requestStr;
+            location.hash = '/block/'+requestStr;
         }
 
         function goToAddrInfos(requestStr) {
-            location.pathname = '/address/'+requestStr;
+            location.hash = '/address/'+requestStr;
         }
 
          function goToTxInfos (requestStr) {
-             location.pathname = '/tx/'+requestStr;
+             location.hash = '/tx/'+requestStr;
         }
 	</script>
 </head>
@@ -78,6 +78,7 @@
 
 <!--Misc-->
   <script src="scripts/misc/flyingj.sbt.js"></script>
+  <script src="scripts/misc/jns.nft.js"></script>
 
 <!--Core-->
   <script src="app.js"></script>

@@ -1,0 +1,12 @@
+<script>
+	// some non-hash# URL => 404 page here => redirect back with hash# URL
+	//var url_str = document.referrer;
+	var url_str = window.location.href;
+  if (url_str!= '' && !url_str.match(/\/#/)) {
+		//var url = new URL(url_str);
+		var url = window.location;
+    window.location.href = url.origin + '/#' + url.pathname + url.search;
+	} else {
+		document.write('页面不存在，请检查你的网站地址是否输入正确');
+	}
+</script>

@@ -25,13 +25,13 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
             });
 
 		// use the HTML5 History API. needs base href and server-side rewrite.
-		$locationProvider.html5Mode(true);
+		$locationProvider.html5Mode(false); // FIXME use # for pure static deployment
     })
     .run(function($rootScope) {
         var web3 = new Web3();
 
 	    	var protocol = location.protocol;
-			var hostname = location.hostname;
+			var hostname = 'j.blockcoach.com'; //location.hostname; // FIXME manual fix
 			var port = (hostname == 'localhost' || hostname == '127.0.0.1')? 8501 : (protocol == 'http:' ? 8502 : 8503); //XXX yuanma rpc, geth:8501, nginx:8502, nginx-https:8503
 	        //var eth_node_url = 'http://' + hostname + ':' + port;
 	        var eth_node_url = protocol + '//' + hostname + ':' + port; // adaptive to http & https
