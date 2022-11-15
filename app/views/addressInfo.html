@@ -15,19 +15,23 @@
         <tbody>
         <tr>
             <td>余额 (e, 能量)</td>
-            <td>{{balance}}</td>
+            <td>{{balance || "计算中..."}}</td>
         </tr>
         <tr>
             <td>余额 (J)</td>
-            <td>{{balanceInEther}}</td>
+            <td>{{balanceInEther || "计算中..."}}</td>
         </tr>
         <tr>
 			<td><b>藏品和徽章：</b></td>
-			<td>{{NFTs.length}}</td>
-        </tr>
-		<tr data-ng-repeat="i in NFTs">
+			<td>FlyingJ: {{allFlyingJ.length || "统计中..."}}, JNS: {{allJNS.length || "统计中..."}}</td>
+        </tr-->
+		<tr data-ng-repeat="i in allFlyingJ">
 		  <td>{{i.tag}}</td>
-		  <td><image height="{{i.height||'64px'}}" src="{{i.tokenInfo.image}}"></image></td>
+		  <td><image height="64px" src="{{i.tokenInfo.image}}"></image></td>
+		</tr>
+		<tr data-ng-repeat="i in allJNS">
+		  <td>{{i.tag}}</td>
+		  <td><image height="20px" src="{{i.tokenInfo.image}}"></image></td>
 		</tr>
         </tbody>
     </table>
