@@ -25,12 +25,17 @@
                 return goToTxInfos('0x'+requestStr)
               else if(/[0-9]{1,7}?/.test(requestStr))
                 return goToBlockInfos(requestStr)
-            }else if(parseInt(requestStr) > 0)
+            } else if(parseInt(requestStr) > 0)
               return goToBlockInfos(parseInt(requestStr))
+			else if (requestStr.toLowerCase().match(/\.j$/))
+				return goToJNSInfo(requestStr)
 
             alert('不知道如何处理 '+ requestStr)
         };
 
+        function goToJNSInfo(requestStr) {
+            location.hash = '/jns/'+requestStr;
+        }
 
         function goToBlockInfos(requestStr) {
             location.hash = '/block/'+requestStr;
@@ -88,6 +93,7 @@
   <script src="scripts/controllers/addressInfoController.js"></script>
   <script src="scripts/controllers/blockInfosController.js"></script>
   <script src="scripts/controllers/transactionInfosController.js"></script>
+  <script src="scripts/controllers/jnsInfoController.js"></script>
 
   <!--Services-->
     <div id="connectwarning" class="modal fade" role="dialog">

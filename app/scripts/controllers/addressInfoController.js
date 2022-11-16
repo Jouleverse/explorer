@@ -120,7 +120,6 @@ angular.module('ethExplorer')
 
 				//try {
 				var jns_id = await jns_contract._whois.call(addr).toString();
-				console.log(jns_id);
 				if (jns_id > 0) {
 					var jns_tokenURI = await jns_contract.tokenURI.call(jns_id);
 					$scope.jns_info = parseTokenURI(jns_tokenURI);
