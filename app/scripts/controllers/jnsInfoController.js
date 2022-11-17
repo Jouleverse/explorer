@@ -28,6 +28,8 @@ angular.module('ethExplorer')
 					$scope.ownerAddress = result.ownerAddress;
 					$scope.boundAddress = result.boundAddress;
 					$scope.logo = result.logo;
+					$scope.bindCalldata = result.bindCalldata;
+					$scope.unbindCalldata = result.unbindCalldata;
 				}, function () {
 					$scope.jnsIdError = "该名字不存在";
 				});
@@ -60,6 +62,8 @@ angular.module('ethExplorer')
 													ownerAddress: owner_addr,
 													boundAddress: bound_addr,
 													logo: img,
+													bindCalldata: jns_contract.bind.getData(token_id),
+													unbindCalldata: jns_contract.unbind.getData(token_id),
 												});
 											} else {
 												deferred.reject(error4);
