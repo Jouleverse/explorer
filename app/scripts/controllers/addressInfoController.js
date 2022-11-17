@@ -17,10 +17,12 @@ angular.module('ethExplorer')
 				});
 
 				getAllFlyingJ().then(function(result) {
+					$scope.countFlyingJ = result.length.toString(); // .toString() is important to work with ||
 					$scope.allFlyingJ = result;
 				});
 
 				getAllJNS().then(function(result) {
+					$scope.countJNS = result.length.toString(); // .toString() !!
 					$scope.allJNS = result;
 				});
 			}
