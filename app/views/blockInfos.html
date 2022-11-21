@@ -17,7 +17,8 @@
             <button class="btn btn-success cb"><span>{{gasUsed}} Gas单位</span></button>
         </div>
         <table class="table table-striped">
-            <tbody><tr>
+            <tbody>
+			<tr>
                 <th colspan="2" style="text-align:left">概要</th>
             </tr>
             <tr>
@@ -59,14 +60,14 @@
                 <td>{{gasLimit}} 单位</td>
             </tr>
             <tr>
-                <td>附加数据</td>
-                <td>{{extraData}}</td>
+                <td nowrap>附加数据</td>
+				<td><p style="word-break:break-all;">{{extraData}}</p></td>
             </tr>
 
-            <tr>
+            <!--tr>
                 <td nowrap>附加数据(转换后)</td>
                 <td>{{dataFromHex}}</td>
-            </tr>
+            </tr-->
 
             </tbody>
         </table>
