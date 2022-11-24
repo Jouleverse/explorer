@@ -79,6 +79,7 @@ angular.module('ethExplorer')
 			} else {
 				alert(`不是有效的地址：${toAddress}`);
 			}
+			
 		}
 
 		$scope.init = function()
@@ -171,21 +172,11 @@ angular.module('ethExplorer')
 													var chainId = window.ethereum.chainId; 
 													console.log('[jns] chain id: ', chainId);
 
-													if (window.ethereum.isConnected() == true) {
-														window.ethereum.request({ method: 'eth_requestAccounts' })
-															.then((accounts) => {
-																var account = accounts[0];
-																console.log("[jns] connected account is: ", account);
-																resolve(chainId, account);
-															})
-															.catch((error) => {
-																console.error(`[jns] error getting accounts: ${error.code}: ${error.message}`);
-																resolve(chainId, null);
-															});
-													} else {
-														// not connected
-														resolve(chainId, null);
-													}
+													var account = window.ethereum.selectedAddress;
+													console.log('[jns] connected account: ', account);
+
+													resolve(chainId, account);
+
 												} else {	
 													// not in metamask env
 													resolve(null, null);
