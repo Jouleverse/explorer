@@ -14,9 +14,9 @@
         </table>
         <div style="padding-bottom:30px;width:100%;text-align:right;clear:both">
 			<span style="color:#999"><p style="word-break:break-all;">{{hexdata}}</p></span>
-			<input type="button" value="绑定" class="btn btn-primary" ng-click="hexdata='向合约地址发送数据 '+bindCalldata+' 进行绑定'"></input>
-			<button class="btn btn-secondary" ng-click="hexdata='向合约地址发送数据 '+unbindCalldata+' 解除绑定'">解绑定</button>
-            <!--button class="btn btn-success cb">转让</button-->
+			<input type="button" value="绑定" class="btn btn-success" ng-click="bind()"></input>
+			<button class="btn btn-secondary" ng-click="unbind()">解绑定</button>
+			<span ng-style="{ 'display': (chainId == '0xe52' && account == ownerAddress) ? 'inline-block' : 'none' }"><button class="btn btn-primary cb" ng-click="give()">📤</button></span>
         </div>
         <table class="table table-striped">
             <tbody><tr>

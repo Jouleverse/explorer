@@ -1,11 +1,82 @@
 angular.module('ethExplorer')
-	.controller('jnsInfoCtrl', function ($rootScope, $scope, $location, $routeParams,$q) {
+	.controller('jnsInfoCtrl', function ($rootScope, $scope, $location, $routeParams, $q) {
 
 		var web3 = $rootScope.web3;
 
+		$scope.bind = function ()
+		{
+			if (window.ethereum && window.ethereum.isConnected()) {
+				// hacking...
+				web3.setProvider(window.ethereum);
+				web3.eth.defaultAccount = web3.eth.accounts[0];
+
+				if (web3.eth.defaultAccount == this.ownerAddress) {
+					var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
+					jns_contract.bind(this.nftId,
+						function (err, result) {
+							if (err) {
+								console.log(err);
+								alert('出错啦：' + err.message);
+							}
+						}); // no need to send(), amazing!
+
+				} else {
+					this.hexdata = '向合约地址发送数据 ' + this.bindCalldata + ' 进行绑定';
+				}
+			}
+		}
+
+		$scope.unbind = function ()
+		{
+			if (window.ethereum && window.ethereum.isConnected()) {
+				// hacking...
+				web3.setProvider(window.ethereum);
+				web3.eth.defaultAccount = web3.eth.accounts[0];
+
+				if (web3.eth.defaultAccount == this.ownerAddress) {
+					var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
+					jns_contract.unbind(this.nftId,
+						function (err, result) {
+							if (err) {
+								console.log(err);
+								alert('出错啦：' + err.message);
+							}
+						}); // no need to send(), amazing!
+
+				} else {
+					this.hexdata = '向合约地址发送数据 ' + this.unbindCalldata + ' 解除绑定';
+				}
+			}
+		}
+
+		$scope.give = function ()
+		{
+			var toAddress = prompt("请输入接收地址：", "0x");
+			if (toAddress && web3.isAddress(toAddress)) { // TODO more validation
+				var nftId = this.nftId; // this. just works! cool.
+				var fromAddress = this.ownerAddress;
+				console.log(`will give jns #${nftId} from ${fromAddress} to: ${toAddress}`);
+				if (window.ethereum && window.ethereum.isConnected()) {
+					// hacking...
+					web3.setProvider(window.ethereum);
+					web3.eth.defaultAccount = web3.eth.accounts[0];
+
+					var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
+					jns_contract.safeTransferFrom(fromAddress, toAddress, nftId,
+						function (err, result) {
+							if (err) {
+								console.log(err);
+								alert('出错啦：' + err.message);
+							}
+						}); // no need to send(), amazing!
+				}
+			} else {
+				alert(`不是有效的地址：${toAddress}`);
+			}
+		}
+
 		$scope.init = function()
 		{
-
 			$scope.jnsId = $routeParams.jnsId.toLowerCase(); // must in format xxx.j
 			// pre-process two exceptions: GM.j Nana.j
 			if ($scope.jnsId == "gm.j") $scope.jnsId = "GM.j";
@@ -30,9 +101,25 @@ angular.module('ethExplorer')
 					$scope.logo = result.logo;
 					$scope.bindCalldata = result.bindCalldata;
 					$scope.unbindCalldata = result.unbindCalldata;
+					$scope.chainId = result.chainId;
+					$scope.account = result.account;
 				}, function () {
 					$scope.jnsIdError = "该名字不存在";
 				});
+
+				if (window.ethereum) {
+					window.ethereum.on('chainChanged', function (chainId) {
+						console.log("[jns] switched to chain id: ", parseInt(chainId, 16));
+						$scope.chainId = chainId;
+						$scope.$apply();
+					});
+
+					window.ethereum.on('accountsChanged', function (accounts) {
+						console.log("[jns] switched to account: ", accounts[0]);
+						$scope.account = accounts[0];
+						$scope.$apply();
+					});
+				}
 
 			} else {
 				$location.path("/");
@@ -56,15 +143,50 @@ angular.module('ethExplorer')
 										jns_contract.tokenURI.call(token_id, function (error4, result4) {
 											if (!error4) {
 												var img = parseTokenURI(result4.toString()).image;
-												deferred.resolve({
-													contractAddress: jns_contract_address,
-													tokenId: token_id,
-													ownerAddress: owner_addr,
-													boundAddress: bound_addr,
-													logo: img,
-													bindCalldata: jns_contract.bind.getData(token_id),
-													unbindCalldata: jns_contract.unbind.getData(token_id),
-												});
+
+												//// get chain & connected account info ////
+												
+												function resolve(chainId, account) {
+													deferred.resolve({
+														contractAddress: jns_contract_address,
+														tokenId: token_id,
+														ownerAddress: owner_addr,
+														boundAddress: bound_addr,
+														logo: img,
+														bindCalldata: jns_contract.bind.getData(token_id),
+														unbindCalldata: jns_contract.unbind.getData(token_id),
+														chainId: chainId,
+														account: account,
+													});
+												}
+
+												if (window.ethereum) {
+													// in metamask env
+													var chainId = window.ethereum.chainId; 
+													console.log('[jns] chain id: ', chainId);
+
+													if (window.ethereum.isConnected() == true) {
+														window.ethereum.request({ method: 'eth_requestAccounts' })
+															.then((accounts) => {
+																var account = accounts[0];
+																console.log("[jns] connected account is: ", account);
+																resolve(chainId, account);
+															})
+															.catch((error) => {
+																console.error(`[jns] error getting accounts: ${error.code}: ${error.message}`);
+																resolve(chainId, null);
+															});
+													} else {
+														// not connected
+														resolve(chainId, null);
+													}
+												} else {	
+													// not in metamask env
+													resolve(null, null);
+												}
+
+												//// ----  ////
+												
 											} else {
 												deferred.reject(error4);
 											}
