@@ -23,7 +23,10 @@ angular.module('ethExplorer')
 				} else {
 					this.hexdata = '向合约地址发送数据 ' + this.bindCalldata + ' 进行绑定';
 				}
+			} else {
+				this.hexdata = '向合约地址发送数据 ' + this.bindCalldata + ' 进行绑定';
 			}
+
 		}
 
 		$scope.unbind = function ()
@@ -46,7 +49,10 @@ angular.module('ethExplorer')
 				} else {
 					this.hexdata = '向合约地址发送数据 ' + this.unbindCalldata + ' 解除绑定';
 				}
+			} else {
+				this.hexdata = '向合约地址发送数据 ' + this.unbindCalldata + ' 解除绑定';
 			}
+
 		}
 
 		$scope.give = function ()
