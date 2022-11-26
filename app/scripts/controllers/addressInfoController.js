@@ -4,6 +4,33 @@ angular.module('ethExplorer')
 		var web3 = $rootScope.web3;
 
 		////////////////////////////////////////////////////////////////////////////////
+		
+		$scope.mint = function () {
+			var namej = prompt("请输入JNS名字（不带后缀.j）：", "");
+			if (namej) { // TODO more validation?
+				if (window.ethereum && window.ethereum.isConnected()) {
+					// hacking...
+					web3.setProvider(window.ethereum);
+					web3.eth.defaultAccount = web3.eth.accounts[0];
+
+					if (web3.eth.defaultAccount == this.jnsContractOwner) {
+						var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
+						jns_contract.claim(namej,
+							function (err, result) {
+								if (err) {
+									console.log(err);
+									//alert('出错啦：' + err.message);
+								}
+							}); // no need to send(), amazing!
+
+					}
+				}
+
+			}
+			
+		}
+
+		////////////////////////////////////////////////////////////////////////////////
 
 		$scope.init=function(){
 
@@ -26,7 +53,6 @@ angular.module('ethExplorer')
 					$scope.allJNS = result;
 				});
 			}
-
 
 			function getAddressInfos(){
 				var deferred = $q.defer();
@@ -118,6 +144,7 @@ angular.module('ethExplorer')
 				//-------------------------------------------------------------------------------
 
 				var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
+				$scope.jnsContractOwner = await jns_contract.owner.call();
 				var jns_balance = await jns_contract.balanceOf.call(addr).toString();
 
 				//try {
@@ -141,6 +168,18 @@ angular.module('ethExplorer')
 					list.push({'tag': jns_tag, 'tokenInfo': jns_tokenInfo});
 				}
 
+				//// get chain & connected account info ////
+				if (window.ethereum) {
+					// in metamask env
+					var chainId = window.ethereum.chainId; 
+					console.log('[addressInfo] chain id: ', chainId);
+
+					var account = window.ethereum.selectedAddress;
+					console.log('[addressInfo] connected account: ', account);
+
+					$scope.chainId = chainId;
+					$scope.account = account;
+				}
 				////////////////////////////////////////////////////////////////////////////////
 				//console.log(list);
 
@@ -160,6 +199,22 @@ angular.module('ethExplorer')
 				}, 0 /*Math.floor(Math.random() * 3000) + 2000*/);
 
 				return deferred.promise;
+			}
+
+			//////////////// add listeners /////////////////
+
+			if (window.ethereum) {
+				window.ethereum.on('chainChanged', function (chainId) {
+					console.log("[addressInfo] switched to chain id: ", parseInt(chainId, 16));
+					$scope.chainId = chainId;
+					$scope.$apply();
+				});
+
+				window.ethereum.on('accountsChanged', function (accounts) {
+					console.log("[addressInfo] switched to account: ", accounts[0]);
+					$scope.account = accounts[0];
+					$scope.$apply();
+				});
 			}
 
 		};

@@ -23,7 +23,12 @@
         </tr>
         <tr>
 			<td><b>藏品和徽章：</b></td>
-			<td>FlyingJ: {{countFlyingJ || "统计中..."}}, JNS: {{countJNS || "统计中..."}}</td>
+			<td>FlyingJ: {{countFlyingJ || "统计中..."}},
+				JNS: {{countJNS || "统计中..."}} 
+				<span ng-style="{ 'display': chainId == '0xe52' && account == jnsContractOwner ? 'inline-block' : 'none' }">
+					<button class="btn btn-secondary cb" ng-click="mint()">🔨</button>
+				</span>
+			</td>
         </tr-->
 		<tr data-ng-repeat="i in allFlyingJ">
 		  <td>{{i.tag}}</td>

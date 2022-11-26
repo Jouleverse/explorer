@@ -10,7 +10,7 @@ angular.module('ethExplorer')
 				web3.setProvider(window.ethereum);
 				web3.eth.defaultAccount = web3.eth.accounts[0];
 
-				if (web3.eth.defaultAccount == this.ownerAddress) {
+				if (web3.eth.defaultAccount.toLowerCase() == this.ownerAddress.toLowerCase()) {
 					var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
 					jns_contract.bind(this.nftId,
 						function (err, result) {
@@ -36,7 +36,7 @@ angular.module('ethExplorer')
 				web3.setProvider(window.ethereum);
 				web3.eth.defaultAccount = web3.eth.accounts[0];
 
-				if (web3.eth.defaultAccount == this.ownerAddress) {
+				if (web3.eth.defaultAccount.toLowerCase() == this.ownerAddress.toLowerCase()) {
 					var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
 					jns_contract.unbind(this.nftId,
 						function (err, result) {
