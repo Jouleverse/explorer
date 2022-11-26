@@ -31,6 +31,9 @@ DONE:
 5. 完全去除对外部js的依赖，尤其是一些访问不畅通的比如googleapis
 6. 支持nginx proxy 8501 to 8502
 7. Fixed: 打开tx/等页面时，仍然会执行mainController中的循环读取区块列表的代码，造成加载速度慢。Root Cause: searchbox在其他页面也出现，而它bind到了main controller. Fix: 重写searchbox.
+8. 支持独立的JNS页面和url /#/jns/{name}.j
+9. 在JNS页面支持连接metamask和give()
+10. 在address info页面支持连接metamask，如果连接的是JNS owner，那么就会出现“🔨”图标来mint JNS
 
 TODO:
 1. 在区块信息插入clique的signer信息（以取代miner）
