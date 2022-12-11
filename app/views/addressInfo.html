@@ -23,13 +23,19 @@
         </tr>
         <tr>
 			<td><b>藏品和徽章：</b></td>
-			<td>FlyingJ: {{countFlyingJ || "统计中..."}},
+			<td>
+				JTI: {{countJTI || "统计中..."}}, 
+				FlyingJ: {{countFlyingJ || "统计中..."}}, 
 				JNS: {{countJNS || "统计中..."}} 
 				<span ng-style="{ 'display': chainId == '0xe52' && account == jnsContractOwner ? 'inline-block' : 'none' }">
 					<button class="btn btn-secondary cb" ng-click="mint()">🔨</button>
 				</span>
 			</td>
-        </tr-->
+        </tr>
+		<tr data-ng-repeat="i in allJTI">
+		  <td>{{i.tag}}</td>
+		  <td><image height="24px" src="{{i.tokenInfo.image}}" style="filter:invert(5%) sepia(75%) saturate(7378%) hue-rotate(45deg) brightness(114%) contrast(112%);"></image></td>
+		</tr>
 		<tr data-ng-repeat="i in allFlyingJ">
 		  <td>{{i.tag}}</td>
 		  <td><image height="64px" src="{{i.tokenInfo.image}}"></image></td>

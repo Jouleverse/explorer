@@ -43,6 +43,11 @@ angular.module('ethExplorer')
 					$scope.balanceInEther = result.balanceInEther;
 				});
 
+				getAllJTI().then(function(result) {
+					$scope.countJTI = result.length.toString(); // .toString() !!
+					$scope.allJTI = result;
+				});
+
 				getAllFlyingJ().then(function(result) {
 					$scope.countFlyingJ = result.length.toString(); // .toString() is important to work with ||
 					$scope.allFlyingJ = result;
@@ -85,6 +90,45 @@ angular.module('ethExplorer')
 					return metadata;
 				}
 				return null;
+			}
+
+			async function _getAllJTI() {
+				//var deferred = $q.defer();
+
+				var list = [];
+
+				var addr = $scope.addressId;
+
+				////////////////////////////////////////////////////////////////////////////////
+
+				var contract = web3.eth.contract(jti_ABI).at(jti_contract_address);
+				var balance = await contract.balanceOf.call(addr).toString();
+
+				if (balance > 0) {
+					//var token_name = await contract.name.call();
+					var token_name = "J Trusted Identity";
+					var token_id = await contract.tokenOfOwnerByIndex.call(addr).toString();
+					var tag = token_name + ' #' + token_id;
+					var tokenURI = await contract.tokenURI.call(token_id);
+
+					var tokenInfo = parseTokenURI(tokenURI);
+
+					list.push({'tag': tag, 'tokenInfo': tokenInfo});
+				}
+
+				return list;
+			}
+
+			function getAllJTI() {
+				var deferred = $q.defer();
+
+				// intentionally delay...
+				window.setTimeout(function() {
+					var list = _getAllJTI();
+					deferred.resolve(list);
+				}, 0 /*Math.floor(Math.random() * 3000) + 2000*/);
+
+				return deferred.promise;
 			}
 
 			async function _getAllFlyingJ() {
