@@ -24,25 +24,33 @@
         <tr>
 			<td><b>藏品和徽章：</b></td>
 			<td>
-				JTI: {{countJTI || "统计中..."}}, 
-				FlyingJ: {{countFlyingJ || "统计中..."}}, 
-				JNS: {{countJNS || "统计中..."}} 
+				JTI: {{countJTI || "统计中..."}} 
+				, 
+				FlyingJ: {{countFlyingJ || "统计中..."}}
+				, 
+				JNS: {{countJNS || "统计中..."}}
 				<span ng-style="{ 'display': chainId == '0xe52' && account == jnsContractOwner ? 'inline-block' : 'none' }">
 					<button class="btn btn-secondary cb" ng-click="mint()">🔨</button>
 				</span>
+				,
+				JNSVote: {{countJNSVote || "统计中..."}}
 			</td>
         </tr>
-		<tr data-ng-repeat="i in allJTI">
-		  <td>{{i.tag}}</td>
-		  <td><image height="24px" src="{{i.tokenInfo.image}}" style="filter:invert(5%) sepia(75%) saturate(7378%) hue-rotate(45deg) brightness(114%) contrast(112%);"></image></td>
+		<tr data-ng-repeat="i1 in allFlyingJ">
+		  <td>{{i1.tag}}</td>
+		  <td><image height="64px" src="{{i1.tokenInfo.image}}"></image></td>
 		</tr>
-		<tr data-ng-repeat="i in allFlyingJ">
-		  <td>{{i.tag}}</td>
-		  <td><image height="64px" src="{{i.tokenInfo.image}}"></image></td>
+		<tr data-ng-repeat="i2 in allJTI">
+		  <td>{{i2.tag}}</td>
+		  <td><image height="24px" src="{{i2.tokenInfo.image}}" style="filter:invert(5%) sepia(75%) saturate(7378%) hue-rotate(45deg) brightness(114%) contrast(112%);"></image></td>
 		</tr>
-		<tr data-ng-repeat="i in allJNS">
-		  <td>{{i.tag}}</td>
-		  <td><a href="/#/jns/{{i.tokenInfo.description}}"><image height="20px" src="{{i.tokenInfo.image}}"></image></a></td>
+		<tr data-ng-if="countJNSVote > 0">
+		  <td>JNS DAO Vote(s)</td>
+		  <td><span data-ng-repeat="i3 in allJNSVote"><image height="64px" style="margin:0 2px 0 0" src="{{i3.tokenInfo.image}}"></image></span></td>
+		</tr>
+		<tr data-ng-repeat="i4 in allJNS">
+		  <td>{{i4.tag}}</td>
+		  <td><a href="/#/jns/{{i4.tokenInfo.description}}"><image height="20px" src="{{i4.tokenInfo.image}}"></image></a></td>
 		</tr>
         </tbody>
     </table>

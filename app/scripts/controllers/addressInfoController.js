@@ -57,6 +57,8 @@ angular.module('ethExplorer')
 					$scope.countJNS = result.length.toString(); // .toString() !!
 					$scope.allJNS = result;
 				});
+
+				getAllJNSVote();
 			}
 
 			function getAddressInfos(){
@@ -243,6 +245,46 @@ angular.module('ethExplorer')
 				}, 0 /*Math.floor(Math.random() * 3000) + 2000*/);
 
 				return deferred.promise;
+			}
+
+			function getAllJNSVote() {
+				$scope.allJNSVote = [];
+				// intentionally delay...
+				//window.setTimeout(function() {
+					var addr = $scope.addressId;
+					var contract = web3.eth.contract(jnsvote_ABI).at(jnsvote_contract_address);
+					contract.balanceOf.call(addr, function (err1, result1) {
+						if (err1) {
+							console.log(err1);
+						} else {
+							var balance = result1.toString();
+							$scope.countJNSVote = balance;
+							for (var i = 0; i < balance; i++) {
+								var token_name = "JNS Vote";
+								contract.tokenOfOwnerByIndex.call(addr, i, function (err2, result2) {
+									if (err2) {
+										console.log(err2);
+									} else {
+										var token_id = result2.toString();
+										var tag = token_name + ' #' + token_id;
+										contract.tokenURI.call(token_id, function (err3, result3) {
+											if (err3) {
+												console.log(err3);
+											} else {
+												var tokenURI = result3;
+												var tokenInfo = parseTokenURI(tokenURI);
+												$scope.allJNSVote.push({'tag': tag, 'tokenInfo': tokenInfo});
+												$scope.$apply(); // inform the data updates !
+											}
+										});
+									}
+								});
+							}
+						}
+					});
+
+				//}, 0 /*Math.floor(Math.random() * 3000) + 2000*/);
+
 			}
 
 			//////////////// add listeners /////////////////
