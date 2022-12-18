@@ -24,6 +24,10 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
                 templateUrl: 'views/jnsInfo.html',
                 controller: 'jnsInfoCtrl'
             }).
+            when('/jnsvote/', {
+                templateUrl: 'views/jnsVoteInfo.html',
+                controller: 'jnsVoteInfoCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });
@@ -35,8 +39,8 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
         var web3 = new Web3();
 
 	    	var protocol = location.protocol;
-			var hostname = 'localhost';
-			//var hostname = 'j.blockcoach.com'; //location.hostname; // FIXME manual fix
+			//var hostname = 'localhost';
+			var hostname = 'j.blockcoach.com'; //location.hostname; // FIXME manual fix
 			var port = (hostname == 'localhost' || hostname == '127.0.0.1')? 8501 : (protocol == 'http:' ? 8502 : 8503); //XXX yuanma rpc, geth:8501, nginx:8502, nginx-https:8503
 	        //var eth_node_url = 'http://' + hostname + ':' + port;
 	        var eth_node_url = protocol + '//' + hostname + ':' + port; // adaptive to http & https

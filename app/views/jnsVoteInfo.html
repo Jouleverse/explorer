@@ -1,0 +1,72 @@
+<div class="container" style="padding-top: 50px;">
+
+    <h1>JNS DAO Govenance Vote
+        <small>参与JNS DAO治理投票</small>
+    </h1>
+
+    <div id="jnsvote-97785883" class="jnsvotediv">
+        <table class="table table-striped" cellpadding="0" cellspacing="0" style="padding:0px;float:left;margin:0px;width:100%">
+            <tbody>
+            <tr>
+				<th colspan="3" align="left">提案总数：{{countProposals}}</th>
+            </tr>
+            </tbody>
+        </table>
+		<span>&nbsp;</span>
+		<div data-ng-repeat="i in allProposals">
+			<table class="table table-striped" data-ng-if="i.disabled == false">
+				<tbody>
+					<tr>
+						<th colspan="2" style="text-align:left">提案 #{{i.id}}</th>
+					</tr>
+					<tr>
+						<td>标题</td>
+						<td>{{i.title}}</td>
+					</tr>
+					<tr>
+						<td>链接</td>
+						<td>{{i.link}}</td>
+					</tr>
+					<tr>
+						<td nowrap>开始时间(区块高度)</td>
+						<td>{{i.timeBegin}}</td>
+					</tr>
+					<tr>
+						<td>结束时间(区块高度)</td>
+						<td>{{i.timeEnd}}</td>
+					</tr>
+					<tr>
+						<td>赞成票数</td>
+						<td>{{i.countVotesFor}}</td>
+					</tr>
+					<tr>
+						<td>反对票数</td>
+						<td>{{i.countVotesAgainst}}</td>
+					</tr>
+					<tr>
+						<td>代表JNS持仓量</td>
+						<td>{{i.countJNSvoted}}</td>
+					</tr>
+					<tr>
+						<td nowrap>其中赞成票代表JNS持仓量</td>
+						<td>{{i.countJNSvotedFor}}</td>
+					</tr>
+					<tr>
+						<td>JNS总量(快照)</td>
+						<td>{{i.totalJNS}}</td>
+					</tr>
+					<tr>
+						<td>投票</td>
+						<td>
+							<span style="color:#999"><p style="word-break:break-all;">{{hexdata}}</p></span>
+							<input type="button" value="赞成" class="btn btn-success" ng-click="voteFor(i.id)"></input>
+							<button class="btn btn-secondary" ng-click="voteAgainst(i.id)">反对</button>
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+    </div>
+
+</div>

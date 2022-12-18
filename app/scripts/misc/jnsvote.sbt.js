@@ -1,5 +1,5 @@
-var jnsvote_contract_address = "0xE2ea34D22547AC95606B93f5f1ae8dc23D0F1020"; // local test
-//var jnsvote_contract_address = ""; // mainnet
+//var jnsvote_contract_address = "0xE2ea34D22547AC95606B93f5f1ae8dc23D0F1020"; // local test
+var jnsvote_contract_address = "0xEf1f38e95dd7F4FB564535F9317ecB3Bd419DA50"; // mainnet
 var jnsvote_ABI = [
 	{
 		"inputs": [
