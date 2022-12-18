@@ -11,13 +11,26 @@ angular.module('ethExplorer')
 				web3.eth.defaultAccount = web3.eth.accounts[0];
 
 				var jnsvote_contract = web3.eth.contract(jnsvote_ABI).at(jnsvote_contract_address);
-				jnsvote_contract.voteFor(proposal,
-					function (err, result) {
-						if (err) {
-							console.log(err);
-							alert('出错啦：' + err.message);
-						}
-					}); // no need to send()
+
+				jnsvote_contract.voteFor.estimateGas(proposal, function (error, gas_amount) {
+					if (error) {
+						console.log('voteFor estimateGas error: ', error);
+						$scope.errmsg = error.data.message;
+						$scope.$apply();
+					} else {
+						console.log('voteFor estimateGas: ', gas_amount);
+
+						jnsvote_contract.voteFor(proposal,
+							function (err, result) {
+								if (err) {
+									console.log('voteFor error: ', err);
+									$scope.errmsg = err.message;
+									$scope.$apply();
+								}
+							}); // no need to send()
+					}
+
+				});
 
 			} else {
 				this.hexdata = '向合约地址 ' + jnsvote_contract_address + ' 发送数据 ' + this.voteForCalldata[proposal] + ' 投赞成票';
@@ -33,13 +46,26 @@ angular.module('ethExplorer')
 				web3.eth.defaultAccount = web3.eth.accounts[0];
 
 				var jnsvote_contract = web3.eth.contract(jnsvote_ABI).at(jnsvote_contract_address);
-				jnsvote_contract.voteAgainst(proposal,
-					function (err, result) {
-						if (err) {
-							console.log(err);
-							alert('出错啦：' + err.message);
-						}
-					}); // no need to send()
+
+				jnsvote_contract.voteAgainst.estimateGas(proposal, function (error, gas_amount) {
+					if (error) {
+						console.log('voteAgainst estimateGas error: ', error);
+						$scope.errmsg = error.data.message;
+						$scope.$apply();
+					} else {
+						console.log('voteAgainst estimateGas: ', gas_amount);
+
+						jnsvote_contract.voteAgainst(proposal,
+							function (err, result) {
+								if (err) {
+									console.log('voteAgainst error: ', err);
+									$scope.errmsg = err.message;
+									$scope.$apply();
+								}
+							}); // no need to send()
+					}
+
+				});
 
 			} else {
 				this.hexdata = '向合约地址 ' + jnsvote_contract_address + ' 发送数据 ' + this.voteAgainstCalldata[proposal] + ' 投反对票';
