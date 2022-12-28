@@ -32,11 +32,11 @@ angular.module('ethExplorer')
 
 		////////////////////////////////////////////////////////////////////////////////
 
-		$scope.init=function(){
+		$scope.init = function(){
 
-			$scope.addressId=$routeParams.addressId;
+			$scope.addressId = $routeParams.addressId;
 
-			if($scope.addressId!==undefined) {
+			if($scope.addressId !== undefined) {
 
 				getAddressInfos().then(function(result){
 					$scope.balance = result.balance;
@@ -53,11 +53,8 @@ angular.module('ethExplorer')
 					$scope.allFlyingJ = result;
 				});
 
-				getAllJNS().then(function(result) {
-					$scope.countJNS = result.length.toString(); // .toString() !!
-					$scope.allJNS = result;
-				});
-
+				getAddressNS();
+				getAllJNS();
 				getAllJNSVote();
 			}
 
@@ -78,6 +75,23 @@ angular.module('ethExplorer')
 					}
 				});
 				return deferred.promise;
+			}
+
+			function getAddressNS() {
+				var addr = $scope.addressId;
+				var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
+				jns_contract._whois.call(addr, function (err, result) {
+					if (!err) {
+						var jns_id = result.toString();
+						if (jns_id > 0) {
+							jns_contract.tokenURI.call(jns_id, function (err2, result2) {
+								var jns_tokenURI = result2;
+								$scope.jns_info = parseTokenURI(jns_tokenURI);
+								$scope.$apply(); //update
+							});
+						}
+					}
+				});
 			}
 
 			function parseTokenURI(tokenURI) {
@@ -179,117 +193,89 @@ angular.module('ethExplorer')
 				return deferred.promise;
 			}
 
-
-			async function _getAllJNS() {
-				//var deferred = $q.defer();
-
-				var list = [];
-
-				var addr = $scope.addressId;
-
-				//-------------------------------------------------------------------------------
-
-				var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
-				$scope.jnsContractOwner = await jns_contract.owner.call();
-				var jns_balance = await jns_contract.balanceOf.call(addr).toString();
-
-				//try {
-				var jns_id = await jns_contract._whois.call(addr).toString();
-				if (jns_id > 0) {
-					var jns_tokenURI = await jns_contract.tokenURI.call(jns_id);
-					$scope.jns_info = parseTokenURI(jns_tokenURI);
-				}
-				//} catch (e) {
-				//	  console.log(e);
-				//}
-
-				for (var i = 0; i < jns_balance; i++) {
-					//var jns_token_name = await jns_contract.name.call();
-					var jns_token_name = "J Name Service";
-					var jns_token_id = await jns_contract.tokenOfOwnerByIndex.call(addr, i).toString();
-					var jns_tag = jns_token_name + ' #' + jns_token_id;
-					var jns_tokenURI = await jns_contract.tokenURI.call(jns_token_id);
-					var jns_tokenInfo = parseTokenURI(jns_tokenURI);
-
-					list.push({'tag': jns_tag, 'tokenInfo': jns_tokenInfo});
-				}
-
-				//// get chain & connected account info ////
-				if (window.ethereum) {
-					// in metamask env
-					var chainId = window.ethereum.chainId; 
-					console.log('[addressInfo] chain id: ', chainId);
-
-					var account = window.ethereum.selectedAddress;
-					console.log('[addressInfo] connected account: ', account);
-
-					$scope.chainId = chainId;
-					$scope.account = account;
-				}
-				////////////////////////////////////////////////////////////////////////////////
-				//console.log(list);
-
-				//deferred.resolve(list);
-
-				//return deferred.promise;
-				return list;
-			}
-
 			function getAllJNS() {
-				var deferred = $q.defer();
+				$scope.allJNS = [];
+				var addr = $scope.addressId;
+				var contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
+				contract.balanceOf.call(addr, function (err1, result1) {
+					if (err1) {
+						console.log(err1);
+					} else {
+						var balance = result1.toString();
+						$scope.countJNS = balance;
+						for (var i = 0; i < balance; i++) {
+							var token_name = "J Name Service";
+							contract.tokenOfOwnerByIndex.call(addr, i, function (err2, result2) {
+								if (err2) {
+									console.log(err2);
+								} else {
+									var token_id = result2.toString();
+									var tag = token_name + ' #' + token_id;
+									contract.tokenURI.call(token_id, function (err3, result3) {
+										if (err3) {
+											console.log(err3);
+										} else {
+											var tokenURI = result3;
+											var tokenInfo = parseTokenURI(tokenURI);
+											$scope.allJNS.push({'tag': tag, 'tokenInfo': tokenInfo});
+											$scope.$apply(); // inform the data updates !
+										}
+									});
+								}
+							});
+						}
+					}
+				});
 
-				// intentionally delay...
-				window.setTimeout(function() {
-					var list = _getAllJNS();
-					deferred.resolve(list);
-				}, 0 /*Math.floor(Math.random() * 3000) + 2000*/);
-
-				return deferred.promise;
+				// if showing mint button
+				contract.owner.call(function (err, result) {
+					$scope.chainId = window.ethereum ? window.ethereum.chainId : '';
+					$scope.account = window.ethereum ? window.ethereum.selectedAddress : '';
+					$scope.jnsContractOwner = result.toString();
+					console.log('[addressInfo] chainId: ', $scope.chainId, 'account: ', $scope.account, 'jnsContractOwner: ', $scope.jnsContractOwner);
+					$scope.$apply();
+				});
 			}
 
 			function getAllJNSVote() {
 				$scope.allJNSVote = [];
-				// intentionally delay...
-				//window.setTimeout(function() {
-					var addr = $scope.addressId;
-					var contract = web3.eth.contract(jnsvote_ABI).at(jnsvote_contract_address);
-					contract.balanceOf.call(addr, function (err1, result1) {
-						if (err1) {
-							console.log(err1);
-						} else {
-							var balance = result1.toString();
-							$scope.countJNSVote = balance;
-							for (var i = 0; i < balance; i++) {
-								var token_name = "JNS Vote";
-								contract.tokenOfOwnerByIndex.call(addr, i, function (err2, result2) {
-									if (err2) {
-										console.log(err2);
-									} else {
-										var token_id = result2.toString();
-										var tag = token_name + ' #' + token_id;
-										contract.tokenURI.call(token_id, function (err3, result3) {
-											if (err3) {
-												console.log(err3);
-											} else {
-												var tokenURI = result3;
-												var tokenInfo = parseTokenURI(tokenURI);
-												$scope.allJNSVote.push({'tag': tag, 'tokenInfo': tokenInfo});
-												$scope.$apply(); // inform the data updates !
-											}
-										});
-									}
-								});
-							}
+				var addr = $scope.addressId;
+				var contract = web3.eth.contract(jnsvote_ABI).at(jnsvote_contract_address);
+				contract.balanceOf.call(addr, function (err1, result1) {
+					if (err1) {
+						console.log(err1);
+					} else {
+						var balance = result1.toString();
+						$scope.countJNSVote = balance;
+						for (var i = 0; i < balance; i++) {
+							var token_name = "JNS Vote";
+							contract.tokenOfOwnerByIndex.call(addr, i, function (err2, result2) {
+								if (err2) {
+									console.log(err2);
+								} else {
+									var token_id = result2.toString();
+									var tag = token_name + ' #' + token_id;
+									contract.tokenURI.call(token_id, function (err3, result3) {
+										if (err3) {
+											console.log(err3);
+										} else {
+											var tokenURI = result3;
+											var tokenInfo = parseTokenURI(tokenURI);
+											$scope.allJNSVote.push({'tag': tag, 'tokenInfo': tokenInfo});
+											$scope.$apply(); // inform the data updates !
+										}
+									});
+								}
+							});
 						}
-					});
-
-				//}, 0 /*Math.floor(Math.random() * 3000) + 2000*/);
+					}
+				});
 
 			}
 
 			//////////////// add listeners /////////////////
-
 			if (window.ethereum) {
+				
 				window.ethereum.on('chainChanged', function (chainId) {
 					console.log("[addressInfo] switched to chain id: ", parseInt(chainId, 16));
 					$scope.chainId = chainId;

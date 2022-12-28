@@ -52,12 +52,12 @@
 
 				// register listeners
 				window.ethereum.on('chainChanged', function (chainId) {
-					console.log("switched to chain id: ", parseInt(chainId, 16));
+					console.log("[index] switched to chain id: ", parseInt(chainId, 16));
 					showHideConnect(chainId, null);
 				});
 
 				window.ethereum.on('accountsChanged', function (accounts) {
-					console.log("switched to accounts: ", accounts);
+					console.log("[index] switched to accounts: ", accounts);
 					showHideConnect(null, accounts);
 				});
 
@@ -65,17 +65,17 @@
 				window.ethereum
 					.request({ method: 'eth_chainId' })
 					.then((chainId) => {
-						console.log(`got chain id: ${parseInt(chainId, 16)}`);
+						console.log(`[index] got chain id: ${parseInt(chainId, 16)}`);
 
 						var account = window.ethereum.selectedAddress;
 						var accounts = account ? [account] : [];
-						console.log("connected account is: ", accounts);
+						console.log("[index] connected account is: ", accounts);
 
 						showHideConnect(chainId, accounts);
 
 					})
 					.catch((error) => {
-						console.error(`Error fetching chainId: ${error.code}: ${error.message}`);
+						console.error(`[index] error fetching chainId: ${error.code}: ${error.message}`);
 						showHideConnect(null, null);
 					});
 
