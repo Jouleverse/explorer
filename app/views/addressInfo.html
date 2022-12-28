@@ -46,7 +46,10 @@
 		</tr>
 		<tr data-ng-if="countJNSVote > 0">
 		  <td>JNS DAO Vote POPs</td>
-		  <td><span data-ng-repeat="i3 in allJNSVote"><image height="64px" style="margin:0 2px 2px 0" src="{{i3.tokenInfo.image}}"></image></span></td>
+		  <td><span data-ng-repeat="i3 in allJNSVote">
+				  <a href="/#/jnsvote/"><image height="64px" style="margin:0 2px 2px 0" src="{{i3.tokenInfo.image}}"></image></a>
+			  </span>
+		  </td>
 		</tr>
 		<tr data-ng-repeat="i4 in allJNS">
 		  <td>{{i4.tag}}</td>

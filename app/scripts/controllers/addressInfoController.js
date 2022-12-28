@@ -43,16 +43,8 @@ angular.module('ethExplorer')
 					$scope.balanceInEther = result.balanceInEther;
 				});
 
-				getAllJTI().then(function(result) {
-					$scope.countJTI = result.length.toString(); // .toString() !!
-					$scope.allJTI = result;
-				});
-
-				getAllFlyingJ().then(function(result) {
-					$scope.countFlyingJ = result.length.toString(); // .toString() is important to work with ||
-					$scope.allFlyingJ = result;
-				});
-
+				getAllJTI();
+				getAllFlyingJ();
 				getAddressNS();
 				getAllJNS();
 				getAllJNSVote();
@@ -61,7 +53,7 @@ angular.module('ethExplorer')
 			function getAddressInfos(){
 				var deferred = $q.defer();
 
-				web3.eth.getBalance($scope.addressId,function(error, result) {
+				web3.eth.getBalance($scope.addressId, function(error, result) {
 					if(!error) {
 						// intentionally delay...
 						window.setTimeout(function() {
@@ -75,6 +67,20 @@ angular.module('ethExplorer')
 					}
 				});
 				return deferred.promise;
+			}
+
+			function parseTokenURI(tokenURI) {
+				var [t, s] = tokenURI.split(',');
+				if (t == 'data:application/json;base64') {
+					var metadata = JSON.parse(atob(s));
+					/*var [t2, s2] = metadata.image.split(',');
+				if (t2 == 'data:image/svg+xml;base64') {
+					var svg = atob(s2);
+					metadata.image = svg;
+				}*/
+					return metadata;
+				}
+				return null;
 			}
 
 			function getAddressNS() {
@@ -94,103 +100,74 @@ angular.module('ethExplorer')
 				});
 			}
 
-			function parseTokenURI(tokenURI) {
-				var [t, s] = tokenURI.split(',');
-				if (t == 'data:application/json;base64') {
-					var metadata = JSON.parse(atob(s));
-					/*var [t2, s2] = metadata.image.split(',');
-				if (t2 == 'data:image/svg+xml;base64') {
-					var svg = atob(s2);
-					metadata.image = svg;
-				}*/
-					return metadata;
-				}
-				return null;
-			}
-
-			async function _getAllJTI() {
-				//var deferred = $q.defer();
-
-				var list = [];
-
-				var addr = $scope.addressId;
-
-				////////////////////////////////////////////////////////////////////////////////
-
-				var contract = web3.eth.contract(jti_ABI).at(jti_contract_address);
-				var balance = await contract.balanceOf.call(addr).toString();
-
-				if (balance > 0) {
-					//var token_name = await contract.name.call();
-					var token_name = "J Trusted Identity";
-					var token_id = await contract.tokenOfOwnerByIndex.call(addr).toString();
-					var tag = token_name + ' #' + token_id;
-					var tokenURI = await contract.tokenURI.call(token_id);
-
-					var tokenInfo = parseTokenURI(tokenURI);
-
-					list.push({'tag': tag, 'tokenInfo': tokenInfo});
-				}
-
-				return list;
-			}
-
 			function getAllJTI() {
-				var deferred = $q.defer();
-
-				// intentionally delay...
-				window.setTimeout(function() {
-					var list = _getAllJTI();
-					deferred.resolve(list);
-				}, 0 /*Math.floor(Math.random() * 3000) + 2000*/);
-
-				return deferred.promise;
-			}
-
-			async function _getAllFlyingJ() {
-				//var deferred = $q.defer();
-
-				var list = [];
-
+				$scope.allJTI = [];
 				var addr = $scope.addressId;
-
-				////////////////////////////////////////////////////////////////////////////////
-				//console.log(flyingj_ABI);
-
-				var contract = web3.eth.contract(flyingj_ABI).at(flyingj_contract_address);
-				var balance = await contract.balanceOf.call(addr).toString();
-
-				//console.log(balance);
-
-				if (balance > 0) {
-					//var token_name = await contract.name.call();
-					var token_name = "Flying J";
-					var token_id = await contract.tokenOfOwnerByIndex.call(addr).toString();
-					var tag = token_name + ' #' + token_id;
-					var tokenURI = await contract.tokenURI.call(token_id);
-
-					//console.log(tag);
-
-					var tokenInfo = parseTokenURI(tokenURI);
-
-					//console.log(tokenInfo);
-
-					list.push({'tag': tag, 'tokenInfo': tokenInfo});
-				}
-
-				return list;
+				var contract = web3.eth.contract(jti_ABI).at(jti_contract_address);
+				contract.balanceOf.call(addr, function (err1, result1) {
+					if (err1) {
+						console.log(err1);
+					} else {
+						var balance = result1.toString();
+						$scope.countJTI = balance;
+						for (var i = 0; i < balance; i++) {
+							var token_name = "J Trusted Identity";
+							contract.tokenOfOwnerByIndex.call(addr, i, function (err2, result2) {
+								if (err2) {
+									console.log(err2);
+								} else {
+									var token_id = result2.toString();
+									var tag = token_name + ' #' + token_id;
+									contract.tokenURI.call(token_id, function (err3, result3) {
+										if (err3) {
+											console.log(err3);
+										} else {
+											var tokenURI = result3;
+											var tokenInfo = parseTokenURI(tokenURI);
+											$scope.allJTI.push({'tag': tag, 'tokenInfo': tokenInfo});
+											$scope.$apply(); // inform the data updates !
+										}
+									});
+								}
+							});
+						}
+					}
+				});
 			}
 
 			function getAllFlyingJ() {
-				var deferred = $q.defer();
-
-				// intentionally delay...
-				window.setTimeout(function() {
-					var list = _getAllFlyingJ();
-					deferred.resolve(list);
-				}, 0 /*Math.floor(Math.random() * 3000) + 2000*/);
-
-				return deferred.promise;
+				$scope.allFlyingJ = [];
+				var addr = $scope.addressId;
+				var contract = web3.eth.contract(flyingj_ABI).at(flyingj_contract_address);
+				contract.balanceOf.call(addr, function (err1, result1) {
+					if (err1) {
+						console.log(err1);
+					} else {
+						var balance = result1.toString();
+						$scope.countFlyingJ = balance;
+						for (var i = 0; i < balance; i++) {
+							var token_name = "Flying J";
+							contract.tokenOfOwnerByIndex.call(addr, i, function (err2, result2) {
+								if (err2) {
+									console.log(err2);
+								} else {
+									var token_id = result2.toString();
+									var tag = token_name + ' #' + token_id;
+									contract.tokenURI.call(token_id, function (err3, result3) {
+										if (err3) {
+											console.log(err3);
+										} else {
+											var tokenURI = result3;
+											var tokenInfo = parseTokenURI(tokenURI);
+											$scope.allFlyingJ.push({'tag': tag, 'tokenInfo': tokenInfo});
+											$scope.$apply(); // inform the data updates !
+										}
+									});
+								}
+							});
+						}
+					}
+				});
 			}
 
 			function getAllJNS() {
