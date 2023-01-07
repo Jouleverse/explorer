@@ -103,17 +103,18 @@
         function processRequest() {
              var requestStr = $("#query")[0].value.split('0x').join('');
 
-            if (requestStr.length === 40)
+            if (requestStr.length === 40) // if address?
               return goToAddrInfos('0x'+requestStr)
             else if(requestStr.length === 64) {
-              if(/[0-9a-zA-Z]{64}?/.test(requestStr))
+              if(/[0-9a-zA-Z]{64}?/.test(requestStr)) // if tx?
                 return goToTxInfos('0x'+requestStr)
-              else if(/[0-9]{1,7}?/.test(requestStr))
+              else if(/[0-9]{1,7}?/.test(requestStr)) // if block hash?
                 return goToBlockInfos(requestStr)
-            } else if(parseInt(requestStr) > 0)
-              return goToBlockInfos(parseInt(requestStr))
-			else if (requestStr.toLowerCase().match(/\.j$/))
+            }
+			else if (requestStr.toLowerCase().match(/\.j$/)) // if jns?
 				return goToJNSInfo(requestStr)
+			else if(parseInt(requestStr) > 0) // if block number?
+				return goToBlockInfos(parseInt(requestStr)) 
 
             alert('不知道如何处理 '+ requestStr)
         };
