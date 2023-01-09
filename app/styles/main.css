@@ -28,3 +28,17 @@
   content: "";
   padding: 0;
 }
+
+/* zoomable clickable emoji e.g. the gift airdrop in the address page */
+.zoom {
+	transition: transform .2s; /* Animation */
+}
+
+.zoom a {
+	text-decoration: none !important;
+	cursor: pointer;
+}
+
+.zoom:hover {
+	transform: scale(1.5);
+}

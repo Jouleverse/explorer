@@ -23,7 +23,7 @@
 			if (chainId != null) {
 				__chainId = chainId;
 
-				if (chainId == '0xe52') {
+				if (chainId == '0xe52' || chainId == '0xf30') { // 3666 or 3888
 					$("#connect")[0].style.display = "inline-block";
 				} else {
 					$("#connect")[0].style.display = "none";
@@ -173,6 +173,7 @@
   <script src="scripts/misc/jns.nft.js"></script>
   <script src="scripts/misc/jnsvote.sbt.js"></script>
   <script src="scripts/misc/jti.sbt.js"></script>
+  <script src="scripts/misc/airdrop.js"></script>
 
 <!--Core-->
   <script src="app.js"></script>

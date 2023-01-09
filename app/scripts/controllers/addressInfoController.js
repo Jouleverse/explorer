@@ -5,6 +5,31 @@ angular.module('ethExplorer')
 
 		////////////////////////////////////////////////////////////////////////////////
 		
+		$scope.star = function () {
+			var nstar = prompt("请输入 JTI 星星数量（1-5）：", "");
+			if (nstar) { // TODO more validation?
+				if (window.ethereum && window.ethereum.isConnected()) {
+					// hacking...
+					web3.setProvider(window.ethereum);
+					web3.eth.defaultAccount = web3.eth.accounts[0];
+
+					if (web3.eth.defaultAccount == this.jnsContractOwner) {
+						var jti_contract = web3.eth.contract(jti_ABI).at(jti_contract_address);
+						jti_contract.issue($scope.addressId, nstar,
+							function (err, result) {
+								if (err) {
+									console.log(err);
+									//alert('出错啦：' + err.message);
+								}
+							});
+
+					}
+				}
+
+			}
+			
+		}
+
 		$scope.mint = function () {
 			var namej = prompt("请输入JNS名字（不带后缀.j）：", "");
 			if (namej) { // TODO more validation?
@@ -30,6 +55,62 @@ angular.module('ethExplorer')
 			
 		}
 
+		$scope.airdrop = function ()
+		{
+			// get the calldata
+			var airdrop_contract = web3.eth.contract(airdrop_ABI).at(airdrop_contract_address);
+			var hexdata = airdrop_contract.airdrop.getData($scope.addressId);
+
+			// do it or show calldata
+			if (window.ethereum && window.ethereum.isConnected() /*&& web3.eth.accounts.length > 0*/) {
+				// hacking...
+				web3.setProvider(window.ethereum);
+				web3.eth.defaultAccount = web3.eth.accounts[0];
+
+				airdrop_contract._approvers.call(web3.eth.defaultAccount, function (err, result) {
+					if (err) {
+						console.log(err);
+						$scope.airdrop_hexdata = '';
+						$scope.airdrop_errmsg = '出错啦：' + err.data.message;
+						$scope.$apply();
+					} else if (result == true) {
+						console.log($scope.addressId);
+						airdrop_contract.airdrop.estimateGas($scope.addressId, function (error, gas_amount) {
+							if (error) {
+								console.log('airdrop estimateGas error: ', error);
+								$scope.airdrop_hexdata = '';
+								$scope.airdrop_errmsg = '出错啦： ' + error.data.message;
+								$scope.$apply();
+							} else {
+								console.log('airdrop estimateGas: ', gas_amount);
+
+								airdrop_contract.airdrop($scope.addressId, function (err, result) {
+									if (err) {
+										console.log(err);
+										$scope.airdrop_hexdata = '';
+										$scope.airdrop_errmsg = '出错啦：' + err.data.message;
+										$scope.$apply();
+									} else {
+										$scope.airdrop_hexdata = '';
+										$scope.airdrop_errmsg = '成功发起空投，tx hash: ' + result; // tx id
+										$scope.$apply();
+									}
+								});
+							}
+						});
+					} else {
+						$scope.airdrop_hexdata = '';
+						$scope.airdrop_errmsg = '无权发起空投！请联系组长！';
+						$scope.$apply();
+					}
+				});
+			} else {
+				this.airdrop_hexdata = '请联系组长向合约地址发送数据 ' + hexdata + ' 发起空投';
+				this.airdrop_errmsg = '';
+			}
+
+		}
+
 		////////////////////////////////////////////////////////////////////////////////
 
 		$scope.init = function(){
@@ -48,6 +129,7 @@ angular.module('ethExplorer')
 				getAddressNS();
 				getAllJNS();
 				getAllJNSVote();
+				
 			}
 
 			function getAddressInfos(){
@@ -73,7 +155,7 @@ angular.module('ethExplorer')
 				var [t, s] = tokenURI.split(',');
 				if (t == 'data:application/json;base64') {
 					var metadata = JSON.parse(atob(s));
-					/*var [t2, s2] = metadata.image.split(',');
+				/*var [t2, s2] = metadata.image.split(',');
 				if (t2 == 'data:image/svg+xml;base64') {
 					var svg = atob(s2);
 					metadata.image = svg;
@@ -132,6 +214,15 @@ angular.module('ethExplorer')
 							});
 						}
 					}
+				});
+
+				// if showing trust button
+				contract.owner.call(function (err, result) {
+					$scope.chainId = window.ethereum ? window.ethereum.chainId : '';
+					$scope.account = window.ethereum ? window.ethereum.selectedAddress : '';
+					$scope.jtiContractOwner = result.toString();
+					console.log('[addressInfo] chainId: ', $scope.chainId, 'account: ', $scope.account, 'jtiContractOwner: ', $scope.jtiContractOwner);
+					$scope.$apply();
 				});
 			}
 

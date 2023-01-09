@@ -1,3 +1,4 @@
+//var jti_contract_address = "0x5893B7AaD98656986D0017D57d558a75994600f8"; // local test
 var jti_contract_address = "0x826971d988d7d86Fdc9062A3f63E7b18D32Bc8EB"; // mainnet
 var jti_ABI = [
 	{
