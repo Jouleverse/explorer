@@ -42,7 +42,7 @@
 					<button ng-click="mint()">🔨</button>
 				</span>
 				,
-				JNSVote: {{countJNSVote || "统计中..."}}
+				JNSVote POAP: {{countJNSVote || "统计中..."}}
 			</td>
         </tr>
 		<tr data-ng-repeat="i1 in allFlyingJ">
@@ -54,7 +54,7 @@
 		  <td><image height="24px" src="{{i2.tokenInfo.image}}" style="filter:invert(5%) sepia(75%) saturate(7378%) hue-rotate(45deg) brightness(114%) contrast(112%);"></image></td>
 		</tr>
 		<tr data-ng-if="countJNSVote > 0">
-		  <td>JNS DAO Vote POPs</td>
+		  <td>JNSVote POAP</td>
 		  <td><span data-ng-repeat="i3 in allJNSVote">
 				  <a href="/#/jnsvote/"><image height="64px" style="margin:0 2px 2px 0" src="{{i3.tokenInfo.image}}"></image></a>
 			  </span>

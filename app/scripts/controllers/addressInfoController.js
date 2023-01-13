@@ -8,7 +8,9 @@ angular.module('ethExplorer')
 		$scope.star = function () {
 			var nstar = prompt("请输入 JTI 星星数量（1-5）：", "");
 			if (nstar) { // TODO more validation?
-				if (window.ethereum && window.ethereum.isConnected()) {
+				if (nstar < 1 || nstar > 5) {
+					alert("星等超出范围（1-5）");
+				} else if (window.ethereum && window.ethereum.isConnected()) {
 					// hacking...
 					web3.setProvider(window.ethereum);
 					web3.eth.defaultAccount = web3.eth.accounts[0];
