@@ -141,13 +141,18 @@
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
-            <span class="icon-bar"></span><a href="/#/" class="navbar-brand">区块链浏览器</a>
+			<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+            <a href="/#/" class="navbar-brand">区块链浏览器</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
             <form  name="search_form" onsubmit="processRequest()"  class="navbar-form navbar-right">
             <div class="form-group">
-            <input type="text" placeholder="交易哈希/地址/区块高度" name="requestType" required  id="query"  class="form-control"><br>
+            <input type="text" placeholder="JNS域名/链地址/交易哈希/区块高度" name="requestType" required  id="query"  class="form-control"><br>
             </div>
             <button type="submit" class="btn btn-success">搜索</button></form>
             </ul>
