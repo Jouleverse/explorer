@@ -32,9 +32,48 @@ angular.module('ethExplorer')
 			
 		}
 
+		$scope.register = function () {
+			var npubkey = prompt("请输入你的npub key：", "");
+			if (npubkey) { // TODO more validation?
+
+				try {
+					
+					var bytes = bech32.fromWords(bech32.decode(npubkey).words);
+					var hexkey = '0x' + bytesToHex(bytes);
+
+					if (window.ethereum && window.ethereum.isConnected()) {
+						// hacking...
+						web3.setProvider(window.ethereum);
+						web3.eth.defaultAccount = web3.eth.accounts[0];
+
+						if (web3.eth.defaultAccount == this.jnsContractOwner) {
+							var jnsdaov_contract = web3.eth.contract(jnsdaov_ABI).at(jnsdaov_contract_address);
+							jnsdaov_contract.register(hexkey,
+								function (err, result) {
+									if (err) {
+										console.log(err);
+										//alert('出错啦：' + err.message);
+									}
+								}); // no need to send()
+
+						}
+					}
+				} catch (e) {
+					console.log(e);
+					alert('出错啦：' + e);
+				}
+
+			}
+			
+		}
+
 		$scope.mint = function () {
 			var namej = prompt("请输入JNS名字（不带后缀.j）：", "");
-			if (namej) { // TODO more validation?
+			if (!namej) {
+				alert('错误：无效输入！');
+			} else if (namej.search('.j$') > 0) {
+				alert('错误：输入不能带后缀.j！');
+			} else { // TODO more validation?
 				if (window.ethereum && window.ethereum.isConnected()) {
 					// hacking...
 					web3.setProvider(window.ethereum);
@@ -128,6 +167,7 @@ angular.module('ethExplorer')
 
 				getAllJTI();
 				getAllFlyingJ();
+				getJNSDAOV();
 				getAddressNS();
 				getAllJNS();
 				getAllJNSVote();
@@ -259,6 +299,25 @@ angular.module('ethExplorer')
 								}
 							});
 						}
+					}
+				});
+			}
+
+			function getJNSDAOV() {
+				$scope.allJNSDAOV = [];
+				var addr = $scope.addressId;
+				var contract = web3.eth.contract(jnsdaov_ABI).at(jnsdaov_contract_address);
+				contract.query.call(addr, function (err2, result2) {
+					if (err2) {
+						console.log(err2);
+					} else {
+						var tokenURI = result2;
+						var tokenInfo = parseTokenURI(tokenURI);
+						var tag = tokenInfo.name;
+						tokenInfo.npubkey = bech32.encode('npub', bech32.toWords(hexToBytes(tokenInfo.hex)));
+						$scope.countJNSDAOV = 1;
+						$scope.allJNSDAOV.push({'tag': tokenInfo.name, 'tokenInfo': tokenInfo});
+						$scope.$apply(); // inform the data updates !
 					}
 				});
 			}

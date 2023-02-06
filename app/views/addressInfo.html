@@ -36,6 +36,11 @@
 				</span>
 				, 
 				FlyingJ: {{countFlyingJ || "统计中..."}}
+				,
+				JNSDAO V: {{countJNSDAOV || "统计中..."}}
+				<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == addressId.toLowerCase() ? 'inline-block' : 'none' }">
+					<button ng-click="register()">+紫V</button>
+				</span>
 				, 
 				JNS: {{countJNS || "统计中..."}}
 				<span ng-style="{ 'display': chainId == '0xe52' && account == jnsContractOwner ? 'inline-block' : 'none' }">
@@ -45,6 +50,12 @@
 				JNSVote POAP: {{countJNSVote || "统计中..."}}
 			</td>
         </tr>
+		<tr data-ng-repeat="i5 in allJNSDAOV">
+		  <td>{{i5.tag}}</td>
+		  <td><img height="14px" src="{{jns_info.image}}" /> <image height="14px" src="{{i5.tokenInfo.image}}"></image> 
+			  <div style="color:#aaa;font-size:small;word-break:break-all;">{{i5.tokenInfo.npubkey}}</div>
+		  </td>
+		</tr>
 		<tr data-ng-repeat="i1 in allFlyingJ">
 		  <td>{{i1.tag}}</td>
 		  <td><image height="64px" src="{{i1.tokenInfo.image}}"></image></td>
