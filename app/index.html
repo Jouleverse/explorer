@@ -34,9 +34,12 @@
 				__accounts = accounts;
 
 				if (accounts.length > 0) {
-					$("#connAddr")[0].innerHTML = accounts[0].substr(0,6) + '...' + accounts[0].substr(-4)
+					$("#connAddr")[0].innerHTML = accounts[0].substr(0,6) + '...' + accounts[0].substr(-4);
+					$("#connLink").attr('onclick', '');
+					$("#connLink").attr('href', '/address/' + accounts[0]);
 				} else {
 					$("#connAddr")[0].innerHTML = 'connect'
+					$("#connLink").attr('onclick', 'connect()');
 				}
 			}
 
@@ -157,7 +160,9 @@
             <button type="submit" class="btn btn-success">搜索</button></form>
             </ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li id="connect" style="display:none"><a style="cursor:pointer" onclick="connect()"><span id="connAddr" style="color:#fff">connect</span></a></li>
+				<li id="connect" style="display:none">
+					<a id="connLink" style="cursor:pointer" onclick="connect()"><span id="connAddr" style="color:#fff">connect</span></a>
+				</li>
 			</ul>
 	    </div>
     </div>

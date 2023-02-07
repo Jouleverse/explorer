@@ -39,4 +39,9 @@ TODO:
 1. 在区块信息插入clique的signer信息（以取代miner）
 2. searchbox遗留问题：无法区分搜索 交易 和 区块哈希（都是0x...且无法通过长度区分？）
 
+...更多histroy待参考git log补充...
+
+2023.2.7
+- fix bug: +紫V输入npub地址后不能弹出metamask
+- improve: 点击右上角已连接的地址可以直接跳转到该地址的钱包页面
 

@@ -46,7 +46,7 @@ angular.module('ethExplorer')
 						web3.setProvider(window.ethereum);
 						web3.eth.defaultAccount = web3.eth.accounts[0];
 
-						if (web3.eth.defaultAccount == this.jnsContractOwner) {
+						if (web3.eth.defaultAccount.toLowerCase() == this.addressId.toLowerCase()) {
 							var jnsdaov_contract = web3.eth.contract(jnsdaov_ABI).at(jnsdaov_contract_address);
 							jnsdaov_contract.register(hexkey,
 								function (err, result) {
@@ -56,7 +56,11 @@ angular.module('ethExplorer')
 									}
 								}); // no need to send()
 
+						} else {
+							alert('出错了：地址不匹配！');
 						}
+					} else {
+						alert('出错了：没有web3环境！');
 					}
 				} catch (e) {
 					console.log(e);
