@@ -20,36 +20,47 @@
 		var __chainId, __accounts;
 
 		function showHideConnect(chainId, accounts) {
-			if (chainId != null) {
+			if (chainId) { // update chainId
+				console.log('update __chainId: from ', __chainId, ' to ', chainId);
 				__chainId = chainId;
-
-				if (chainId == '0xe52' || chainId == '0xf30') { // 3666 or 3888
-					$("#connect")[0].style.display = "inline-block";
-				} else {
-					$("#connect")[0].style.display = "none";
-				}
 			}
 
-			if (accounts != null) {
+			if (accounts) { // update accounts
+				console.log('update __accounts: from ', __accounts, ' to ', accounts);
 				__accounts = accounts;
-
-				if (accounts.length > 0) {
-					$("#connAddr")[0].innerHTML = accounts[0].substr(0,6) + '...' + accounts[0].substr(-4);
-					$("#connLink").attr('onclick', '');
-					$("#connLink").attr('href', '/address/' + accounts[0]);
-				} else {
-					$("#connAddr")[0].innerHTML = 'connect'
-					$("#connLink").attr('onclick', 'connect()');
-				}
 			}
 
-			if (chainId == null && accounts == null)
-				$("#connect")[0].style.display = "none";
+			if (__chainId) { // 有网络
+				if (__chainId == '0xe52' || __chainId == '0xf30') { // 3666 or 3888 已知网络
+					$("#connNet")[0].innerHTML = parseInt(__chainId, 16);
+
+					if (__accounts.length > 0) { // 有账户
+						$("#connAddr")[0].innerHTML = __accounts[0].substr(0,6) + '...' + __accounts[0].substr(-4);
+						$("#connLink").attr('onclick', '');
+						$("#connLink").attr('href', '/address/' + __accounts[0]);
+					} else { // 没有账户
+						$("#connAddr")[0].innerHTML = '连接账户';
+						$("#connLink").attr('onclick', 'connect()');
+						$("#connLink").attr('href', '');
+					}
+
+				} else { // 未知网络
+					$("#connAddr")[0].innerHTML = '未知网络';
+					$("#connNet")[0].innerHTML = parseInt(__chainId, 16);
+					$("#connLink").attr('onclick', 'switchNetwork()');
+					$("#connLink").attr('href', '');
+				}
+			} else { // 没有网络
+				$("#connAddr")[0].innerHTML = '';
+				$("#connNet")[0].innerHTML = '?'; // no web3 found
+				$("#connLink").attr('onclick', '');
+				$("#connLink").attr('href', 'https://jnsdao.com/docs/joule-basics/wallet-rpc');
+			}
 
 		}
 
-		// init to check chainId...
-		(function() {
+		// init to check chainId... we are waiting for body to be loaded first...
+		var onBodyLoaded = function() {
 
 			if (window.ethereum) {
 
@@ -82,8 +93,11 @@
 						showHideConnect(null, null);
 					});
 
+			} else {
+				console.log('showHideConnect(null, null)');
+				showHideConnect(null, null);
 			}
-		})();
+		};
 
 		// connect to check account...
 		function connect() {
@@ -101,6 +115,37 @@
 
 			}
 		}
+
+		// switch network...
+		function switchNetwork() {
+			if (window.ethereum) {
+				window.ethereum
+					.request({ method: 'wallet_switchEthereumChain', 
+						params: [{ chainId: '0xe52' }] })
+					.catch((error) => {
+						console.error(`Error switch chain: ${error.code}: ${error.message}`);
+						if (error.code === 4902) { // network not added
+							window.ethereum
+								.request({ method: 'wallet_addEthereumChain', 
+									params: [{ 
+										chainId: '0xe52',
+										chainName: 'Joule Mainnet',
+										nativeCurrency: {
+											name: 'Joule',
+											symbol: 'J ',
+											decimals: 18
+										},
+										rpcUrls: ['http://rpc.jnsdao.com:8502', 'https://rpc.jnsdao.com:8503'],
+										blockExplorerUrls: ['https://jscan.jnsdao.com'],
+									}] })
+								.catch((error) => {
+									console.error(`Error add chain: ${error.code}: ${error.message}`);
+								});
+						}
+					});
+			}
+		}
+
 
 		// for search box...
         function processRequest() {
@@ -139,7 +184,7 @@
         }
 	</script>
 </head>
-<body>
+<body onload="onBodyLoaded()">
   
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -160,8 +205,11 @@
             <button type="submit" class="btn btn-success">搜索</button></form>
             </ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li id="connect" style="display:none">
-					<a id="connLink" style="cursor:pointer" onclick="connect()"><span id="connAddr" style="color:#fff">connect</span></a>
+				<li id="connect" style="display:inline-block">
+					<a id="connLink" style="cursor:pointer" onclick="connect()">
+						<span id="connAddr"></span>
+						[<span id="connNet">?</span>]
+					</a>
 				</li>
 			</ul>
 	    </div>
@@ -208,7 +256,7 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <center><div class="modal-header">
-                    <h4 class="modal-title">Allow Access to Geth and Refresh the Page</h4>
+                    <h4 class="modal-title">无法连接到区块链网络</h4>
                 </div>
                 <div class="modal-body">
                     <code><p id="modaltext"></p></code>
@@ -227,7 +275,7 @@
     </footer>
 </div>
 <script>
-$("#modaltext").text( 'geth --rpc --rpccorsdomain "'+ window.location.protocol + '//' + window.location.host + '"' );
+$("#modaltext").text( '无法连接到RPC服务，请检查你的网络连接是否畅通' );
 </script>
 </body>
 </html>
