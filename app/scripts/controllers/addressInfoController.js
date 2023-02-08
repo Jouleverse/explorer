@@ -169,6 +169,14 @@ angular.module('ethExplorer')
 					$scope.balanceInEther = result.balanceInEther;
 				});
 
+				// fix '统计中...'
+				$scope.allFlyingJ = [];
+				$scope.allJTI = [];
+				$scope.allJNS = [];
+				$scope.allJNSDAOV = [];
+				$scope.allJNSVote = [];
+
+				// fetch & update
 				getAllJTI();
 				getAllFlyingJ();
 				getJNSDAOV();

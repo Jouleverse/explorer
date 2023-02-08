@@ -21,9 +21,9 @@ angular.module('ethExplorer')
 							var current = Date.now() / 1000;
 							console.log("local time: ", current, " block time: ", result.timestamp);
 							if (current - result.timestamp < 60) { // last block is within 60 sec
-								$scope.status = "🟢 正常";
+								$scope.status = "🟢 数据正常";
 							} else {
-								$scope.status = "🔴 异常";
+								$scope.status = "🔴 数据异常";
 							}
 						}
 
