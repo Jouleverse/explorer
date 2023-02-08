@@ -45,3 +45,6 @@ TODO:
 - fix bug: +紫V输入npub地址后不能弹出metamask
 - improve: 点击右上角已连接的地址可以直接跳转到该地址的钱包页面
 
+2023.2.8
+- fix: 一些文案，首页网络状态改为数据状态；钱包地址页改为燃料余额；网络可识别时不显示数字ID而是显示名称Joule Mainnet/Testnet
+- improve: 把mintJNS从地址页移动到JNS信息页，流程优化为先查，不存在则直接mint所查询的名字，不需要再次输入（且避免输入错误）

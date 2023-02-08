@@ -3,6 +3,38 @@ angular.module('ethExplorer')
 
 		var web3 = $rootScope.web3;
 
+		$scope.mintJNS = function (jnsId) {
+
+			if (jnsId.search('.j$') < 0) {
+				// TODO more validation?
+				alert('错误：' + jnsId + ' 不是有效的JNS名称！');
+			} else {
+				// remove trailing .j (for correct call to contract)
+				var namej = jnsId.slice(0, jnsId.length - 2); 
+				console.log('about to mint JNS name: ' + namej + '.j');
+
+				if (window.ethereum && window.ethereum.isConnected()) {
+					// hacking...
+					web3.setProvider(window.ethereum);
+					web3.eth.defaultAccount = web3.eth.accounts[0];
+
+					if (web3.eth.defaultAccount == this.jnsContractOwner) {
+						var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
+						jns_contract.claim(namej,
+							function (err, result) {
+								if (err) {
+									console.log(err);
+									//alert('出错啦：' + err.message);
+								}
+							}); // no need to send(), amazing!
+
+					}
+				}
+
+			}
+			
+		}
+
 		$scope.bind = function ()
 		{
 			if (window.ethereum && window.ethereum.isConnected()) {
@@ -138,6 +170,16 @@ angular.module('ethExplorer')
 
 				var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
 
+				// if showing mint button
+				jns_contract.owner.call(function (err, result) {
+					$scope.chainId = window.ethereum ? window.ethereum.chainId : '';
+					$scope.account = window.ethereum ? window.ethereum.selectedAddress : '';
+					$scope.jnsContractOwner = result.toString();
+					console.log('[addressInfo] chainId: ', $scope.chainId, 'account: ', $scope.account, 'jnsContractOwner: ', $scope.jnsContractOwner);
+					$scope.$apply();
+				});
+
+				// search jns
 				jns_contract._nslookup.call($scope.jnsName, function (error, result) {
 					if (!error) {
 						var token_id = result.toString();
@@ -146,7 +188,7 @@ angular.module('ethExplorer')
 								var owner_addr = result2.toString();
 								jns_contract._bound.call(token_id, function (error3, result3) {
 									if (!error3) {
-										var bound_addr = (result3 == 0)? "未绑定" : result3.toString();
+										var bound_addr = (result3 == 0)? "未绑定" : ('已绑定 ' + result3.toString());
 										jns_contract.tokenURI.call(token_id, function (error4, result4) {
 											if (!error4) {
 												var img = parseTokenURI(result4.toString()).image;

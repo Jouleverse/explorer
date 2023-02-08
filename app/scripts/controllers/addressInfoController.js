@@ -71,7 +71,7 @@ angular.module('ethExplorer')
 			
 		}
 
-		$scope.mint = function () {
+		/*$scope.mint = function () {
 			var namej = prompt("请输入JNS名字（不带后缀.j）：", "");
 			if (!namej) {
 				alert('错误：无效输入！');
@@ -98,7 +98,7 @@ angular.module('ethExplorer')
 
 			}
 			
-		}
+		}*/
 
 		$scope.airdrop = function ()
 		{
