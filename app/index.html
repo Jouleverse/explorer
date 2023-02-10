@@ -37,7 +37,7 @@
 			if (__chainId) { // 有网络
 				var i = Object.keys(__joule_networks).indexOf(__chainId);
 				if (i != -1) { // 3666 or 3888 已知网络
-					$("#connNet")[0].innerHTML = __joule_networks[__chainId];
+					$("#connNet")[0].innerHTML = parseInt(__chainId, 16); // 2023.2.10: 仍显示network id
 
 					if (__accounts.length > 0) { // 有账户
 						$("#connAddr")[0].innerHTML = __accounts[0].substr(0,6) + '...' + __accounts[0].substr(-4);
