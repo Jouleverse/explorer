@@ -33,7 +33,7 @@ angular.module('ethExplorer')
 		}
 
 		$scope.register = function () {
-			var npubkey = prompt("请输入你的npub key：", "");
+			var npubkey = prompt("请输入你的npub公钥：", "");
 			if (npubkey) { // TODO more validation?
 
 				try {
