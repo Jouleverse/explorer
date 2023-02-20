@@ -123,7 +123,8 @@ angular.module('ethExplorer')
 										var info = {
 											id: id,
 											title: result2[0],
-											link: result2[1],
+											cid: result2[1],
+											link: cid2link(result2[1]),
 											timeBegin: result2[2].toString(),
 											timeEnd: result2[3].toString(),
 											countVotesFor: result2[4].toString() + " (" + (result2[4] == 0 ? "0" : Math.floor(result2[4]/(result2[4].add(result2[5]))*10000)/100) + "%)",
@@ -188,6 +189,12 @@ angular.module('ethExplorer')
 				return metadata;
 			}
 			return null;
+		}
+
+		function cid2link(ipfsURI) { //ipfs CIDv0 to link CIDv1.dweb.link
+			const cidv0 = ipfsURI.slice(7);
+			const cidv1 = Multiformats.CID.parse(cidv0).toV1().toString();
+			return 'https://' + cidv1 + '.ipfs.dweb.link';
 		}
 
 	});

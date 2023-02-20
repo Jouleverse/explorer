@@ -57,3 +57,6 @@ TODO:
 2023.2.13
 - improve: 燃料余额 => 能量余额
 
+2023.2.20
+- improve: use dweb.link to show ipfs content of JNSVote governance proposal.
+
