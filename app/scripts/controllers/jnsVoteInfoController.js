@@ -193,8 +193,9 @@ angular.module('ethExplorer')
 
 		function cid2link(ipfsURI) { //ipfs CIDv0 to link CIDv1.dweb.link
 			const cidv0 = ipfsURI.slice(7);
-			const cidv1 = Multiformats.CID.parse(cidv0).toV1().toString();
-			return 'https://' + cidv1 + '.ipfs.dweb.link';
+			//const cidv1 = Multiformats.CID.parse(cidv0).toV1().toString();
+			//return 'https://' + cidv1 + '.ipfs.dweb.link';
+			return 'https://gateway.pinata.cloud/ipfs/' + cidv0; //use pinata.cloud
 		}
 
 	});

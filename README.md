@@ -60,3 +60,6 @@ TODO:
 2023.2.20
 - improve: use dweb.link to show ipfs content of JNSVote governance proposal.
 
+2023.2.27
+- fix: use pinata's ipfs gateway instead of dweb.link.
+
