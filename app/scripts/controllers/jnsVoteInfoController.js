@@ -28,6 +28,9 @@ angular.module('ethExplorer')
 									$scope.$apply();
 								}
 							}); // no need to send()
+
+						$scope.errmsg = '投票上链中，请15秒后刷新此页面';
+						$scope.$apply();
 					}
 
 				});
@@ -63,6 +66,9 @@ angular.module('ethExplorer')
 									$scope.$apply();
 								}
 							}); // no need to send()
+
+						$scope.errmsg = '投票上链中，请15秒后刷新此页面';
+						$scope.$apply();
 					}
 
 				});
@@ -85,6 +91,7 @@ angular.module('ethExplorer')
 			
 			function getAllJNSVote(addr) {
 				console.log('fetching JNSVote POAPs of address ' + addr);
+				$scope.countJNSVote = 0;
 				$scope.allJNSVote = [];
 				var contract = web3.eth.contract(jnsvote_ABI).at(jnsvote_contract_address);
 				contract.balanceOf.call(addr, function (err1, result1) {
@@ -138,6 +145,17 @@ angular.module('ethExplorer')
 										console.log(err2);
 										alert('出错啦：' + err2.message);
 									} else {
+										beginBlock = result2[2];
+										endBlock = result2[3];
+										currentBlock = web3.eth.blockNumber;
+										var progress;
+										if (currentBlock < beginBlock) 
+											progress = '未开始';
+										else if (currentBlock < endBlock)
+											progress = '进行中';
+										else 
+											progress = '已结束';
+
 										var info = {
 											id: id,
 											title: result2[0],
@@ -154,6 +172,7 @@ angular.module('ethExplorer')
 
 											totalJNS: result2[8].toString(),
 											disabled: result2[9],
+											progress: progress,
 										};
 
 										//$scope.allProposals.push(info);
@@ -209,6 +228,7 @@ angular.module('ethExplorer')
 
 				window.ethereum.on('accountsChanged', function (accounts) {
 					console.log("[jnsVOte] switched to account: ", accounts[0]);
+					getAllJNSVote(accounts[0]); //refresh!
 					$scope.account = accounts[0];
 					$scope.$apply();
 				});

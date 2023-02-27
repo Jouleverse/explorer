@@ -63,4 +63,6 @@ TODO:
 2023.2.27
 - fix: use w3s ipfs gateway instead of dweb.link.
 - improve: 在JNSVote页面展示治理徽章
+- fix: refresh jnsvote POAP
+- improve: 增加投票进度展示
 

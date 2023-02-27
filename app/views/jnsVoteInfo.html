@@ -10,12 +10,14 @@
             <tr>
 				<th colspan="2" style="text-align:left">提案总数：{{countProposals}}</th>
             </tr>
-			<tr data-ng-if="countJNSVote > 0">
-				<td>JNSVote POAP <br/> 我的治理徽章</td>
-				<td>
-					<span data-ng-repeat="i3 in allJNSVote">
+			<tr>
+				<td>JNSVote POAP</td>
+				<td data-ng-if="countJNSVote == 0">还没有参与过投票治理哎！</td>
+				<td data-ng-if="countJNSVote > 0">
+					<div >我是JNSDAO成员，参与过 {{countJNSVote}} 次投票治理，收集了 {{countJNSVote}} 枚治理徽章：</div>
+					<div data-ng-repeat="i3 in allJNSVote">
 						<a href="/#/jnsvote/"><image height="64px" style="margin:0 2px 2px 0" src="{{i3.tokenInfo.image}}"></image></a>
-					</span>
+					</div>
 				</td>
 			</tr>
             </tbody>
@@ -64,11 +66,17 @@
 						<td>{{i.totalJNS}}</td>
 					</tr>
 					<tr>
+						<td>投票进度</td>
+						<td><b>{{i.progress}}</b></td>
+					</tr>
+					<tr data-ng-if="i.progress == '进行中'">
 						<td>投票</td>
 						<td>
 							<span style="color:#999"><p style="word-break:break-all;">{{hexdata}}</p></span>
-							<input type="button" value="赞成" class="btn btn-success" ng-click="voteFor(i.id)"></input>
-							<button class="btn btn-secondary" ng-click="voteAgainst(i.id)">反对</button>
+							<div id="voteButtons">
+								<input type="button" value="赞成" class="btn btn-success" ng-click="voteFor(i.id)"></input>
+								<button class="btn btn-secondary" ng-click="voteAgainst(i.id)">反对</button>
+							</div>
 							<span style="color:#a00"><p style="word-break:break-all;">{{errmsg}}</p></span>
 						</td>
 					</tr>
