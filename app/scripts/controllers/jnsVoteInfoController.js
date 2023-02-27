@@ -75,31 +75,49 @@ angular.module('ethExplorer')
 
 		$scope.init = function()
 		{
+			$scope.countJNSVote = 0;
+			$scope.allJNSVote = [];
+			$scope.allProposals = [];
+
 			getAllProposals();
 
-			if (window.ethereum) {
-				// in metamask env
-				$scope.chainId = window.ethereum.chainId; 
-				console.log('[jns] chain id: ', $scope.chainId);
-
-				$scope.account = window.ethereum.selectedAddress;
-				console.log('[jns] connected account: ', $scope.account);
-
-				window.ethereum.on('chainChanged', function (chainId) {
-					console.log("[jns] switched to chain id: ", parseInt(chainId, 16));
-					$scope.chainId = chainId;
-					$scope.$apply();
+			/////////////////// handlers or helpers ///////////////////////
+			
+			function getAllJNSVote(addr) {
+				console.log('fetching JNSVote POAPs of address ' + addr);
+				$scope.allJNSVote = [];
+				var contract = web3.eth.contract(jnsvote_ABI).at(jnsvote_contract_address);
+				contract.balanceOf.call(addr, function (err1, result1) {
+					if (err1) {
+						console.log(err1);
+					} else {
+						var balance = result1.toString();
+						$scope.countJNSVote = balance;
+						for (var i = 0; i < balance; i++) {
+							var token_name = "JNS Vote";
+							contract.tokenOfOwnerByIndex.call(addr, i, function (err2, result2) {
+								if (err2) {
+									console.log(err2);
+								} else {
+									var token_id = result2.toString();
+									var tag = token_name + ' #' + token_id;
+									contract.tokenURI.call(token_id, function (err3, result3) {
+										if (err3) {
+											console.log(err3);
+										} else {
+											var tokenURI = result3;
+											var tokenInfo = parseTokenURI(tokenURI);
+											$scope.allJNSVote.push({'tag': tag, 'tokenInfo': tokenInfo});
+											$scope.$apply(); // inform the data updates !
+										}
+									});
+								}
+							});
+						}
+					}
 				});
 
-				window.ethereum.on('accountsChanged', function (accounts) {
-					console.log("[jns] switched to account: ", accounts[0]);
-					$scope.account = accounts[0];
-					$scope.$apply();
-				});
-
-			} /*else {
-				$location.path("/");
-			}*/
+			}
 
 			function getAllProposals() {
 				$scope.allProposals = [];
@@ -164,6 +182,38 @@ angular.module('ethExplorer')
 
 			}
 
+			//////////////// add listeners /////////////////
+			if (window.ethereum) {
+				
+				window.ethereum.on('connect', function (connectInfo) {
+					console.log("[jnsVote] connected: ", connectInfo);
+					//web3.setProvider(window.ethereum);
+					//web3.eth.defaultAccount = web3.eth.accounts[0];
+
+					window.ethereum
+						.request({ method: 'eth_requestAccounts' })
+						.then((accounts) => {
+							console.log("connected account is: ", accounts[0]);
+							getAllJNSVote(accounts[0]);
+						})
+						.catch((error) => {
+							console.error(`Error requesting accounts: ${error.code}: ${error.message}`);
+						});
+				});
+
+				window.ethereum.on('chainChanged', function (chainId) {
+					console.log("[jnsVote] switched to chain id: ", parseInt(chainId, 16));
+					$scope.chainId = chainId;
+					$scope.$apply();
+				});
+
+				window.ethereum.on('accountsChanged', function (accounts) {
+					console.log("[jnsVOte] switched to account: ", accounts[0]);
+					$scope.account = accounts[0];
+					$scope.$apply();
+				});
+			}
+
 		}
 
 		$scope.init();
@@ -193,9 +243,10 @@ angular.module('ethExplorer')
 
 		function cid2link(ipfsURI) { //ipfs CIDv0 to link CIDv1.dweb.link
 			const cidv0 = ipfsURI.slice(7);
-			//const cidv1 = Multiformats.CID.parse(cidv0).toV1().toString();
+			const cidv1 = Multiformats.CID.parse(cidv0).toV1().toString();
+			return 'https://' + cidv1 + '.ipfs.w3s.link';
 			//return 'https://' + cidv1 + '.ipfs.dweb.link';
-			return 'https://gateway.pinata.cloud/ipfs/' + cidv0; //use pinata.cloud
+			//return 'https://gateway.pinata.cloud/ipfs/' + cidv0; //use pinata.cloud
 		}
 
 	});

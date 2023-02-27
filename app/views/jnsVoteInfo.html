@@ -1,15 +1,23 @@
 <div class="container" style="padding-top: 50px;">
 
-    <h1>JNS DAO Govenance Vote
-        <small>参与JNS DAO治理投票</small>
+    <h1>JNSDAO Govenance Vote
+        <small>参与JNSDAO治理投票</small>
     </h1>
 
     <div id="jnsvote-97785883" class="jnsvotediv">
-        <table class="table table-striped" cellpadding="0" cellspacing="0" style="padding:0px;float:left;margin:0px;width:100%">
+        <table class="table table-striped">
             <tbody>
             <tr>
-				<th colspan="3" align="left">提案总数：{{countProposals}}</th>
+				<th colspan="2" style="text-align:left">提案总数：{{countProposals}}</th>
             </tr>
+			<tr data-ng-if="countJNSVote > 0">
+				<td>JNSVote POAP <br/> 我的治理徽章</td>
+				<td>
+					<span data-ng-repeat="i3 in allJNSVote">
+						<a href="/#/jnsvote/"><image height="64px" style="margin:0 2px 2px 0" src="{{i3.tokenInfo.image}}"></image></a>
+					</span>
+				</td>
+			</tr>
             </tbody>
         </table>
 		<span>&nbsp;</span>
