@@ -11,13 +11,20 @@
 				<th colspan="2" style="text-align:left">提案总数：{{countProposals}}</th>
             </tr>
 			<tr>
-				<td>JNSVote POAP</td>
+				<td>JNSVote POAP徽章</td>
 				<td data-ng-if="countJNSVote == 0">还没有参与过投票治理哎！</td>
 				<td data-ng-if="countJNSVote > 0">
 					<div >我是JNSDAO成员，参与过 {{countJNSVote}} 次投票治理，收集了 {{countJNSVote}} 枚治理徽章：</div>
 					<div data-ng-repeat="i3 in allJNSVote">
 						<a href="/#/jnsvote/"><image height="64px" style="margin:0 2px 2px 0" src="{{i3.tokenInfo.image}}"></image></a>
 					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>投票资格要求</td>
+				<td>
+					<div>✅ JTI认证</div>
+					<div>✅ JNS持仓 &gt; 0 </div>
 				</td>
 			</tr>
             </tbody>
@@ -39,11 +46,15 @@
 					</tr>
 					<tr>
 						<td nowrap>开始时间(区块高度)</td>
-						<td>{{i.timeBegin}}</td>
+						<td>{{i.timeBegin}} <span data-ng-if="i.countdown1">（距投票开始还有{{i.countdown1}}）</span></td>
 					</tr>
 					<tr>
 						<td>结束时间(区块高度)</td>
-						<td>{{i.timeEnd}}</td>
+						<td>{{i.timeEnd}} <span data-ng-if="i.countdown2">（距投票结束还有{{i.countdown2}}）</span></td>
+					</tr>
+					<tr>
+						<td>投票进度</td>
+						<td><b>{{i.progress}}</b></td>
 					</tr>
 					<tr>
 						<td>赞成票数</td>
@@ -64,10 +75,6 @@
 					<tr>
 						<td>JNS总量(快照)</td>
 						<td>{{i.totalJNS}}</td>
-					</tr>
-					<tr>
-						<td>投票进度</td>
-						<td><b>{{i.progress}}</b></td>
 					</tr>
 					<tr data-ng-if="i.progress == '进行中'">
 						<td>投票</td>

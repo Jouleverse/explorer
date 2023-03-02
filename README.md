@@ -66,3 +66,5 @@ TODO:
 - fix: refresh jnsvote POAP
 - improve: 增加投票进度展示
 
+2023.3.2
+- improve: jnsvote展示投票资格要求，以及倒计时

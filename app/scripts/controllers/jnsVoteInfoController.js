@@ -149,12 +149,16 @@ angular.module('ethExplorer')
 										endBlock = result2[3];
 										currentBlock = web3.eth.blockNumber;
 										var progress;
-										if (currentBlock < beginBlock) 
+										var countdown1 = '', countdown2 = '';
+										if (currentBlock < beginBlock) {
 											progress = '未开始';
-										else if (currentBlock < endBlock)
+											countdown1 = formatTime((beginBlock - currentBlock) * 15);
+										} else if (currentBlock < endBlock) {
 											progress = '进行中';
-										else 
+											countdown2 = formatTime((endBlock - currentBlock) * 15);
+										} else {
 											progress = '已结束';
+										}
 
 										var info = {
 											id: id,
@@ -173,6 +177,8 @@ angular.module('ethExplorer')
 											totalJNS: result2[8].toString(),
 											disabled: result2[9],
 											progress: progress,
+											countdown1: countdown1,
+											countdown2: countdown2,
 										};
 
 										//$scope.allProposals.push(info);
@@ -238,6 +244,26 @@ angular.module('ethExplorer')
 
 		$scope.init();
 
+		function formatTime(seconds) {
+			var days, hours, minutes;
+			var result = '';
+
+			days = Math.floor(seconds / 3600 / 24);
+			if (days > 0)
+				result += days + '天';
+
+			seconds -= days * 3600 * 24;
+			hours = Math.floor(seconds / 3600);
+			if (hours > 0)
+				result += hours + '小时';
+
+			seconds -= hours * 3600;
+			minutes = Math.floor(seconds / 60);
+			if (minutes > 0)
+				result += minutes + '分钟';
+
+			return result;
+		}
 
 		function hex2a(hexx) {
 			var hex = hexx.toString();//force conversion
