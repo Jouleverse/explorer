@@ -10,9 +10,20 @@
             <tr>
 				<th colspan="2" style="text-align:left">提案总数：{{countProposals}}</th>
             </tr>
+            <tr>
+				<td>当前已连接账户</td>
+				<td>
+					<span ng-show='account'>
+						<a href='/#/address/{{account}}'>
+							<img height="14px" src="{{jns_info.image}}" /> {{ account }}
+						</a>
+					</span>
+					<span ng-hide='account'>未连接账户，请点击菜单栏右侧“连接账户”进行连接</span>
+				</td>
+            </tr>
 			<tr>
 				<td>JNSVote POAP徽章</td>
-				<td data-ng-if="countJNSVote == 0">还没有参与过投票治理哎！</td>
+				<td data-ng-if="countJNSVote == 0">没有治理徽章</td>
 				<td data-ng-if="countJNSVote > 0">
 					<div >我是JNSDAO成员，参与过 {{countJNSVote}} 次投票治理，收集了 {{countJNSVote}} 枚治理徽章：</div>
 					<div data-ng-repeat="i3 in allJNSVote">
@@ -23,11 +34,11 @@
 			<tr>
 				<td>投票资格要求</td>
 				<td>
-					<div>✅ JTI认证</div>
-					<div>✅ JNS持仓 &gt; 0 </div>
+					<div>{{ countJTI == 0 ? '❌':'✅' }} JTI认证</div>
+					<div>{{ countJNS == 0 ? '❌':'✅' }} JNS持仓 &gt; 0 （当前账户代表的JNS持仓量为：{{ countJNS }}）</div>
 				</td>
 			</tr>
-            </tbody>
+			</tbody>
         </table>
 		<span>&nbsp;</span>
 		<div data-ng-repeat="i in allProposals">
@@ -55,6 +66,10 @@
 					<tr>
 						<td>投票进度</td>
 						<td><b>{{i.progress}}</b></td>
+					</tr>
+					<tr data-ng-if="i.progress == '已结束' && decision != 0">
+						<td>投票结果</td>
+						<td>{{ i.decision == 1 ? '✅ 通过' : '❌ 未通过' }}</td>
 					</tr>
 					<tr>
 						<td>赞成票数</td>

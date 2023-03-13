@@ -88,11 +88,66 @@ angular.module('ethExplorer')
 			getAllProposals();
 
 			/////////////////// handlers or helpers ///////////////////////
+			function getJTIBalance(addr) {
+				console.log('fetching JTI balance of address ' + addr);
+				$scope.countJTI = 0;
+				$scope.$apply(); //clear
+
+				var contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
+				contract.balanceOf.call(addr, function (err1, result1) {
+					if (err1) {
+						console.log(err1);
+					} else {
+						var balance = result1.toString();
+						$scope.countJTI = balance;
+						$scope.$apply(); //refresh!
+					}
+				});
+			}
+
+			function getJNSBalance(addr) {
+				console.log('fetching JNS balance of address ' + addr);
+				$scope.countJNS = 0;
+				$scope.$apply(); //clear
+
+				var contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
+				contract.balanceOf.call(addr, function (err1, result1) {
+					if (err1) {
+						console.log(err1);
+					} else {
+						var balance = result1.toString();
+						$scope.countJNS = balance;
+						$scope.$apply(); //refresh!
+					}
+				});
+			}
+
+			function getAddressNS(addr) {
+				console.log('fetching bound JNS of address ' + addr);
+				$scope.jns_info = '';
+				$scope.$apply(); //clear
+
+				var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
+				jns_contract._whois.call(addr, function (err, result) {
+					if (!err) {
+						var jns_id = result.toString();
+						if (jns_id > 0) {
+							jns_contract.tokenURI.call(jns_id, function (err2, result2) {
+								var jns_tokenURI = result2;
+								$scope.jns_info = parseTokenURI(jns_tokenURI);
+								$scope.$apply(); //update
+							});
+						}
+					}
+				});
+			}
 			
 			function getAllJNSVote(addr) {
 				console.log('fetching JNSVote POAPs of address ' + addr);
 				$scope.countJNSVote = 0;
 				$scope.allJNSVote = [];
+				$scope.$apply(); //clear
+
 				var contract = web3.eth.contract(jnsvote_ABI).at(jnsvote_contract_address);
 				contract.balanceOf.call(addr, function (err1, result1) {
 					if (err1) {
@@ -145,11 +200,18 @@ angular.module('ethExplorer')
 										console.log(err2);
 										alert('出错啦：' + err2.message);
 									} else {
-										beginBlock = result2[2];
-										endBlock = result2[3];
-										currentBlock = web3.eth.blockNumber;
+										const beginBlock = result2[2];
+										const endBlock = result2[3];
+										const currentBlock = web3.eth.blockNumber;
 										var progress;
 										var countdown1 = '', countdown2 = '';
+
+										const countVotesFor = result2[4];
+										const countVotesAgainst = result2[5];
+										const countJNSvoted = result2[6];
+										const countJNSvotedFor = result2[7];
+										const totalJNS = result2[8];
+
 										if (currentBlock < beginBlock) {
 											progress = '未开始';
 											countdown1 = formatTime((beginBlock - currentBlock) * 15);
@@ -158,6 +220,8 @@ angular.module('ethExplorer')
 											countdown2 = formatTime((endBlock - currentBlock) * 15);
 										} else {
 											progress = '已结束';
+
+											decision = decisionMaker(id, countVotesFor, countVotesAgainst, countJNSvoted, countJNSvotedFor, totalJNS);
 										}
 
 										var info = {
@@ -167,18 +231,19 @@ angular.module('ethExplorer')
 											link: cid2link(result2[1]),
 											timeBegin: result2[2].toString(),
 											timeEnd: result2[3].toString(),
-											countVotesFor: result2[4].toString() + " (" + (result2[4] == 0 ? "0" : Math.floor(result2[4]/(result2[4].add(result2[5]))*10000)/100) + "%)",
+											countVotesFor: countVotesFor.toString() + " (" + (countVotesFor == 0 ? "0" : Math.floor(countVotesFor.div(countVotesFor.add(countVotesAgainst))*10000)/100) + "%)",
 
-											countVotesAgainst: result2[5].toString() + " (" + (result2[5] == 0 ? "0" : Math.floor(result2[5]/(result2[4].add(result2[5]))*10000)/100) + "%)",
+											countVotesAgainst: countVotesAgainst.toString() + " (" + (countVotesAgainst == 0 ? "0" : Math.floor(countVotesAgainst.div(countVotesFor.add(countVotesAgainst))*10000)/100) + "%)",
 
-											countJNSvoted: result2[6].toString() + " (" + (result2[6] == 0 ? "0" : Math.floor(result2[6].div(result2[8])*10000)/100) + "%)",
-											countJNSvotedFor: result2[7].toString() + " (" + (result2[7] == 0 ? "0" : Math.floor(result2[7].div(result2[8])*10000)/100) + "%)",
+											countJNSvoted: countJNSvoted.toString() + " (" + (countJNSvoted == 0 ? "0" : Math.floor(countJNSvoted.div(totalJNS)*10000)/100) + "%)",
+											countJNSvotedFor: countJNSvotedFor.toString() + " (" + (countJNSvotedFor == 0 ? "0" : Math.floor(countJNSvotedFor.div(totalJNS)*10000)/100) + "%)",
 
-											totalJNS: result2[8].toString(),
+											totalJNS: totalJNS.toString(),
 											disabled: result2[9],
 											progress: progress,
 											countdown1: countdown1,
 											countdown2: countdown2,
+											decision: decision,
 										};
 
 										//$scope.allProposals.push(info);
@@ -209,6 +274,7 @@ angular.module('ethExplorer')
 
 			//////////////// add listeners /////////////////
 			if (window.ethereum) {
+				console.log("[jnsVote] add listeners");
 				
 				window.ethereum.on('connect', function (connectInfo) {
 					console.log("[jnsVote] connected: ", connectInfo);
@@ -220,6 +286,11 @@ angular.module('ethExplorer')
 						.then((accounts) => {
 							console.log("connected account is: ", accounts[0]);
 							getAllJNSVote(accounts[0]);
+							getJNSBalance(accounts[0]);
+							getJTIBalance(accounts[0]);
+							$scope.account = accounts[0];
+							getAddressNS(accounts[0]);
+							$scope.$apply();
 						})
 						.catch((error) => {
 							console.error(`Error requesting accounts: ${error.code}: ${error.message}`);
@@ -233,9 +304,12 @@ angular.module('ethExplorer')
 				});
 
 				window.ethereum.on('accountsChanged', function (accounts) {
-					console.log("[jnsVOte] switched to account: ", accounts[0]);
+					console.log("[jnsVote] switched to account: ", accounts[0]);
 					getAllJNSVote(accounts[0]); //refresh!
+					getJNSBalance(accounts[0]);
+					getJTIBalance(accounts[0]);
 					$scope.account = accounts[0];
+					getAddressNS(accounts[0]);
 					$scope.$apply();
 				});
 			}
@@ -243,6 +317,34 @@ angular.module('ethExplorer')
 		}
 
 		$scope.init();
+
+		function decisionMaker(proposalId, countVotesFor, countVotesAgainst, countJNSvoted, countJNSvotedFor, totalJNS) {
+			var decision = 0;
+			var approvalRate = countVotesFor == 0 ? 0 : countVotesFor.div(countVotesFor.add(countVotesAgainst));
+
+			var representativeRate = countJNSvotedFor == 0 ? 0 : countJNSvotedFor.div(totalJNS);
+			console.log('[decisionMaker] decision for proposal #', proposalId, ' countVotesFor: ', countVotesFor.toString(), ' countVotesAgainst: ', countVotesAgainst.toString(), ' countJNSvotedFor: ', countJNSvotedFor.toString(), ' totalJNS: ', totalJNS.toString(), ' approvalRate: ', approvalRate.toString(), ' representativeRate: ', representativeRate.toString());
+
+			const ar = approvalRate.toNumber();
+			const rr = representativeRate.toNumber();
+
+			if (proposalId <= 2) { // use V1 rule
+				if (ar > 2/3 && rr > 1/2) {
+					decision = 1;
+				} else {
+					decision = -1;
+				}
+			} else { // use V2 rule, boostrapped by proposal #3
+				if (ar > 2/3 && rr > 0.4) {
+					decision = 1;
+				} else {
+					decision = -1;
+				}
+			}
+
+			console.log('[decisionMaker] ar: ', ar > 2/3, ' rr: ', rr > 1/2, ' decision: ', decision);
+			return decision;
+		}
 
 		function formatTime(seconds) {
 			var days, hours, minutes;
