@@ -11,8 +11,6 @@ angular.module('ethExplorer')
 
                 getTransactionInfos()
                     .then(function(result){
-                        //TODO Refactor this logic, asynchron calls + services....
-                        var number = web3.eth.blockNumber;
 
                     $scope.result = result;
 
@@ -30,35 +28,41 @@ angular.module('ethExplorer')
                     }
                     $scope.from = result.from;
                     $scope.gas = result.gas;
-                    $scope.gasPrice = result.gasPrice.c[0] + " e";
-					var gasPriceGwei = result.gasPrice.c[0] / 10**9;
+                    //$scope.gasPrice = result.gasPrice.c[0] + " e";
+                    $scope.gasPrice = result.gasPrice + " e";
+					//var gasPriceGwei = result.gasPrice.c[0] / 10**9;
+					var gasPriceGwei = result.gasPrice / 10**9;
                     $scope.gasPriceGwei = gasPriceGwei < 10 ? parseInt(gasPriceGwei * 10)/10 : parseInt(gasPriceGwei);
                     $scope.hash = result.hash;
                     $scope.input = result.input; // that's a string
                     $scope.nonce = result.nonce;
                     $scope.to = result.to;
                     $scope.transactionIndex = result.transactionIndex;
-                    $scope.ethValue = result.value.c[0] / 10000; 
+                    //$scope.ethValue = result.value.c[0] / 10000; 
+                    $scope.ethValue = result.value / 10000; 
                     $scope.txprice = (result.gas * result.gasPrice)/1000000000000000000 + " J";
 					var txfee = result.gas * result.gasPrice / 10**9;
 					$scope.txfeeGwei = txfee < 10 ? parseInt(txfee * 10)/10 : parseInt(txfee);
 
                     if($scope.blockNumber!==undefined){
-                        $scope.conf = number - $scope.blockNumber;
-                        if($scope.conf===0){
-                            $scope.conf='未确认'; //TODO change color button when unconfirmed... ng-if or ng-class
-                        } else {
-							$scope.conf += ' 确认数';
-						}
+						web3.eth.getBlock($scope.blockNumber, false, function (err, info) {
+							if(info) {
+								$scope.time = info.timestamp;
+								$scope.time_localestring = new Date(info.timestamp * 1000).toLocaleString('zh-CN', { timezone: 'UTC', timeZoneName: 'short' });
+								$scope.$apply(); // $scope.$appy() can trigger getBlock twice! HAHAHAHA....
+							}
+						});
+
+						$scope.conf = '未确认';
+						web3.eth.getBlockNumber(function (err, number) {
+							if (number && number > $scope.blockNumber) {
+								$scope.conf = number - $scope.blockNumber + " 确认数";
+								$scope.$apply();
+
+							}
+						});
                     }
-                        //TODO Refactor this logic, asynchron calls + services....
-                    if($scope.blockNumber!==undefined){
-                        var info = web3.eth.getBlock($scope.blockNumber);
-                        if(info!==undefined){
-                            $scope.time = info.timestamp;
-							$scope.time_localestring = new Date(info.timestamp * 1000).toLocaleString('zh-CN', { timezone: 'UTC', timeZoneName: 'short' });
-                        }
-                    }
+
 
                 });
 
@@ -90,6 +94,6 @@ angular.module('ethExplorer')
 
         };
         $scope.init();
-        console.log($scope.result);
+        //console.log($scope.result);
 
     });

@@ -63,27 +63,26 @@ angular.module('ethExplorer')
 
 		$scope.unbind = function ()
 		{
-			if (window.ethereum && window.ethereum.isConnected()) {
-				// hacking...
-				web3.setProvider(window.ethereum);
-				web3.eth.defaultAccount = web3.eth.accounts[0];
-
-				if (web3.eth.defaultAccount.toLowerCase() == this.ownerAddress.toLowerCase()) {
-					var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
-					jns_contract.unbind(this.nftId,
-						function (err, result) {
-							if (err) {
-								console.log(err);
-								alert('出错啦：' + err.message);
-							}
-						}); // no need to send(), amazing!
-
-				} else {
-					this.hexdata = '向合约地址发送数据 ' + this.unbindCalldata + ' 解除绑定';
-				}
-			} else {
+			if (!(window.ethereum && window.ethereum.isConnected()
+				&& __accounts && __accounts[0].toLowerCase() == this.ownerAddress.toLowerCase())) {
 				this.hexdata = '向合约地址发送数据 ' + this.unbindCalldata + ' 解除绑定';
+				return;
 			}
+
+			web3.setProvider(window.ethereum); //switch to the injected metamask provider
+			const connectedAccount = __accounts[0]; //global var
+			var jns_contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
+			jns_contract.methods.unbind(this.nftId).send({ from: connectedAccount }, (err, txhash) => {
+				$("#warning-title").text('unbind上链操作');
+				if (err) {
+					console.log(err);
+					$("#warning-text").text('出错啦：' + err.message);
+				} else {
+					$("#warning-text").html('<p>已发送，tx哈希值：</p><p><a href="/#/tx/' + txhash + '">' + txhash + '</a></p><p>请等待上链交易完成后刷新页面数据，大约需要几秒到十几秒的时间</p>');
+				}
+				$('#dialog-warning').modal({keyboard:true, backdrop:true});
+				$('#dialog-warning').modal('show');
+			});
 
 		}
 
@@ -168,10 +167,10 @@ angular.module('ethExplorer')
 			function getJNSInfo() {
 				var deferred = $q.defer();
 
-				var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
+				var jns_contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
 
 				// if showing mint button
-				jns_contract.owner.call(function (err, result) {
+				jns_contract.methods.owner().call(function (err, result) {
 					$scope.chainId = window.ethereum ? window.ethereum.chainId : '';
 					$scope.account = window.ethereum ? window.ethereum.selectedAddress : '';
 					$scope.jnsContractOwner = result.toString();
@@ -180,16 +179,16 @@ angular.module('ethExplorer')
 				});
 
 				// search jns
-				jns_contract._nslookup.call($scope.jnsName, function (error, result) {
+				jns_contract.methods._nslookup($scope.jnsName).call(function (error, result) {
 					if (!error) {
 						var token_id = result.toString();
-						jns_contract.ownerOf.call(token_id, function (error2, result2) {
+						jns_contract.methods.ownerOf(token_id).call(function (error2, result2) {
 							if (!error2) {
 								var owner_addr = result2.toString();
-								jns_contract._bound.call(token_id, function (error3, result3) {
+								jns_contract.methods._bound(token_id).call(function (error3, result3) {
 									if (!error3) {
 										var bound_addr = (result3 == 0)? "未绑定" : ('已绑定 ' + result3.toString());
-										jns_contract.tokenURI.call(token_id, function (error4, result4) {
+										jns_contract.methods.tokenURI(token_id).call(function (error4, result4) {
 											if (!error4) {
 												var img = parseTokenURI(result4.toString()).image;
 
@@ -202,8 +201,8 @@ angular.module('ethExplorer')
 														ownerAddress: owner_addr,
 														boundAddress: bound_addr,
 														logo: img,
-														bindCalldata: jns_contract.bind.getData(token_id),
-														unbindCalldata: jns_contract.unbind.getData(token_id),
+														bindCalldata: jns_contract.methods.bind(token_id).encodeABI(),
+														unbindCalldata: jns_contract.methods.unbind(token_id).encodeABI(),
 														chainId: chainId,
 														account: account,
 													});

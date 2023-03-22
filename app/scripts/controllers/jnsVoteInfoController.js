@@ -93,8 +93,8 @@ angular.module('ethExplorer')
 				$scope.countJTI = 0;
 				$scope.$apply(); //clear
 
-				var contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
-				contract.balanceOf.call(addr, function (err1, result1) {
+				var contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
+				contract.methods.balanceOf(addr).call(function (err1, result1) {
 					if (err1) {
 						console.log(err1);
 					} else {
@@ -110,8 +110,8 @@ angular.module('ethExplorer')
 				$scope.countJNS = 0;
 				$scope.$apply(); //clear
 
-				var contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
-				contract.balanceOf.call(addr, function (err1, result1) {
+				var contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
+				contract.methods.balanceOf(addr).call(function (err1, result1) {
 					if (err1) {
 						console.log(err1);
 					} else {
@@ -127,12 +127,12 @@ angular.module('ethExplorer')
 				$scope.jns_info = '';
 				$scope.$apply(); //clear
 
-				var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
-				jns_contract._whois.call(addr, function (err, result) {
+				var jns_contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
+				jns_contract.methods._whois(addr).call(function (err, result) {
 					if (!err) {
 						var jns_id = result.toString();
 						if (jns_id > 0) {
-							jns_contract.tokenURI.call(jns_id, function (err2, result2) {
+							jns_contract.methods.tokenURI(jns_id).call(function (err2, result2) {
 								var jns_tokenURI = result2;
 								$scope.jns_info = parseTokenURI(jns_tokenURI);
 								$scope.$apply(); //update
@@ -148,8 +148,8 @@ angular.module('ethExplorer')
 				$scope.allJNSVote = [];
 				$scope.$apply(); //clear
 
-				var contract = web3.eth.contract(jnsvote_ABI).at(jnsvote_contract_address);
-				contract.balanceOf.call(addr, function (err1, result1) {
+				var contract = new web3.eth.Contract(jnsvote_ABI, jnsvote_contract_address);
+				contract.methods.balanceOf(addr).call(function (err1, result1) {
 					if (err1) {
 						console.log(err1);
 					} else {
@@ -157,13 +157,13 @@ angular.module('ethExplorer')
 						$scope.countJNSVote = balance;
 						for (var i = 0; i < balance; i++) {
 							var token_name = "JNS Vote";
-							contract.tokenOfOwnerByIndex.call(addr, i, function (err2, result2) {
+							contract.methods.tokenOfOwnerByIndex(addr, i).call(function (err2, result2) {
 								if (err2) {
 									console.log(err2);
 								} else {
 									var token_id = result2.toString();
 									var tag = token_name + ' #' + token_id;
-									contract.tokenURI.call(token_id, function (err3, result3) {
+									contract.methods.tokenURI(token_id).call(function (err3, result3) {
 										if (err3) {
 											console.log(err3);
 										} else {
@@ -186,19 +186,19 @@ angular.module('ethExplorer')
 				$scope.voteForCalldata = {};
 				$scope.voteAgainstCalldata = {};
 
-				var jnsvote_contract = web3.eth.contract(jnsvote_ABI).at(jnsvote_contract_address);
-				jnsvote_contract._totalProposals.call(function (err, result) {
+				var jnsvote_contract = new web3.eth.Contract(jnsvote_ABI, jnsvote_contract_address);
+				jnsvote_contract.methods._totalProposals().call(function (err, result) {
 						if (err) {
-							console.log(err);
-							alert('出错啦：' + err.message);
+							console.log('_totalProposals error: ', err, result);
 						} else {
+							console.log('_totalProposals: ', result);
 							$scope.countProposals = result.toString();
+							$scope.$apply();
 
 							var gen_callback2 = function (id) {
 								return function (err2, result2) {
 									if (err2) {
-										console.log(err2);
-										alert('出错啦：' + err2.message);
+										console.log('read proposal error: ', id, err2, result2);
 									} else {
 										const beginBlock = result2[2];
 										const endBlock = result2[3];
@@ -261,10 +261,11 @@ angular.module('ethExplorer')
 
 							for (var i = 0; i < $scope.countProposals; i++) {
 								var pid = i + 1;
-								$scope.voteForCalldata[pid] = jnsvote_contract.voteFor.getData(pid);
-								$scope.voteAgainstCalldata[pid] = jnsvote_contract.voteAgainst.getData(pid);
+								$scope.voteForCalldata[pid] = jnsvote_contract.methods.voteFor(pid).encodeABI();
+								//$scope.voteAgainstCalldata[pid] = jnsvote_contract.voteAgainst.getData(pid);
+								$scope.voteAgainstCalldata[pid] = jnsvote_contract.methods.voteAgainst(pid).encodeABI();
 								// fetch data from blockchain
-								jnsvote_contract._proposals.call(pid, gen_callback2(pid));
+								jnsvote_contract.methods._proposals(pid).call(gen_callback2(pid));
 							}
 
 						}

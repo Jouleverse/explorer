@@ -17,6 +17,8 @@ angular.module('ethExplorer')
 				$scope.blocks = [];
 				for (var i = 0; i < maxBlocks; ++i) {
 					getBlockInfo(blockNum - i).then(function (result) {
+						result.time_localestring = new Date(result.timestamp * 1000).toLocaleString('zh-CN', { timezone: 'UTC', timeZoneName: 'short' });
+
 						if (result.number == blockNum) {
 							var current = Date.now() / 1000;
 							console.log("local time: ", current, " block time: ", result.timestamp);
@@ -41,7 +43,8 @@ angular.module('ethExplorer')
 		function getBlockHeight() {
 			var deferred = $q.defer();
 
-			var height = parseInt(web3.eth.blockNumber, 10);
+			//var height = parseInt(web3.eth.blockNumber, 10);
+			var height = web3.eth.getBlockNumber(); // fix: make it compatible with web3 1.8.2
 
 			// intentionally delay...
 			window.setTimeout(function() {
@@ -54,8 +57,7 @@ angular.module('ethExplorer')
 		function getBlockInfo(blockNum) {
 			var deferred = $q.defer();
 
-			var blockInfo = web3.eth.getBlock(blockNum);
-			blockInfo.time_localestring = new Date(blockInfo.timestamp * 1000).toLocaleString('zh-CN', { timezone: 'UTC', timeZoneName: 'short' });
+			var blockInfo = web3.eth.getBlock(blockNum); // it is a promise 
 
 			// intentionally delay...
 			window.setTimeout(function() {

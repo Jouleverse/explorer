@@ -12,7 +12,6 @@ angular.module('ethExplorer')
 
                 getBlockInfos()
                     .then(function(result){
-                        var number = web3.eth.blockNumber;
 
                     $scope.result = result;
 
@@ -43,20 +42,14 @@ angular.module('ethExplorer')
                     $scope.dataFromHex = hex2a(result.extraData);
                     $scope.size = result.size;
                     if($scope.blockNumber!==undefined){
-                        $scope.conf = number - $scope.blockNumber + " 确认数";
-                        if($scope.conf===0 + " 确认数"){
-                            $scope.conf='未确认';
-                        }
+						$scope.conf = '未确认';
+						web3.eth.getBlockNumber(function (err, number) {
+							if (!err && number > $scope.blockNumber) {
+								$scope.conf = number - $scope.blockNumber + " 确认数";
+								$scope.$apply();
+							}
+						});
                     }
-                    if($scope.blockNumber!==undefined){
-                        var info = web3.eth.getBlock($scope.blockNumber);
-                        if(info!==undefined){
-                            var newDate = new Date();
-                            newDate.setTime(info.timestamp*1000);
-                            $scope.time = newDate.toUTCString();
-                        }
-                    }
-
 
 
                 });

@@ -87,12 +87,28 @@
 		}
 
 		function getAddressJNS(addr, callback) {
-			var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
+			// for web3 0.15.0
+			/*var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
 			jns_contract._whois.call(addr, function (err, result) {
 				if (!err) {
 					var jns_id = result.toString();
 					if (jns_id > 0) {
 						jns_contract.tokenURI.call(jns_id, function (err2, result2) {
+							var jns_tokenURI = result2;
+							var jns_info = parseTokenURI(jns_tokenURI);
+							callback(jns_info);
+						});
+					}
+				}
+			});*/
+
+			// for web3 1.8.2
+			var jns_contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
+			jns_contract.methods._whois(addr).call(function (err, result) {
+				if (!err) {
+					var jns_id = result.toString();
+					if (jns_id > 0) {
+						jns_contract.methods.tokenURI(jns_id).call(function (err2, result2) {
 							var jns_tokenURI = result2;
 							var jns_info = parseTokenURI(jns_tokenURI);
 							callback(jns_info);
@@ -296,17 +312,20 @@
   <script src="scripts/controllers/jnsVoteInfoController.js"></script>
 
   <!--Services-->
-    <div id="connectwarning" class="modal fade" role="dialog">
+    <div id="dialog-warning" class="modal fade" role="dialog">
         <div class="modal-dialog">
 
             <!-- Modal content-->
             <div class="modal-content">
                 <center><div class="modal-header">
-                    <h4 class="modal-title">无法连接到区块链网络</h4>
+						<h4 class="modal-title"><span id="warning-title"></span></h4>
                 </div>
                 <div class="modal-body">
-                    <code><p id="modaltext"></p></code>
+                    <code><p id="warning-text"></p></code>
                 </div></center>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+				</div>
             </div>
         </div>
     </div>
@@ -321,7 +340,8 @@
     </footer>
 </div>
 <script>
-$("#modaltext").text( '无法连接到RPC服务，请检查你的网络连接是否畅通' );
+$("#warning-title").text('无法连接到区块链网络');
+$("#warning-text").text('无法连接到RPC服务，请检查你的网络连接是否畅通' );
 </script>
 </body>
 </html>
