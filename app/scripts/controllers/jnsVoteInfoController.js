@@ -202,59 +202,67 @@ angular.module('ethExplorer')
 									} else {
 										const beginBlock = result2[2];
 										const endBlock = result2[3];
-										const currentBlock = web3.eth.blockNumber;
-										var progress;
-										var countdown1 = '', countdown2 = '';
+										const countVotesFor = web3.utils.BN(result2[4]);
+										const countVotesAgainst = web3.utils.BN(result2[5]);
+										const countJNSvoted = web3.utils.BN(result2[6]);
+										const countJNSvotedFor = web3.utils.BN(result2[7]);
+										const totalJNS = web3.utils.BN(result2[8]);
 
-										const countVotesFor = result2[4];
-										const countVotesAgainst = result2[5];
-										const countJNSvoted = result2[6];
-										const countJNSvotedFor = result2[7];
-										const totalJNS = result2[8];
+										web3.eth.getBlockNumber(function (e, currentBlock) {
+											var progress;
+											var countdown1 = '', countdown2 = '';
 
-										if (currentBlock < beginBlock) {
-											progress = '未开始';
-											countdown1 = formatTime((beginBlock - currentBlock) * 15);
-										} else if (currentBlock < endBlock) {
-											progress = '进行中';
-											countdown2 = formatTime((endBlock - currentBlock) * 15);
-										} else {
-											progress = '已结束';
+											if (currentBlock < beginBlock) {
+												progress = '未开始';
+												countdown1 = formatTime((beginBlock - currentBlock) * 15);
+											} else if (currentBlock < endBlock) {
+												progress = '进行中';
+												countdown2 = formatTime((endBlock - currentBlock) * 15);
+											} else {
+												progress = '已结束';
 
-											decision = decisionMaker(id, countVotesFor, countVotesAgainst, countJNSvoted, countJNSvotedFor, totalJNS);
-										}
+												decision = decisionMaker(id, countVotesFor, countVotesAgainst, countJNSvoted, countJNSvotedFor, totalJNS);
+											}
 
-										var info = {
-											id: id,
-											title: result2[0],
-											cid: result2[1],
-											link: cid2link(result2[1]),
-											timeBegin: result2[2].toString(),
-											timeEnd: result2[3].toString(),
-											countVotesFor: countVotesFor.toString() + " (" + (countVotesFor == 0 ? "0" : Math.floor(countVotesFor.div(countVotesFor.add(countVotesAgainst))*10000)/100) + "%)",
+											var info = {
+												id: id,
+												title: result2[0],
+												cid: result2[1],
+												link: cid2link(result2[1]),
+												timeBegin: result2[2].toString(),
+												timeEnd: result2[3].toString(),
 
-											countVotesAgainst: countVotesAgainst.toString() + " (" + (countVotesAgainst == 0 ? "0" : Math.floor(countVotesAgainst.div(countVotesFor.add(countVotesAgainst))*10000)/100) + "%)",
+												//countVotesFor: countVotesFor.toString() + " (" + (countVotesFor == 0 ? "0" : Math.floor(countVotesFor.div(countVotesFor.add(countVotesAgainst))*10000)/100) + "%)",
 
-											countJNSvoted: countJNSvoted.toString() + " (" + (countJNSvoted == 0 ? "0" : Math.floor(countJNSvoted.div(totalJNS)*10000)/100) + "%)",
-											countJNSvotedFor: countJNSvotedFor.toString() + " (" + (countJNSvotedFor == 0 ? "0" : Math.floor(countJNSvotedFor.div(totalJNS)*10000)/100) + "%)",
+												//countVotesAgainst: countVotesAgainst.toString() + " (" + (countVotesAgainst == 0 ? "0" : Math.floor(countVotesAgainst.div(countVotesFor.add(countVotesAgainst))*10000)/100) + "%)",
+												//countJNSvoted: countJNSvoted.toString() + " (" + (countJNSvoted == 0 ? "0" : Math.floor(countJNSvoted.div(totalJNS)*10000)/100) + "%)",
+												//countJNSvotedFor: countJNSvotedFor.toString() + " (" + (countJNSvotedFor == 0 ? "0" : Math.floor(countJNSvotedFor.div(totalJNS)*10000)/100) + "%)",
+												
+												countVotesFor: countVotesFor.toString() + " (" + (countVotesFor == 0 ? "0" : Math.floor(countVotesFor/countVotesFor.add(countVotesAgainst)*10000)/100) + "%)",
+												countVotesAgainst: countVotesAgainst.toString() + " (" + (countVotesAgainst == 0 ? "0" : Math.floor(countVotesAgainst/countVotesFor.add(countVotesAgainst)*10000)/100) + "%)",
 
-											totalJNS: totalJNS.toString(),
-											disabled: result2[9],
-											progress: progress,
-											countdown1: countdown1,
-											countdown2: countdown2,
-											decision: decision,
-										};
+												countJNSvoted: countJNSvoted.toString() + " (" + (countJNSvoted == 0 ? "0" : Math.floor(countJNSvoted/totalJNS*10000)/100) + "%)",
+												countJNSvotedFor: countJNSvotedFor.toString() + " (" + (countJNSvotedFor == 0 ? "0" : Math.floor(countJNSvotedFor/totalJNS*10000)/100) + "%)",
 
-										//$scope.allProposals.push(info);
-										var j = 0;
-										while (j < $scope.allProposals.length && info.id < $scope.allProposals[j].id) {
-											j++;
-										}
-										$scope.allProposals.splice(j, 0, info);
+												totalJNS: totalJNS.toString(),
+												disabled: result2[9],
+												progress: progress,
+												countdown1: countdown1,
+												countdown2: countdown2,
+												decision: decision,
+											};
 
-										$scope.$apply(); // trigger update
+											//$scope.allProposals.push(info);
+											var j = 0;
+											while (j < $scope.allProposals.length && info.id < $scope.allProposals[j].id) {
+												j++;
+											}
+											$scope.allProposals.splice(j, 0, info);
+
+											$scope.$apply(); // trigger update
+										});
 									}
+
 								};
 
 							};
@@ -321,13 +329,17 @@ angular.module('ethExplorer')
 
 		function decisionMaker(proposalId, countVotesFor, countVotesAgainst, countJNSvoted, countJNSvotedFor, totalJNS) {
 			var decision = 0;
-			var approvalRate = countVotesFor == 0 ? 0 : countVotesFor.div(countVotesFor.add(countVotesAgainst));
+			//var approvalRate = countVotesFor == 0 ? 0 : countVotesFor.div(countVotesFor.add(countVotesAgainst)); //从1.8.x web3的BN .div只有整数部分，而却没有.dividedBy ...
+			//var representativeRate = countJNSvotedFor == 0 ? 0 : countJNSvotedFor.div(totalJNS);
+			var approvalRate = countVotesFor == 0 ? 0 : countVotesFor/countVotesFor.add(countVotesAgainst);
+			var representativeRate = countJNSvotedFor == 0 ? 0 : countJNSvotedFor/totalJNS;
 
-			var representativeRate = countJNSvotedFor == 0 ? 0 : countJNSvotedFor.div(totalJNS);
 			console.log('[decisionMaker] decision for proposal #', proposalId, ' countVotesFor: ', countVotesFor.toString(), ' countVotesAgainst: ', countVotesAgainst.toString(), ' countJNSvotedFor: ', countJNSvotedFor.toString(), ' totalJNS: ', totalJNS.toString(), ' approvalRate: ', approvalRate.toString(), ' representativeRate: ', representativeRate.toString());
 
-			const ar = approvalRate.toNumber();
-			const rr = representativeRate.toNumber();
+			//const ar = approvalRate.toNumber();
+			//const rr = representativeRate.toNumber();
+			const ar = approvalRate;
+			const rr = representativeRate;
 
 			if (proposalId <= 2) { // use V1 rule
 				if (ar > 2/3 && rr > 1/2) {
@@ -343,7 +355,7 @@ angular.module('ethExplorer')
 				}
 			}
 
-			console.log('[decisionMaker] ar: ', ar > 2/3, ' rr: ', rr > 1/2, ' decision: ', decision);
+			console.log('[decisionMaker] proposal id#: ', proposalId, ' ar: ', ar, ' rr: ', rr, ' decision: ', decision);
 			return decision;
 		}
 
