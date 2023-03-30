@@ -75,3 +75,20 @@ TODO:
 - improve: 投票资格要求，可以根据账户是否具备投票要求条件动态刷新，方便用户判断自己是否可以投票
 - improve: 现在可以展示投票结果（通过/未通过）了，且区分V1规则和V2规则
 
+2023.3.30
+- fix: great refactoring work 3/13-3/30
+```
+/* refactored-20230330
+ * 1. 全面重写web3调用，升级为兼容web3.js 1.x
+ * 2. 使用selectedAddress作为connectedAccount
+ * 3. if 先正常逻辑，后出错逻辑
+ * 4. 使用 => for inline function handlers
+ * 5. 写操作（send tx）先estimateGas（可以检查合约逻辑报错，相当于dry-run）再send
+ * 6. 提交上链显示tx hash；tx成功显示receipt上链成功，流程闭环
+ * 7. 采用h5 dialog替代alert，更好地兼容mobile浏览器
+ * 8. 补齐错误处理逻辑分枝
+ */
+```
+- improve: 完善搜索错误提示
+- fix: jnsvote顶部展示当前连接地址的投票资格情况
+

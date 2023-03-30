@@ -3,38 +3,47 @@ angular.module('ethExplorer')
 
 		var web3 = $rootScope.web3;
 
-		////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////
+		// write functionalities in page scope                                      //
+		//////////////////////////////////////////////////////////////////////////////
 		
-		$scope.star = function () {
-			var nstar = prompt("请输入 JTI 星星数量（1-5）：", "");
-			if (nstar) { // TODO more validation?
+		//refactored-20230330
+		$scope.star = function() {
+			const DIALOG_TITLE = 'JTI认证';
+
+			const nstar = parseInt(prompt("请输入 JTI 星星数量（1-5）："), 10);
+
+			if (nstar && !isNaN(nstar)) { 
 				if (nstar < 1 || nstar > 5) {
 					alert("星等超出范围（1-5）");
 				} else if (window.ethereum && window.ethereum.isConnected()) {
-					// hacking...
 					web3.setProvider(window.ethereum);
-					web3.eth.defaultAccount = web3.eth.accounts[0];
+					const connectedAccount = window.ethereum.selectedAddress;
 
-					if (web3.eth.defaultAccount == this.jnsContractOwner) {
-						var jti_contract = web3.eth.contract(jti_ABI).at(jti_contract_address);
-						jti_contract.issue($scope.addressId, nstar,
-							function (err, result) {
-								if (err) {
-									console.log(err);
-									//alert('出错啦：' + err.message);
-								}
-							});
-
+					if (connectedAccount.toLowerCase() == this.jnsContractOwner.toLowerCase()) {
+						const jti_contract = new web3.eth.Contract(jti_ABI, jti_contract_address);
+						jti_contract.methods.issue($scope.addressId, nstar).estimateGas({from: connectedAccount}, (err, gas) => {
+							if (!err) {
+								jti_contract.methods.issue($scope.addressId, nstar)
+									.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
+									.then(handlerShowRct(DIALOG_TITLE));
+							} else {
+								dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
+							}
+						});
 					}
 				}
-
+			} else {
+				dialogShowTxt(DIALOG_TITLE, "请输入有效的星级数量（1-5）");
 			}
-			
-		}
+		};
 
+		//refactored-20230330
 		$scope.register = function () {
+			const DIALOG_TITLE = '登记npub公钥';
+
 			var npubkey = prompt("请输入你的npub公钥：", "");
-			if (npubkey) { // TODO more validation?
+			if (npubkey) {
 
 				try {
 					
@@ -42,122 +51,74 @@ angular.module('ethExplorer')
 					var hexkey = '0x' + bytesToHex(bytes);
 
 					if (window.ethereum && window.ethereum.isConnected()) {
-						// hacking...
 						web3.setProvider(window.ethereum);
-						web3.eth.defaultAccount = web3.eth.accounts[0];
+						const connectedAccount = window.ethereum.selectedAddress;
 
-						if (web3.eth.defaultAccount.toLowerCase() == this.addressId.toLowerCase()) {
-							var jnsdaov_contract = web3.eth.contract(jnsdaov_ABI).at(jnsdaov_contract_address);
-							jnsdaov_contract.register(hexkey,
-								function (err, result) {
-									if (err) {
-										console.log(err);
-										//alert('出错啦：' + err.message);
-									}
-								}); // no need to send()
-
+						if (connectedAccount.toLowerCase() == this.addressId.toLowerCase()) {
+							var jnsdaov_contract = new web3.eth.Contract(jnsdaov_ABI, jnsdaov_contract_address);
+							jnsdaov_contract.methods.register(hexkey).estimateGas({from: connectedAccount}, (err, gas) => {
+								if (!err) {
+									jnsdaov_contract.methods.register(hexkey).send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
+										.then(handlerShowRct(DIALOG_TITLE));
+								} else {
+									dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
+								}
+							});
 						} else {
-							alert('出错了：地址不匹配！');
+							dialogShowTxt(DIALOG_TITLE, '出错了：地址不匹配！');
 						}
 					} else {
-						alert('出错了：没有web3环境！');
+						dialogShowTxt(DIALOG_TITLE, '出错了：没有web3环境！');
 					}
 				} catch (e) {
-					console.log(e);
-					alert('出错啦：' + e);
+					dialogShowTxt(DIALOG_TITLE, '出错啦：' + e);
 				}
 
 			}
 			
 		}
 
-		/*$scope.mint = function () {
-			var namej = prompt("请输入JNS名字（不带后缀.j）：", "");
-			if (!namej) {
-				alert('错误：无效输入！');
-			} else if (namej.search('.j$') > 0) {
-				alert('错误：输入不能带后缀.j！');
-			} else { // TODO more validation?
-				if (window.ethereum && window.ethereum.isConnected()) {
-					// hacking...
-					web3.setProvider(window.ethereum);
-					web3.eth.defaultAccount = web3.eth.accounts[0];
-
-					if (web3.eth.defaultAccount == this.jnsContractOwner) {
-						var jns_contract = web3.eth.contract(jns_ABI).at(jns_contract_address);
-						jns_contract.claim(namej,
-							function (err, result) {
-								if (err) {
-									console.log(err);
-									//alert('出错啦：' + err.message);
-								}
-							}); // no need to send(), amazing!
-
-					}
-				}
-
-			}
-			
-		}*/
-
+		//refactored-20230330
 		$scope.airdrop = function ()
 		{
+			const DIALOG_TITLE = '发放空投';
 			// get the calldata
-			var airdrop_contract = web3.eth.contract(airdrop_ABI).at(airdrop_contract_address);
-			var hexdata = airdrop_contract.airdrop.getData($scope.addressId);
+			var airdrop_contract = new web3.eth.Contract(airdrop_ABI, airdrop_contract_address);
+			var hexdata = airdrop_contract.methods.airdrop($scope.addressId).encodeABI();
 
 			// do it or show calldata
-			if (window.ethereum && window.ethereum.isConnected() /*&& web3.eth.accounts.length > 0*/) {
-				// hacking...
+			if (window.ethereum && window.ethereum.isConnected()) {
+				// using injected provider
 				web3.setProvider(window.ethereum);
-				web3.eth.defaultAccount = web3.eth.accounts[0];
+				const connectedAccount = window.ethereum.selectedAddress;
 
-				airdrop_contract._approvers.call(web3.eth.defaultAccount, function (err, result) {
-					if (err) {
-						console.log(err);
-						$scope.airdrop_hexdata = '';
-						$scope.airdrop_errmsg = '出错啦：' + err.data.message;
-						$scope.$apply();
-					} else if (result == true) {
-						console.log($scope.addressId);
-						airdrop_contract.airdrop.estimateGas($scope.addressId, function (error, gas_amount) {
-							if (error) {
-								console.log('airdrop estimateGas error: ', error);
-								$scope.airdrop_hexdata = '';
-								$scope.airdrop_errmsg = '出错啦： ' + error.data.message;
-								$scope.$apply();
+				airdrop_contract.methods._approvers(connectedAccount).call(function (error, isApprover) {
+					if (error) {
+						dialogShowTxt('出错啦：' + error.message);
+					} else if (isApprover == true) {
+						airdrop_contract.methods.airdrop($scope.addressId).estimateGas({ from: connectedAccount }, (err, gas) => {
+							if (!err) {
+								airdrop_contract.methods.airdrop($scope.addressId)
+									.send({ from: connectedAccount }, handlerShowTx(DIALOG_TITLE))
+									.then(handlerShowRct(DIALOG_TITLE));
 							} else {
-								console.log('airdrop estimateGas: ', gas_amount);
-
-								airdrop_contract.airdrop($scope.addressId, function (err, result) {
-									if (err) {
-										console.log(err);
-										$scope.airdrop_hexdata = '';
-										$scope.airdrop_errmsg = '出错啦：' + err.data.message;
-										$scope.$apply();
-									} else {
-										$scope.airdrop_hexdata = '';
-										$scope.airdrop_errmsg = '成功发起空投，tx hash: ' + result; // tx id
-										$scope.$apply();
-									}
-								});
+								dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
 							}
 						});
 					} else {
-						$scope.airdrop_hexdata = '';
-						$scope.airdrop_errmsg = '无权发起空投！请联系组长！';
-						$scope.$apply();
+						dialogShowTxt(DIALOG_TITLE, '出错了：没有权限。请联系组长到该页面点击空投图标发放空投！');
 					}
 				});
 			} else {
-				this.airdrop_hexdata = '请联系组长向合约地址发送数据 ' + hexdata + ' 发起空投';
-				this.airdrop_errmsg = '';
+				dialogShowTxt(DIALOG_TITLE, '出错了：没有web3环境。请联系组长到该页面点击空投图标发放空投！');
 			}
 
 		}
 
-		////////////////////////////////////////////////////////////////////////////////
 
+		//////////////////////////////////////////////////////////////////////////////
+		// read functionalities in page scope                                       //
+		//////////////////////////////////////////////////////////////////////////////
 		$scope.init = function(){
 
 			$scope.addressId = $routeParams.addressId;

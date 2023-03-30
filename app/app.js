@@ -55,7 +55,6 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
         var connected = false;
         //if(!web3.isConnected()) {
 		if (!web3.eth.net.isListening()) { // fix: make it compatible with web3 1.8.2
-            $('#dialog-warning').modal({keyboard:false,backdrop:'static'}) 
-            $('#dialog-warning').modal('show') 
+			dialogModalShowTxt('无法连接到区块链网络', '无法连接到RPC服务，请检查你的网络连接是否畅通');
         }
     });

@@ -3,82 +3,63 @@ angular.module('ethExplorer')
 
 		var web3 = $rootScope.web3;
 
+		//////////////////////////////////////////////////////////////////////////////
+		// write functionalities in page scope                                      //
+		//////////////////////////////////////////////////////////////////////////////
+
+		//refactored-20230330
 		$scope.voteFor = function (proposal)
 		{
+			const DIALOG_TITLE = "投赞成票";
+
 			if (window.ethereum && window.ethereum.isConnected()) {
-				// hacking...
+				// using injected provider
 				web3.setProvider(window.ethereum);
-				web3.eth.defaultAccount = web3.eth.accounts[0];
+				const connectedAccount = window.ethereum.selectedAddress;
 
-				var jnsvote_contract = web3.eth.contract(jnsvote_ABI).at(jnsvote_contract_address);
-
-				jnsvote_contract.voteFor.estimateGas(proposal, function (error, gas_amount) {
-					if (error) {
-						console.log('voteFor estimateGas error: ', error);
-						$scope.errmsg = error.data.message;
-						$scope.$apply();
+				var jnsvote_contract = new web3.eth.Contract(jnsvote_ABI, jnsvote_contract_address);
+				jnsvote_contract.methods.voteFor(proposal).estimateGas({from: connectedAccount}, (err, gas) => {
+					if (!err) {
+						jnsvote_contract.methods.voteFor(proposal).send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
+							.then(handlerShowRct(DIALOG_TITLE));
 					} else {
-						console.log('voteFor estimateGas: ', gas_amount);
-
-						jnsvote_contract.voteFor(proposal,
-							function (err, result) {
-								if (err) {
-									console.log('voteFor error: ', err);
-									$scope.errmsg = err.message;
-									$scope.$apply();
-								}
-							}); // no need to send()
-
-						$scope.errmsg = '投票上链中，请15秒后刷新此页面';
-						$scope.$apply();
+						dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
 					}
-
 				});
-
 			} else {
 				this.hexdata = '向合约地址 ' + jnsvote_contract_address + ' 发送数据 ' + this.voteForCalldata[proposal] + ' 投赞成票';
 			}
 
 		}
 
+		//refactored-20230330
 		$scope.voteAgainst = function (proposal)
 		{
+			const DIALOG_TITLE = "投反对票";
+
 			if (window.ethereum && window.ethereum.isConnected()) {
-				// hacking...
+				// using injected provider
 				web3.setProvider(window.ethereum);
-				web3.eth.defaultAccount = web3.eth.accounts[0];
+				const connectedAccount = window.ethereum.selectedAddress;
 
-				var jnsvote_contract = web3.eth.contract(jnsvote_ABI).at(jnsvote_contract_address);
-
-				jnsvote_contract.voteAgainst.estimateGas(proposal, function (error, gas_amount) {
-					if (error) {
-						console.log('voteAgainst estimateGas error: ', error);
-						$scope.errmsg = error.data.message;
-						$scope.$apply();
+				var jnsvote_contract = new web3.eth.Contract(jnsvote_ABI, jnsvote_contract_address);
+				jnsvote_contract.methods.voteAgainst(proposal).estimateGas({from: connectedAccount}, (err, gas) => {
+					if (!err) {
+						jnsvote_contract.methods.voteAgainst(proposal).send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
+							.then(handlerShowRct(DIALOG_TITLE));
 					} else {
-						console.log('voteAgainst estimateGas: ', gas_amount);
-
-						jnsvote_contract.voteAgainst(proposal,
-							function (err, result) {
-								if (err) {
-									console.log('voteAgainst error: ', err);
-									$scope.errmsg = err.message;
-									$scope.$apply();
-								}
-							}); // no need to send()
-
-						$scope.errmsg = '投票上链中，请15秒后刷新此页面';
-						$scope.$apply();
+						dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
 					}
-
 				});
-
 			} else {
 				this.hexdata = '向合约地址 ' + jnsvote_contract_address + ' 发送数据 ' + this.voteAgainstCalldata[proposal] + ' 投反对票';
 			}
 
 		}
 
+		//////////////////////////////////////////////////////////////////////////////
+		// read functionalities in page scope                                       //
+		//////////////////////////////////////////////////////////////////////////////
 		$scope.init = function()
 		{
 			$scope.countJNSVote = 0;
@@ -91,7 +72,6 @@ angular.module('ethExplorer')
 			function getJTIBalance(addr) {
 				console.log('fetching JTI balance of address ' + addr);
 				$scope.countJTI = 0;
-				$scope.$apply(); //clear
 
 				var contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
 				contract.methods.balanceOf(addr).call(function (err1, result1) {
@@ -108,7 +88,6 @@ angular.module('ethExplorer')
 			function getJNSBalance(addr) {
 				console.log('fetching JNS balance of address ' + addr);
 				$scope.countJNS = 0;
-				$scope.$apply(); //clear
 
 				var contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
 				contract.methods.balanceOf(addr).call(function (err1, result1) {
@@ -125,7 +104,7 @@ angular.module('ethExplorer')
 			function getAddressNS(addr) {
 				console.log('fetching bound JNS of address ' + addr);
 				$scope.jns_info = '';
-				$scope.$apply(); //clear
+				//$scope.$apply(); //clear//错误：不能在此apply. 只能在callback中apply.
 
 				var jns_contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
 				jns_contract.methods._whois(addr).call(function (err, result) {
@@ -146,7 +125,6 @@ angular.module('ethExplorer')
 				console.log('fetching JNSVote POAPs of address ' + addr);
 				$scope.countJNSVote = 0;
 				$scope.allJNSVote = [];
-				$scope.$apply(); //clear
 
 				var contract = new web3.eth.Contract(jnsvote_ABI, jnsvote_contract_address);
 				contract.methods.balanceOf(addr).call(function (err1, result1) {
@@ -281,30 +259,19 @@ angular.module('ethExplorer')
 
 			}
 
-			//////////////// add listeners /////////////////
-			if (window.ethereum) {
-				console.log("[jnsVote] add listeners");
-				
-				window.ethereum.on('connect', function (connectInfo) {
-					console.log("[jnsVote] connected: ", connectInfo);
-					//web3.setProvider(window.ethereum);
-					//web3.eth.defaultAccount = web3.eth.accounts[0];
+			//////////////// get data && add listeners /////////////////
+			if (window.ethereum && window.ethereum.isConnected()) {
+				console.log("[jnsVote] get data && add listeners");
 
-					window.ethereum
-						.request({ method: 'eth_requestAccounts' })
-						.then((accounts) => {
-							console.log("connected account is: ", accounts[0]);
-							getAllJNSVote(accounts[0]);
-							getJNSBalance(accounts[0]);
-							getJTIBalance(accounts[0]);
-							$scope.account = accounts[0];
-							getAddressNS(accounts[0]);
-							$scope.$apply();
-						})
-						.catch((error) => {
-							console.error(`Error requesting accounts: ${error.code}: ${error.message}`);
-						});
-				});
+				//web3.setProvider(window.ethereum);
+				const connectedAccount = window.ethereum.selectedAddress;
+				console.log("[jnsVote] connected account is: ", connectedAccount);
+				getAllJNSVote(connectedAccount);
+				getJNSBalance(connectedAccount);
+				getJTIBalance(connectedAccount);
+				getAddressNS(connectedAccount);
+				$scope.account = connectedAccount;
+				//$scope.$apply(); //错误：不能在init时apply. 只能在callback中apply.
 
 				window.ethereum.on('chainChanged', function (chainId) {
 					console.log("[jnsVote] switched to chain id: ", parseInt(chainId, 16));
@@ -313,12 +280,13 @@ angular.module('ethExplorer')
 				});
 
 				window.ethereum.on('accountsChanged', function (accounts) {
-					console.log("[jnsVote] switched to account: ", accounts[0]);
-					getAllJNSVote(accounts[0]); //refresh!
-					getJNSBalance(accounts[0]);
-					getJTIBalance(accounts[0]);
-					$scope.account = accounts[0];
-					getAddressNS(accounts[0]);
+					const connectedAccount = window.ethereum.selectedAddress;
+					console.log("[jnsVote] switched to account: ", connectedAccount);
+					getAllJNSVote(connectedAccount); //refresh!
+					getJNSBalance(connectedAccount);
+					getJTIBalance(connectedAccount);
+					getAddressNS(connectedAccount);
+					$scope.account = connectedAccount;
 					$scope.$apply();
 				});
 			}
@@ -327,6 +295,9 @@ angular.module('ethExplorer')
 
 		$scope.init();
 
+		//////////////////////////////////////////////////////////////////////////////
+		// helper functionalities NOT in page scope                                 //
+		//////////////////////////////////////////////////////////////////////////////
 		function decisionMaker(proposalId, countVotesFor, countVotesAgainst, countJNSvoted, countJNSvotedFor, totalJNS) {
 			var decision = 0;
 			//var approvalRate = countVotesFor == 0 ? 0 : countVotesFor.div(countVotesFor.add(countVotesAgainst)); //从1.8.x web3的BN .div只有整数部分，而却没有.dividedBy ...

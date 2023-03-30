@@ -34,8 +34,8 @@
 			<tr>
 				<td>投票资格要求</td>
 				<td>
-					<div>{{ countJTI == 0 ? '❌':'✅' }} JTI认证</div>
-					<div>{{ countJNS == 0 ? '❌':'✅' }} JNS持仓 &gt; 0 （当前账户代表的JNS持仓量为：{{ countJNS }}）</div>
+					<div>{{ countJTI && countJTI > 0 ? '✅':'❌' }} JTI认证</div>
+					<div>{{ countJNS && countJNS > 0 ? '✅':'❌' }} JNS持仓 &gt; 0 （当前账户代表的JNS持仓量为：{{ countJNS ? countJNS : 0 }}）</div>
 				</td>
 			</tr>
 			</tbody>

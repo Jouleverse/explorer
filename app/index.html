@@ -15,6 +15,48 @@
   <script src="bower_components/web3/dist/web3.min.js"></script>
 
 	<script>
+		// global helpers
+		function dialogShowTxt(title, content) {
+			$("#warning-title").text(title);
+			$("#warning-content").text(content);
+			$('#dialog-warning').modal({keyboard:true, backdrop:true});
+			$('#dialog-warning').modal('show');
+		}
+
+		function dialogShowHtml(title, content) {
+			$("#warning-title").text(title);
+			$("#warning-content").html(content);
+			$('#dialog-warning').modal({keyboard:true, backdrop:true});
+			$('#dialog-warning').modal('show');
+		}
+
+		function dialogModalShowTxt(title, content) {
+			$("#warning-title").text(title);
+			$("#warning-content").text(content);
+			$('#dialog-warning').modal({keyboard:false, backdrop:'static'});
+			$('#dialog-warning').modal('show');
+		}
+
+		// callback generator for web3js sending tx
+		// usage: contract.methods.aaa(params).send({from: bbb}, handlerShowTx(DIALOG_TITLE)).then(handlerShowRct(DIALOG_TITLE);
+		function handlerShowTx(DIALOG_TITLE) {
+			return (err, txHash) => {
+				if (!err) {
+					dialogShowTxt(DIALOG_TITLE, '上链请求已提交（约5-15s确认），tx哈希值：' + txHash + ' 请稍等...');
+					// TODO Communicate with relay (given txHash) for a confirmation or an invoice for the user to pay.
+					// some codes...
+				} else {
+					dialogShowTxt(DIALOG_TITLE, '出错啦：' + err.message);
+				}
+			}
+		}
+		//dialogShowHtml(DIALOG_TITLE, '<p>已发送，tx哈希值：</p><p><a href="/#/tx/' + txHash + '">' + txHash + '</a></p><p>请等待上链交易完成后刷新页面数据，大约需要几秒到十几秒的时间</p>'); // here we still have a trivial bug: dialog will not be closed automatically when click on the txhash, and the tx page will not be refreshed.
+		
+		function handlerShowRct(DIALOG_TITLE) {
+			return (receipt) => {
+				dialogShowTxt(DIALOG_TITLE, '上链成功！');
+			}
+		}
 
 		// global vars
 		var __joule_networks = {
@@ -225,7 +267,13 @@
 			else if(parseInt(requestStr) > 0) // if block number?
 				return goToBlockInfos(parseInt(requestStr)) 
 
-            alert('不知道如何处理 '+ requestStr)
+			dialogShowHtml('搜索', `<p>不知道如何处理搜索词 ${requestStr} </p>` +
+				'<p>可以试试输入以下内容：</p>' +
+				'<ul><li>区块高度：如 1011228</li>' + 
+				'<li>交易哈希：如 0xe3978e8252c6a993de45bb0c3dc5321be4370be22043e299773df464ed67a830</li>' +
+				'<li>链地址：如 0x3D86Dd50C2f333d3d79Da2DE6bCd5706adD7a20c</li>' + 
+				'<li>JNS名字：如 love.j</li>' +
+				'</ul>')
         };
 
         function goToJNSInfo(requestStr) {
@@ -319,10 +367,10 @@
             <div class="modal-content">
                 <center><div class="modal-header">
 						<h4 class="modal-title"><span id="warning-title"></span></h4>
-                </div>
-                <div class="modal-body">
-                    <code><p id="warning-text"></p></code>
                 </div></center>
+                <div class="modal-body">
+                    <code><p style="word-break:break-all;" id="warning-content"></p></code>
+                </div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
 				</div>
@@ -339,9 +387,9 @@
         </p>
     </footer>
 </div>
-<script>
+<!--script>
 $("#warning-title").text('无法连接到区块链网络');
 $("#warning-text").text('无法连接到RPC服务，请检查你的网络连接是否畅通' );
-</script>
+</script-->
 </body>
 </html>

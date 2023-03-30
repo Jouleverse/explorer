@@ -31,7 +31,7 @@
 			<td><b>藏品和徽章：</b></td>
 			<td>
 				JTI: {{countJTI || "统计中..."}} 
-				<span ng-style="{ 'display': chainId == '0xe52' && account == jtiContractOwner ? 'inline-block' : 'none' }">
+				<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == jtiContractOwner.toLowerCase() ? 'inline-block' : 'none' }">
 					<button ng-click="star()">⭐️</button>
 				</span>
 				, 
