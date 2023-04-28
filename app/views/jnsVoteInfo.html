@@ -26,9 +26,9 @@
 				<td data-ng-if="countJNSVote == 0">没有治理徽章</td>
 				<td data-ng-if="countJNSVote > 0">
 					<div >我是JNSDAO成员，参与过 {{countJNSVote}} 次投票治理，收集了 {{countJNSVote}} 枚治理徽章：</div>
-					<div data-ng-repeat="i3 in allJNSVote">
+					<span data-ng-repeat="i3 in allJNSVote">
 						<a href="/#/jnsvote/"><image height="64px" style="margin:0 2px 2px 0" src="{{i3.tokenInfo.image}}"></image></a>
-					</div>
+					</span>
 				</td>
 			</tr>
 			<tr>

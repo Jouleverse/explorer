@@ -92,3 +92,6 @@ TODO:
 - improve: 完善搜索错误提示
 - fix: jnsvote顶部展示当前连接地址的投票资格情况
 
+2023.4.28
+- fix ipfs gw & poap alignment
+
