@@ -221,46 +221,65 @@
 
 		// switch network...
 		function switchNetwork() {
-			if (window.ethereum) {
-				window.ethereum
-					.request({ method: 'wallet_switchEthereumChain', 
-						params: [{ chainId: '0xe52' }] })
+			function addNetwork(env) {
+					env.request({ method: 'wallet_addEthereumChain', 
+						params: [{ 
+							chainId: '0xe52',
+							chainName: 'Jouleverse Mainnet',
+							nativeCurrency: {
+								name: 'Joule',
+								symbol: 'J ',
+								decimals: 18
+							},
+							rpcUrls: ['http://rpc.jnsdao.com:8502', 'https://rpc.jnsdao.com:8503'],
+								iconUrls: ['https://jnsdao.com/img/logo.svg'],
+								blockExplorerUrls: ['https://jscan.jnsdao.com'],
+							}] })
 					.then((res) => {
-						dialogShowTxt("欢迎👏👏👏", `已成功切换至Jouleverse Mainnet区块链网络！开启你的精彩旅程吧～`); })
+						dialogShowTxt("欢迎👏👏👏", `已成功添加Jouleverse Mainnet区块链网络！开启你的精彩旅程吧～`); })
 					.catch((error) => {
-						console.error(`Error switch chain: ${error.code}: ${error.message}`);
-						dialogShowHtml("未找到区块链网络", `请先添加Jouleverse Mainnet区块链网络：
-							<ul><li>网络名称: Jouleverse Mainnet</li>
-							<li>网络 URL: https://rpc.jnsdao.com:8503</li>
-							<li>链 ID: 3666</li>
-							<li>代币符号: J</li>
-							<li>区块链浏览器 URL: https://jscan.jnsdao.com</li>
-							</ul>`);
-						if (error.code === 4902) { // network not added
-							window.ethereum
-								.request({ method: 'wallet_addEthereumChain', 
-									params: [{ 
-										chainId: '0xe52',
-										chainName: 'Jouleverse Mainnet',
-										nativeCurrency: {
-											name: 'Joule',
-											symbol: 'J ',
-											decimals: 18
-										},
-										rpcUrls: ['http://rpc.jnsdao.com:8502', 'https://rpc.jnsdao.com:8503'],
-										iconUrls: ['https://jnsdao.com/img/logo.svg'],
-										blockExplorerUrls: ['https://jscan.jnsdao.com'],
-									}] })
-								.then((res) => {
-									dialogShowTxt("欢迎👏👏👏", `已成功添加Jouleverse Mainnet区块链网络！开启你的精彩旅程吧～`); })
-								.catch((error) => {
-									console.error(`Error add chain: ${error.code}: ${error.message}`);
-									dialogShowTxt("无法添加网络", `添加Jouleverse Mainnet区块链网络失败：${error.code}: ${error.message}`);
-								});
-						}
+						console.error(`Error add chain: ${error.code}: ${error.message}`);
+						dialogShowTxt("无法添加网络", `添加Jouleverse Mainnet区块链网络失败：${error.code}: ${error.message}`);
 					});
+			}
+
+			function handleEthereum() {
+				const { ethereum } = window;
+
+				if (ethereum /* && ethereum.isMetaMask */) {
+					ethereum
+						.request({ method: "wallet_switchEthereumChain", 
+							params: [{ chainId: "0xe52" }] })
+						.then((res) => {
+							dialogShowTxt("欢迎👏👏👏", `已成功切换至Jouleverse Mainnet区块链网络！开启你的精彩旅程吧～`); })
+						.catch((error) => {
+							console.error(`Error switch chain: ${error.code}: ${error.message}`);
+							dialogShowHtml(`未找到区块链网络(${error.code})`, `请先添加Jouleverse Mainnet区块链网络：
+								<ul><li>网络名称: Jouleverse Mainnet</li>
+								<li>网络 URL: https://rpc.jnsdao.com:8503</li>
+								<li>链 ID: 3666</li>
+								<li>代币符号: J</li>
+								<li>区块链浏览器 URL: https://jscan.jnsdao.com</li>
+								</ul>`);
+							if (error.code === 4902 || error.code === -32603) { // network not added. mm mobile has different error code!
+								addNetwork(ethereum)
+							}
+						});
+				} else {
+					dialogShowHtml("未安装web3环境", "请先安装web3环境支持，比如<a href='https://metamask.io/'>Metamask小狐狸插件</a>，等");
+				}
+			}
+
+			if (window.ethereum) {
+				handleEthereum();
 			} else {
-				dialogShowHtml("未安装web3环境", "请先安装web3环境支持，比如<a href='https://metamask.io/'>Metamask小狐狸插件</a>，等");
+				/*window.addEventListener("ethereum#initialized", handleEthereum, {
+					once: true,
+				});*/
+
+				// If the event is not dispatched by the end of the timeout, the user probably doesn't have MetaMask installed.
+				//setTimeout(handleEthereum, 3000); // 3 seconds
+				setTimeout(handleEthereum, 100);
 			}
 		}
 
