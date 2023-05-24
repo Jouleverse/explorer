@@ -224,7 +224,7 @@
 			function addNetwork(env) {
 					env.request({ method: 'wallet_addEthereumChain', 
 						params: [{ 
-							chainId: '0xe52',
+							chainId: `0xe52`,
 							chainName: 'Jouleverse Mainnet',
 							nativeCurrency: {
 								name: 'Joule',
@@ -249,7 +249,7 @@
 				if (ethereum /* && ethereum.isMetaMask */) {
 					ethereum
 						.request({ method: "wallet_switchEthereumChain", 
-							params: [{ chainId: "0xe52" }] })
+							params: [{ chainId: `0xe52` }] })
 						.then((res) => {
 							dialogShowTxt("欢迎👏👏👏", `已成功切换至Jouleverse Mainnet区块链网络！开启你的精彩旅程吧～`); })
 						.catch((error) => {
