@@ -95,3 +95,6 @@ TODO:
 2023.4.28
 - fix ipfs gw & poap alignment
 
+2023.5.24
+- improve: 首页增加一键添加Jouleverse Mainnet的功能按钮，且优化了switch/add network的UX
+- fix: Joule Mainnet => Jouleverse Mainnet

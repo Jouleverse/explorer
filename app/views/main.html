@@ -2,27 +2,35 @@
 
 	<!--h1 style="text-align:center;">Welcome to the Etherparty Block Explorer!</h1-->
 
-	<h4 style="text-align:center; margin-top: 30px;">
-		<p>区块链状态：{{status || "检测中..."}}</p>
-		<p><a href="/#/block/{{blockNum}}">最新区块高度: {{blockNum || "读取中..."}}</a></p>
-	</h4>
+	<div style="text-align:center; margin-top: 30px;">
+		<h4>
+			<p>区块链状态：{{status || "检测中..."}}</p>
+			<p><a href="/#/block/{{blockNum}}">最新区块高度: {{blockNum || "读取中..."}}</a></p>
+		</h4>
+	</div>
 
-	<table class="table table-striped" cellpadding="0" cellspacing="0" style="padding:0px;float:left;margin:0px;width:100%">
-		<tbody>
-			<tr>
-				<th>区块 #</th>
-				<th>交易 #</th>
-				<th>尺寸(字节数)</th>
-				<th>时间戳</th>
-			</tr>
-			<tr data-ng-repeat="i in blocks">
-				<td><a href="/#/block/{{i.number}}">{{i.number}}</a></td>
-				<td>{{i.transactions.length}}</td>
-				<td>{{i.size}}</td>
-				<td>{{i.timestamp}} ({{i.time_localestring}})</td>
-			</tr>
+	<div style="padding:0px;float:left;margin:0px;width:100%">
+		<table class="table table-striped" cellpadding="0" cellspacing="0">
+			<tbody>
+				<tr>
+					<th>区块 #</th>
+					<th>交易 #</th>
+					<th>尺寸(字节数)</th>
+					<th>时间戳</th>
+				</tr>
+				<tr data-ng-repeat="i in blocks">
+					<td><a href="/#/block/{{i.number}}">{{i.number}}</a></td>
+					<td>{{i.transactions.length}}</td>
+					<td>{{i.size}}</td>
+					<td>{{i.timestamp}} ({{i.time_localestring}})</td>
+				</tr>
 
-		</tbody>
-	</table>
+			</tbody>
+		</table>
+	</div>
 
+	<div style="text-align:center;margin-top:60px">
+		<div><h5>👇👇👇没有找到区块链网络？👇👇👇</h5></div>
+		<div><input type="button" class="btn btn-primary" onclick="switchNetwork()" value="点此一键添加Jouleverse Mainnet"></input></div>
+	</div>
 </div>

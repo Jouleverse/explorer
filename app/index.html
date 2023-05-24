@@ -225,27 +225,42 @@
 				window.ethereum
 					.request({ method: 'wallet_switchEthereumChain', 
 						params: [{ chainId: '0xe52' }] })
+					.then((res) => {
+						dialogShowTxt("欢迎👏👏👏", `已成功切换至Jouleverse Mainnet区块链网络！开启你的精彩旅程吧～`); })
 					.catch((error) => {
 						console.error(`Error switch chain: ${error.code}: ${error.message}`);
+						dialogShowHtml("未找到区块链网络", `请先添加Jouleverse Mainnet区块链网络：
+							<ul><li>网络名称: Jouleverse Mainnet</li>
+							<li>网络 URL: https://rpc.jnsdao.com:8503</li>
+							<li>链 ID: 3666</li>
+							<li>代币符号: J</li>
+							<li>区块链浏览器 URL: https://jscan.jnsdao.com</li>
+							</ul>`);
 						if (error.code === 4902) { // network not added
 							window.ethereum
 								.request({ method: 'wallet_addEthereumChain', 
 									params: [{ 
 										chainId: '0xe52',
-										chainName: 'Joule Mainnet',
+										chainName: 'Jouleverse Mainnet',
 										nativeCurrency: {
 											name: 'Joule',
 											symbol: 'J ',
 											decimals: 18
 										},
 										rpcUrls: ['http://rpc.jnsdao.com:8502', 'https://rpc.jnsdao.com:8503'],
+										iconUrls: ['https://jnsdao.com/img/logo.svg'],
 										blockExplorerUrls: ['https://jscan.jnsdao.com'],
 									}] })
+								.then((res) => {
+									dialogShowTxt("欢迎👏👏👏", `已成功添加Jouleverse Mainnet区块链网络！开启你的精彩旅程吧～`); })
 								.catch((error) => {
 									console.error(`Error add chain: ${error.code}: ${error.message}`);
+									dialogShowTxt("无法添加网络", `添加Jouleverse Mainnet区块链网络失败：${error.code}: ${error.message}`);
 								});
 						}
 					});
+			} else {
+				dialogShowHtml("未安装web3环境", "请先安装web3环境支持，比如<a href='https://metamask.io/'>Metamask小狐狸插件</a>，等");
 			}
 		}
 
@@ -303,7 +318,7 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-            <a href="/#/" class="navbar-brand">区块链浏览器</a>
+            <a href="/#/" class="navbar-brand">Jouleverse区块链浏览器</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
