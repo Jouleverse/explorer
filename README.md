@@ -99,3 +99,7 @@ TODO:
 - improve: 首页增加一键添加Jouleverse Mainnet的功能按钮，且优化了switch/add network的UX
 - fix: Joule Mainnet => Jouleverse Mainnet
 - fix: support another error.code for MetaMask mobile!
+
+2023.5.25
+- improve: 修改两处文案。钱包地址 改为 链地址
+
