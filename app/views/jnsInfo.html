@@ -41,10 +41,6 @@
                 <td>NFT图案</td>
 				<td><image height="20px" src="{{logo}}"></image></td>
 			</tr>
-			<tr>
-                <td>数字身份 DID</td>
-				<td><a href="./#/did/{{jnsId}}">{{jnsId}}（点击进入DID数字身份资料页面）</a></td>
-			</tr>
             <tr>
                 <td>持有者</td>
                 <td><a href="./#/address/{{ownerAddress}}">{{ownerAddress}}</a></td>
@@ -55,6 +51,10 @@
 					{{boundAddress}}
                 </td>
             </tr>
+			<tr data-ng-if="boundAddress !== undefined && boundAddress !== '未绑定'">
+                <td>数字身份 DID</td>
+				<td><a href="./#/did/{{jnsId}}">{{jnsId}}（点击进入该数字身份DID资料页面）</a></td>
+			</tr>
 
             </tbody>
         </table>
