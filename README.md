@@ -103,3 +103,6 @@ TODO:
 2023.5.25
 - improve: 修改两处文案。钱包地址 改为 链地址
 
+2023.6.6
+- improve: 实现 /did/:jnsId ；搜索jns域名将跳转至该页面，而不是此前的 /jns/:jnsId （在profile页面点击jns会跳转/jns/:jnsId 只有这个入口）
+

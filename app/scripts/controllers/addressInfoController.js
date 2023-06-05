@@ -121,10 +121,22 @@ angular.module('ethExplorer')
 		//////////////////////////////////////////////////////////////////////////////
 		$scope.init = function(){
 
+			// entry /did/:jnsId
+			$scope.jnsId = $routeParams.jnsId;
+			// entry /address/:addressId
 			$scope.addressId = $routeParams.addressId;
 
 			if($scope.addressId !== undefined) {
+				update(true);
+			} else if ($scope.jnsId !== undefined) {
+				getNSAddress().then(function(addr) {
+					$scope.addressId = addr;
+					// do not use $apply here
+					update(false);
+				});
+			}
 
+			function update(shouldGetAddressNS) {
 				getAddressInfos().then(function(result){
 					$scope.balance = result.balance;
 					$scope.balanceInEther = result.balanceInEther;
@@ -140,11 +152,12 @@ angular.module('ethExplorer')
 				// fetch & update
 				getAllJTI();
 				getAllFlyingJ();
+				
+				if (shouldGetAddressNS) getAddressNS();
+
 				getJNSDAOV();
-				getAddressNS();
 				getAllJNS();
 				getAllJNSVote();
-				
 			}
 
 			function getAddressInfos(){
@@ -180,12 +193,53 @@ angular.module('ethExplorer')
 				return null;
 			}
 
+			function getNSAddress() {
+				var deferred = $q.defer();
+
+				// check name format
+				var matched = $scope.jnsId.match(/(.*)\.j$/);
+				if (matched == null) {
+					// not ending with .j
+					$scope.addressId = "域名格式错误"; //FIXME
+				}
+				var jnsName = matched[1]; // the (.*) part
+
+				var jns_contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
+				jns_contract.methods._nslookup(jnsName).call(function (err, result) {
+					if (!err) {
+						var token_id = result.toString();
+						if (token_id > 0) {
+							jns_contract.methods.tokenURI(token_id).call(function (err2, result2) {
+								var jns_tokenURI = result2;
+								$scope.jns_info = parseTokenURI(jns_tokenURI);
+								$scope.$apply(); //update
+							});
+
+							jns_contract.methods._bound(token_id).call(function (error3, result3) {
+								var bound_addr = (result3 == 0)? "未绑定地址" : result3.toString();
+								/*$scope.addressId = bound_addr;
+								$scope.$apply();*/
+
+								deferred.resolve(bound_addr);
+							});
+
+						}
+					} else {
+						deferred.reject(err);
+					}
+				});
+
+				return deferred.promise;
+			}
+
 			function getAddressNS() {
 				var addr = $scope.addressId;
+				console.log("getAddressNS(): addr = ", addr);
 				var jns_contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
-				jns_contract.methods._whois(addr).call(addr, function (err, result) {
+				jns_contract.methods._whois(addr).call(function (err, result) {
 					if (!err) {
 						var jns_id = result.toString();
+						console.log("getAddressNS(): jns_id = ", jns_id);
 						if (jns_id > 0) {
 							jns_contract.methods.tokenURI(jns_id).call(function (err2, result2) {
 								var jns_tokenURI = result2;
@@ -250,7 +304,7 @@ angular.module('ethExplorer')
 						console.log(err1);
 					} else {
 						var balance = result1.toString();
-						$scope.countFlyingJ = balance;
+						$scope.countFlyingJ = balance || "0";
 						for (var i = 0; i < balance; i++) {
 							var token_name = "Flying J";
 							contract.methods.tokenOfOwnerByIndex(addr, i).call(function (err2, result2) {
@@ -282,7 +336,9 @@ angular.module('ethExplorer')
 				var contract = new web3.eth.Contract(jnsdaov_ABI, jnsdaov_contract_address);
 				contract.methods.query(addr).call(function (err2, result2) {
 					if (err2) {
-						console.log(err2);
+						console.log("getJNSDAOV() error: ", err2);
+						$scope.countJNSDAOV = "0";
+						$scope.$apply();
 					} else {
 						var tokenURI = result2;
 						var tokenInfo = parseTokenURI(tokenURI);
@@ -304,7 +360,7 @@ angular.module('ethExplorer')
 						console.log(err1);
 					} else {
 						var balance = result1.toString();
-						$scope.countJNS = balance;
+						$scope.countJNS = balance || "0";
 						for (var i = 0; i < balance; i++) {
 							var token_name = "J Name Service";
 							contract.methods.tokenOfOwnerByIndex(addr, i).call(function (err2, result2) {
@@ -348,7 +404,7 @@ angular.module('ethExplorer')
 						console.log(err1);
 					} else {
 						var balance = result1.toString();
-						$scope.countJNSVote = balance;
+						$scope.countJNSVote = balance || "0";
 						for (var i = 0; i < balance; i++) {
 							var token_name = "JNS Vote";
 							contract.methods.tokenOfOwnerByIndex(addr, i).call(function (err2, result2) {

@@ -1,10 +1,18 @@
 <div class="container" style="padding-top: 50px;">
-<h1>链地址
-    <small>查看链地址信息</small>
-	<span class="zoom" ng-style="{ 'display': balance == 0 ? 'inline-block' : 'none' }">
-		<button ng-click="airdrop()">🎁</button>
-	</span>
-</h1>
+	<h1>
+		<span data-ng-if="jnsId !== undefined">
+			<p><img height="32px" src="{{jns_info.image}}" /></p>
+			DID
+			<small>查看该DID(链身份)的资料</small>
+		</span>
+		<span data-ng-if="jnsId === undefined">
+			链地址
+			<small>查看链地址信息</small>
+		</span>
+		<span class="zoom" ng-style="{ 'display': balance == 0 ? 'inline-block' : 'none' }">
+			<button ng-click="airdrop()">🎁</button>
+		</span>
+	</h1>
 
 <span style="color:#999"><p style="word-break:break-all;">{{airdrop_hexdata}}</p></span>
 <span style="color:#a00"><p style="word-break:break-all;">{{airdrop_errmsg}}</p></span>
