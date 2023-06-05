@@ -84,15 +84,17 @@
 					if (__accounts.length > 0) { // 有账户
 						var addr = __accounts[0];
 						$("#connAddr")[0].innerHTML = addr.substr(0,6) + '...' + addr.substr(-4);
+						$("#connLink").attr('onclick', '');
+						$("#connLink").attr('href', '/address/' + addr);
 
 						getAddressJNS(addr, function (jns_info) {
 							if (jns_info) {
 								$("#connAddr")[0].innerHTML = '<img height="14px" src="' + jns_info.image + '" />';
-							}
+								$("#connLink").attr('onclick', '');
+								$("#connLink").attr('href', '/did/' + jns_info.description); // "description" is a legacy naming... sorry.
+							} 
 						});
 
-						$("#connLink").attr('onclick', '');
-						$("#connLink").attr('href', '/address/' + addr);
 					} else { // 没有账户
 						$("#connAddr")[0].innerHTML = '连接账户';
 						$("#connLink").attr('onclick', 'connect()');
@@ -311,8 +313,8 @@
         };
 
         function goToJNSInfo(requestStr) {
-            //location.hash = '/jns/'+requestStr;
-            location.hash = '/did/'+requestStr;
+            location.hash = '/jns/'+requestStr; // better for search
+            //location.hash = '/did/'+requestStr; 
         }
 
         function goToBlockInfos(requestStr) {

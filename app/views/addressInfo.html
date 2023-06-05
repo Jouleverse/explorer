@@ -2,10 +2,11 @@
 	<h1>
 		<span data-ng-if="jnsId !== undefined">
 			<p><img height="32px" src="{{jns_info.image}}" /></p>
-			DID
-			<small>查看该DID(链身份)的资料</small>
+			{{jns_info.description}}
+			<small>查看该数字身份DID的资料</small>
 		</span>
 		<span data-ng-if="jnsId === undefined">
+			<p style="color:#050">{{ addressId.substr(0,6) + '...' + addressId.substr(-4) }}</p>
 			链地址
 			<small>查看链地址信息</small>
 		</span>
