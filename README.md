@@ -107,3 +107,6 @@ TODO:
 - improve: 实现 /did/:jnsId ；搜索jns域名将跳转至该页面，而不是此前的 /jns/:jnsId （在profile页面点击jns会跳转/jns/:jnsId 只有这个入口）
 - fix: search jns => /jns/:jnsId => 点击数字身份 => DID profile页。另一入口：右上角，当绑定JNS后，点击会跳转DID页，而不是地址页
 
+2023.6.25
+- improve: Jouleverse Mainnet => Joule Mainnet, inspired by Optimism => OP Mainnet
+
