@@ -110,3 +110,5 @@ TODO:
 2023.6.25
 - improve: Jouleverse Mainnet => Joule Mainnet, inspired by Optimism => OP Mainnet
 
+2023.6.28
+- new feature: 支持wrapper Joule的显示以及unwrap操作

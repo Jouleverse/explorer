@@ -15,7 +15,7 @@ angular.module('ethExplorer')
 
 			if (nstar && !isNaN(nstar)) { 
 				if (nstar < 1 || nstar > 5) {
-					alert("星等超出范围（1-5）");
+					dialogShowTxt(DIALOG_TITLE, "错误：星等超出范围（1-5）");
 				} else if (window.ethereum && window.ethereum.isConnected()) {
 					web3.setProvider(window.ethereum);
 					const connectedAccount = window.ethereum.selectedAddress;
@@ -115,6 +115,60 @@ angular.module('ethExplorer')
 
 		}
 
+		// unwrap wJoule
+		$scope.wjUnwrapDialog = function () {
+			$('#dialog-unwrap-wjoule').modal({keyboard:false, backdrop:'static'});
+			$('#dialog-unwrap-wjoule').modal('show');
+		}
+
+		$scope.wjUnwrapTo = function () {
+			const DIALOG_TITLE = 'Unwrap wJ';
+			const amt = $('#wj-unwrap-amount')[0].value;
+			const to = $('#wj-unwrap-to')[0].value;
+			console.log('wjUnwrapTo', amt, to);
+			
+			if (amt && !isNaN(amt)) { // isNaN works, nice.
+				if (!(amt > 0)) {
+					dialogShowTxt(DIALOG_TITLE, "错误：wJ数量必须大于0");
+				} else if (!(amt < $scope.wjBalanceInJoule)) {
+					dialogShowTxt(DIALOG_TITLE, "错误：wJ数量不能超过持有量");
+				} else if (window.ethereum && window.ethereum.isConnected()) {
+					web3.setProvider(window.ethereum);
+					const connectedAccount = window.ethereum.selectedAddress;
+
+					const e = web3.utils.toWei(amt);
+					const wj_contract = new web3.eth.Contract(wj_ABI, wj_contract_address);
+					if (to === '') { // to is empty
+						wj_contract.methods.withdraw(e).estimateGas({from: connectedAccount}, (err, gas) => {
+							if (!err) {
+								wj_contract.methods.withdraw(e)
+									.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
+									.then(handlerShowRct(DIALOG_TITLE));
+							} else {
+								dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
+							}
+						});
+					} else if (web3.utils.isAddress(to)) {
+						wj_contract.methods.withdrawTo(to, e).estimateGas({from: connectedAccount}, (err, gas) => {
+							if (!err) {
+								wj_contract.methods.withdrawTo(to, e)
+									.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
+									.then(handlerShowRct(DIALOG_TITLE));
+							} else {
+								dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
+							}
+						});
+					} else { 
+						dialogShowTxt(DIALOG_TITLE, '错误：目标地址不是正确的链地址格式');
+					}
+
+				}
+
+			} else {
+				dialogShowTxt(DIALOG_TITLE, "错误：请输入有效的wJ数量");
+			}
+
+		};
 
 		//////////////////////////////////////////////////////////////////////////////
 		// read functionalities in page scope                                       //
@@ -140,6 +194,11 @@ angular.module('ethExplorer')
 				getAddressInfos().then(function(result){
 					$scope.balance = result.balance;
 					$scope.balanceInEther = result.balanceInEther;
+				});
+
+				getWJBalance().then(function (result) {
+					$scope.wjBalance = result.balance;
+					$scope.wjBalanceInJoule = result.balanceInJoule;
 				});
 
 				// fix '统计中...'
@@ -176,6 +235,24 @@ angular.module('ethExplorer')
 						deferred.reject(error);
 					}
 				});
+				return deferred.promise;
+			}
+
+			function getWJBalance() {
+				var deferred = $q.defer();
+				var addr = $scope.addressId;
+				var wj_contract = new web3.eth.Contract(wj_ABI, wj_contract_address);
+				wj_contract.methods.balanceOf(addr).call(function (err, result) {
+					if (!err) {
+						deferred.resolve({
+							balance: result.toString(),
+							balanceInJoule: web3.utils.fromWei(result, 'ether').toString()
+						});
+					} else {
+						deferred.reject(err);
+					}
+				});
+
 				return deferred.promise;
 			}
 

@@ -29,12 +29,20 @@
     <table class="table table-striped">
         <tbody>
         <tr>
-            <td>能量余额 (e, 能量值)</td>
-			<td>{{balance || "计算中..."}}</td>
+			<td><b>能量余额：</b></td>
+			<td>{{balanceInEther || "计算中..."}} J (焦耳)，即 {{balance || "计算中..."}} e (能量单位)</td>
         </tr>
         <tr>
-            <td>能量余额 (J，焦耳)</td>
-            <td>{{balanceInEther || "计算中..."}}</td>
+			<td><b>数字资产：</b></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Wrapped Joule</td>
+            <td>{{wjBalanceInJoule || "计算中..."}} wJ
+				<span ng-style="{ 'display': wjBalance > 0 ? 'inline-block':'none'}">
+					<button ng-click="wjUnwrapDialog()"><font style="color:#0023ed">unwrap</font></button>
+				</span>
+			</td>
         </tr>
         <tr>
 			<td><b>藏品和徽章：</b></td>
@@ -88,5 +96,32 @@
     </table>
 	<small>* 注：J（焦耳）是能量单位。定义 1 J = 1 Ee（E能量）= 10^9 Ge（G能量）= 10^18 e，即 1,000,000,000,000,000,000 e（能量）。</small>
 </div>
+
+  <!-- dialog for input to unwrap wJoule -->
+    <div id="dialog-unwrap-wjoule" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <center><div class="modal-header">
+						<h4 class="modal-title"><span id="">Unwrap wJ</span></h4>
+                </div></center>
+                <div class="modal-body">
+					<code>
+						<span style="word-break:break-all;" id="">
+							<p>拆开wJ (wrapped Joule)，释放其中的能量到某一地址。需输入：</p>
+							<p>1. 要拆开的wJ数量：<input type="text" id="wj-unwrap-amount"></input> wJ</p>
+							<p>2. 接收能量的链地址（留空则默认为当前地址）：<input type="text" id="wj-unwrap-to"></input></p>
+						</span>
+					</code>
+                </div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="wjUnwrapTo()">确定</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+				</div>
+            </div>
+        </div>
+    </div>
+  <!-- end of dialog for input to unwrap wJoule -->
 
 </div>
