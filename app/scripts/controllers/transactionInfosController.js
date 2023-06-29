@@ -3,6 +3,10 @@ angular.module('ethExplorer')
 
        var web3 = $rootScope.web3;
 	
+		$scope.address2tag = function (address) {
+			return __getAddressTag(address);
+		}
+
         $scope.init=function()
         {
             $scope.txId=$routeParams.transactionId;

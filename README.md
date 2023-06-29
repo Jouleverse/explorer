@@ -112,3 +112,7 @@ TODO:
 
 2023.6.28
 - new feature: 支持wrapper Joule的显示以及unwrap操作
+
+2023.6.29
+- new feature: 支持显示well known地址的tag（区块详情页面 & 交易详情页面）
+
