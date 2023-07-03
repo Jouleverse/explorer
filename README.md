@@ -116,3 +116,7 @@ TODO:
 2023.6.29
 - new feature: 支持显示well known地址的tag（区块详情页面 & 交易详情页面）
 
+2023.7.3
+- fix: wJ unwrap数字与持有量的比较问题 '2' > '100' 的问题
+- improve: 仅在自己的页面能看到wJ 的unwrap按钮。查看他人页面看不到该按钮。
+

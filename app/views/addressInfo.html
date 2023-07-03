@@ -39,8 +39,10 @@
         <tr>
             <td>Wrapped Joule</td>
             <td>{{wjBalanceInJoule || "计算中..."}} wJ
-				<span ng-style="{ 'display': wjBalance > 0 ? 'inline-block':'none'}">
-					<button ng-click="wjUnwrapDialog()"><font style="color:#0023ed">unwrap</font></button>
+				<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == addressId.toLowerCase() ? 'inline-block' : 'none' }">
+					<span ng-style="{ 'display': wjBalance > 0 ? 'inline-block':'none'}">
+						<button ng-click="wjUnwrapDialog()"><font style="color:#0023ed">unwrap</font></button>
+					</span>
 				</span>
 			</td>
         </tr>

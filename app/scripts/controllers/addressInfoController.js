@@ -130,8 +130,8 @@ angular.module('ethExplorer')
 			if (amt && !isNaN(amt)) { // isNaN works, nice.
 				if (!(amt > 0)) {
 					dialogShowTxt(DIALOG_TITLE, "错误：wJ数量必须大于0");
-				} else if (!(amt < $scope.wjBalanceInJoule)) {
-					dialogShowTxt(DIALOG_TITLE, "错误：wJ数量不能超过持有量");
+				} else if (!(parseFloat(amt) < parseFloat($scope.wjBalanceInJoule))) {
+					dialogShowTxt(DIALOG_TITLE, "错误：wJ数量 " + amt + " 不能超过持有量 " + $scope.wjBalanceInJoule);
 				} else if (window.ethereum && window.ethereum.isConnected()) {
 					web3.setProvider(window.ethereum);
 					const connectedAccount = window.ethereum.selectedAddress;
