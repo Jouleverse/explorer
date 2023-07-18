@@ -20,7 +20,9 @@ angular.module('ethExplorer')
 					web3.setProvider(window.ethereum);
 					const connectedAccount = window.ethereum.selectedAddress;
 
-					if (connectedAccount.toLowerCase() == this.jnsContractOwner.toLowerCase()) {
+					console.log("JTI admin check", connectedAccount, this.jnsContractOwner);
+					if (connectedAccount.toLowerCase() == this.jtiContractOwner.toLowerCase()) {
+						console.log("JTI admin logged in");
 						const jti_contract = new web3.eth.Contract(jti_ABI, jti_contract_address);
 						jti_contract.methods.issue($scope.addressId, nstar).estimateGas({from: connectedAccount}, (err, gas) => {
 							if (!err) {
@@ -31,6 +33,8 @@ angular.module('ethExplorer')
 								dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
 							}
 						});
+					} else {
+						console.log("JTI admin not logged in");
 					}
 				}
 			} else {

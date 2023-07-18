@@ -120,3 +120,6 @@ TODO:
 - fix: wJ unwrap数字与持有量的比较问题 '2' > '100' 的问题
 - improve: 仅在自己的页面能看到wJ 的unwrap按钮。查看他人页面看不到该按钮。
 
+2023.7.18
+- fix: 判断是否JTI admin比较错了
+
