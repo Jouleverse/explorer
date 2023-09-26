@@ -123,3 +123,6 @@ TODO:
 2023.7.18
 - fix: 判断是否JTI admin比较错了
 
+2023.9.26
+- fix: logo; 使用文字，不用logo，区分主网/测试网；添加网络Joule Mainnet => Jouleverse Mainnet
+
