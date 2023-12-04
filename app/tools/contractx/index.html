@@ -101,10 +101,7 @@ window.ethExp = null;
 // the var contractDetailsJson is going to contain the ABI of the smart contracts.
 // The placeholder below < % contract-details-json % > is going to be replace on runtime.
 // Please check the function CliController@buildUI
-const contractDetailsJson = [
-    {
-        "contractName": "JNS多签",
-        "abi": [
+const abi_multisig = [
             {
                 "constant": false,
                 "inputs": [
@@ -636,13 +633,28 @@ const contractDetailsJson = [
                 "type": "function",
                 "stateMutability": "view"
             }
-        ],
+        ];
+
+const contractDetailsJson = [
+    {
+        "contractName": "JNS多签",
+        "abi": abi_multisig,
         "networks": {
             "3666": {
                 "address": "0x4eF599b6E39D950D6Ddbd830fF5f95e06770C1B3"
             }
         }
-    }
+    },
+    {
+        "contractName": "创世金库",
+        "abi": abi_multisig,
+        "networks": {
+            "3666": {
+                "address": "0x3B717119878E2db1AA7df46F5AdcF9766A01706F"
+            }
+        }
+    },
+
 ];
 
 // Once the page is loaded then it executes the init function to initialize all 
