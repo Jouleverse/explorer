@@ -126,3 +126,10 @@ TODO:
 2023.9.26
 - fix: logo; 使用文字，不用logo，区分主网/测试网；添加网络Joule Mainnet => Jouleverse Mainnet
 
+2023.12.2
+- improve: 增加合约工具 tools/contractx
+
+2023.12.7
+- fix: 更改options gas limit从区块limit 300万下调至100万，以使得领红包时评估gas低于新手空投0.017J
+- improve: 给tools/contractx增加estimateGas和报错功能，方便调试错误
+

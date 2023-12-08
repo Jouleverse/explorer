@@ -1731,7 +1731,7 @@ async function handleSmartContractCall(e) {
 
     // getting the data coming from the submitted form
     const data = new FormData(e.target);
-    var options = {};
+    var options = { gasLimit: 1000000 }; // Jouleverse: lower the gas limit from block.gaslimit 3m to 1m
     const contractName = data.get('contract-name'); // name of the smart contract
     const scFnc = data.get('function-name');  // name of the smart contract's function
 
@@ -1772,6 +1772,7 @@ async function handleSmartContractCall(e) {
                 });
         } 
         // calling a function that is PAYABLE
+		// Jouleverse: WE WILL NEVER USE THIS
         else if (window.ethExp.methodIsPayable(scFnc, contractName)) {
             (await window.ethExp.sendTxToSmartContract(userAddress, userPrivateKey, scFnc, params, options, contractName))
                 .on('transactionHash', transactionHash => UI.consoleSuccess({ transactionHash }))
@@ -2326,6 +2327,7 @@ class EthereumExplorer {
         if (options.value) txData.value = options.value;
 
         // if the private key is given then we must sign the transaction with that private key
+		// Jouleverse: WE WILL NOT USE THIS
         if (fromPrivateKey) {
             const data = this.contract(contractName).methods[contractFnc](...contractData).encodeABI();
             if (data) txData.data = data;
@@ -2343,10 +2345,19 @@ class EthereumExplorer {
         }
 
         // if the private key is not given then teh signature will be handled via Metamask (or similar)
-        this.contract(contractName).methods[contractFnc](...contractData).send(txData)
-            .on('transactionHash', transactionHash => this.emit('transactionHash', transactionHash))
-            .on('receipt', receipt => this.emit('receipt', receipt))
-            .on('error', error => this.emit('error', error));
+		// Jouleverse: WE WILL USE THIS
+		this.contract(contractName).methods[contractFnc](...contractData).estimateGas(txData, (err, gas) => {
+
+			if (err) {
+				this.emit('error', err);
+			} else {
+				this.contract(contractName).methods[contractFnc](...contractData).send(txData)
+					.on('transactionHash', transactionHash => this.emit('transactionHash', transactionHash))
+					.on('receipt', receipt => this.emit('receipt', receipt))
+					.on('error', error => this.emit('error', error));
+			}
+
+		});
 
         return Promise.resolve(this);
     }
