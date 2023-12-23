@@ -133,3 +133,7 @@ TODO:
 - fix: 更改options gas limit从区块limit 300万下调至100万，以使得领红包时评估gas低于新手空投0.017J
 - improve: 给tools/contractx增加estimateGas和报错功能，方便调试错误
 
+2023.12.23
+- improve: tools/contractx增加 合约地址 显示和链接到explorer
+- improve: tools/contractx增加 节点PoS（多签）
+

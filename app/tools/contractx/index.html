@@ -1471,6 +1471,15 @@ const contractDetailsJson = [
         }
     },
     {
+        "contractName": "节点PoS",
+        "abi": abi_multisig,
+        "networks": {
+            "3666": {
+                "address": "0xDb11694Ed05Db4a6230BDFd0914094FE7CE73646"
+            }
+        }
+    },
+    {
         "contractName": "WJ",
         "abi": abi_WJ10,
         "networks": {
@@ -1809,6 +1818,8 @@ async function handleSmartContractCall(e) {
  */
 function addContractToDashboard(contract, active=false) {
     const cName = contract.contractName;
+	//Jouleverse
+    const cAddress = contract.address;
 
     // adding a tab HTML element with the name of the smart contract
     document.getElementById('contracts-tab-nav').innerHTML += `
@@ -1822,11 +1833,12 @@ function addContractToDashboard(contract, active=false) {
     //  - In the right column (smContractPanels-${cName}) it will appear the form of the selected smart contract function.
     document.getElementById('contracts-tab-content').innerHTML += `
         <div class="tab-pane p-4 fade ${active ? 'active show' : ''} smart-contract-content" id="contract-tab-${cName}">
-            <h3 class="pb-3"><b>${cName}</b> smart contract</h3>
+			<h3 class="pb-3"><b>${cName}</b> <small>智能合约</small></h3>
+			<p><small>合约地址：<a target="_blank" href="https://jscan.jnsdao.com/address/${cAddress}">${cAddress}</a></small></p>
             <div class="row">
                 <div class="col-md-4">
                     <div class="card">
-                        <div class="card-header">Select a function</div>
+                        <div class="card-header">选择一个方法</div>
                         <div class="card-body p-0">
                             <select name="smFunctions-${cName}" id="smFunctions-${cName}" size="10" class="form-select"></select>
                         </div>
