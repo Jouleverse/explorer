@@ -145,3 +145,6 @@ TODO:
 - fix: 删除页面输入地址和私钥，改为提示信息
 - fix: footer
 - new: /cryptojunks 新页面
+
+2023.12.30
+- fix: /cryptojunks 修改布局，优化分页，提升加载速度，且满足需求“查找未被mint的junk”

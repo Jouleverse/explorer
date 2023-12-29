@@ -10,10 +10,17 @@
 				<tr>
 					<td>Current supply: {{countCryptoJunks}}. Supply limit: 10000. Sealed: {{ countCryptoJunks && countCryptoJunks == 10000 ? 'set in stone' : 'not yet' }}</td>
 				</tr>
+				<tr>
+					<td>Page: <span data-ng-repeat="i in allPages">
+							<span data-ng-if="i == pageId"><font size="5em">{{i+1}}</font></span>
+							<span data-ng-if="i != pageId"><a href="/cryptojunks/page/{{i}}">{{i+1}} </a></span>
+						</span></td>
+				</tr>
 				<tr data-ng-if="countCryptoJunks > 0">
 					<td><span data-ng-repeat="cj in allCryptoJunks">
 							<div style="float:left; margin-left:1px;">
-								<div style="background-color: #638596;"><image alt="{{cj.tokenInfo.name}}" height="64px" style="margin:0 2px 2px 0; image-rendering: pixelated;" src="{{cj.tokenInfo.image}}"></image></div>
+								<div data-ng-if="cj.tokenInfo != undefined" style="background-color: #638596;"><image alt="{{cj.tokenInfo.name}}" height="64px" style="margin:0 2px 2px 0; image-rendering: pixelated;" src="{{cj.tokenInfo.image}}"></image></div>
+								<div data-ng-if="cj.tokenInfo == undefined" style="background-color: #638596;"><span style="display:inline-block;width:64px;height:64px;margin:0 2px 2px 0;">空</span></div>
 								<div style="text-align:center">#{{cj.id}}</div>
 							</div>
 						</span>

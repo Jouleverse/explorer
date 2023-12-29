@@ -12,61 +12,66 @@ angular.module('ethExplorer')
 		//////////////////////////////////////////////////////////////////////////////
 		$scope.init = function()
 		{
+			if ($routeParams.pageId) {
+				$scope.pageId = $routeParams.pageId;
+			} else {
+				$scope.pageId = 0;
+			}
+			console.log('cryptojunks page ' + $scope.pageId);
 
-			$scope.allCryptoJunks = [];
-			getAllCryptoJunks();
-
-			if (window.ethereum) {
-				window.ethereum.on('chainChanged', function (chainId) {
-					console.log("[jns] switched to chain id: ", parseInt(chainId, 16));
-					$scope.chainId = chainId;
-					$scope.$apply();
-				});
-
-				window.ethereum.on('accountsChanged', function (accounts) {
-					console.log("[jns] switched to account: ", accounts[0]);
-					$scope.account = accounts[0];
-					$scope.$apply();
-				});
+			$scope.allPages = [];
+			for (var i = 0; i < 100; i++) {
+				$scope.allPages.push(i);
 			}
 
-			function getAllCryptoJunks() {
-				$scope.allCryptoJunks = [];
-				var contract = new web3.eth.Contract(cryptojunks_ABI, cryptojunks_contract_address);
+			$scope.allCryptoJunks = [];
+			getCryptoJunksSupply();
+			getAllCryptoJunksByPage($scope.pageId);
+
+			function getCryptoJunksSupply() {
+				const contract = new web3.eth.Contract(cryptojunks_ABI, cryptojunks_contract_address);
 				contract.methods.totalSupply().call(function (err1, result1) {
 					if (err1) {
 						console.log(err1);
 					} else {
-						var balance = result1.toString();
-						$scope.countCryptoJunks = balance || "0";
+						const supply = result1.toString();
+						$scope.countCryptoJunks = supply || "0";
 						$scope.$apply(); // inform the data updates !
 
-						for (var i = 0; i < balance; i++) {
-							var token_name = "CryptoJunks";
-							contract.methods.tokenByIndex(i).call(function (err2, result2) {
-								if (err2) {
-									console.log(err2);
-								} else {
-									var token_id = result2.toString();
-									//var tag = token_name + ' #' + token_id;
-									contract.methods.tokenURI(token_id).call(function (err3, result3) {
-										if (err3) {
-											console.log(err3);
-										} else {
-											var tokenURI = result3;
-											var tokenInfo = parseTokenURI(tokenURI);
-											$scope.allCryptoJunks.push({'id': token_id, 'tokenInfo': tokenInfo});
-											$scope.$apply(); // inform the data updates !
-										}
-									});
-								}
-							});
-						}
 					}
 				});
 			}
 
+			function getAllCryptoJunksByPage(pageId) {
+				$scope.allCryptoJunks = [];
+
+				const contract = new web3.eth.Contract(cryptojunks_ABI, cryptojunks_contract_address);
+
+				const length = 100; //100 junks per page
+				const begin = pageId * length;
+
+				for (var i = 0; i < length; i++) {
+					const tokenId = begin + i;
+					contract.methods.tokenURI(tokenId).call(function (e2, tokenURI) {
+						if (e2) {
+							console.log('token not exists: ' + e2);
+							$scope.allCryptoJunks.splice(i, 0, {'id': tokenId, 'tokenInfo': undefined});
+							$scope.$apply(); // inform the data updates !
+						} else {
+							var tokenInfo = parseTokenURI(tokenURI);
+
+							if (tokenInfo.image == 'data:image/png;base64,')
+								tokenInfo = undefined; //not exists
+
+							$scope.allCryptoJunks.splice(i, 0, {'id': tokenId, 'tokenInfo': tokenInfo});
+							$scope.$apply(); // inform the data updates !
+						}
+					})
+				}
+			}
+
 		};
+
 
 		$scope.init();
 
