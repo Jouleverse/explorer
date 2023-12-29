@@ -56,6 +56,8 @@
 				, 
 				FlyingJ: {{countFlyingJ || "统计中..."}}
 				,
+				CryptoJunks: {{countCryptoJunks || "统计中..."}}
+				,
 				JNSDAO V: {{countJNSDAOV || "统计中..."}}
 				<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == addressId.toLowerCase() ? 'inline-block' : 'none' }">
 					<button ng-click="register()"><font style="color:#c647ba">登记npub公钥</font></button>
@@ -82,6 +84,16 @@
 		<tr data-ng-repeat="i2 in allJTI">
 		  <td>{{i2.tag}}</td>
 		  <td><image height="24px" src="{{i2.tokenInfo.image}}" style="filter:invert(5%) sepia(75%) saturate(7378%) hue-rotate(45deg) brightness(114%) contrast(112%);"></image></td>
+		</tr>
+		<tr data-ng-if="countCryptoJunks > 0">
+		  <td>CryptoJunks</td>
+		  <td><span data-ng-repeat="cj in allCryptoJunks">
+				  <div style="float:left; margin-left:1px;">
+					  <div style="background-color: #638596;"><image alt="{{cj.tokenInfo.name}}" height="64px" style="margin:0 2px 2px 0; image-rendering: pixelated;" src="{{cj.tokenInfo.image}}"></image></div>
+					<div style="text-align:center">#{{cj.id}}</div>
+				  </div>
+			  </span>
+		  </td>
 		</tr>
 		<tr data-ng-if="countJNSVote > 0">
 		  <td>JNSVote POAP</td>

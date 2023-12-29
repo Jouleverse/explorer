@@ -140,4 +140,5 @@ TODO:
 2023.12.29
 - new: tools/contractx增加支持CryptoJunks
 - fix: tools/contractx disable Value inputs
-
+- fix: rpc 8502 (需要rpc防火墙开端口，方便本地调试)
+- new: profile页面支持CryptoJunks显示

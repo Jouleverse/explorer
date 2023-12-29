@@ -45,7 +45,8 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
 	    	var protocol = location.protocol;
 			//var hostname = 'localhost';
 			var hostname = 'rpc.jnsdao.com'; //'j.blockcoach.com'; //location.hostname; // FIXME manual fix
-			var port = (hostname == 'localhost' || hostname == '127.0.0.1')? 8501 : (protocol == 'http:' ? 8502 : 8503); //XXX yuanma rpc, geth:8501, nginx:8502, nginx-https:8503
+			var port = protocol == 'http:' ? 8502 : 8503;
+			//var port = (hostname == 'localhost' || hostname == '127.0.0.1')? 8501 : (protocol == 'http:' ? 8502 : 8503); //XXX yuanma rpc, geth:8501, nginx:8502, nginx-https:8503
 	        //var eth_node_url = protocol + '//' + hostname + ':' + port; // adaptive to http & https
 	        var eth_node_url = '//' + hostname + ':' + port; // 使用相对协议，在https页面混合http请求？
 
