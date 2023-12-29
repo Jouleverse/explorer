@@ -143,3 +143,4 @@ TODO:
 - fix: rpc 8502 (需要rpc防火墙开端口，方便本地调试)
 - new: profile页面支持CryptoJunks显示
 - fix: 删除页面输入地址和私钥，改为提示信息
+- fix: footer
