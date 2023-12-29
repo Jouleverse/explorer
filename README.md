@@ -137,3 +137,7 @@ TODO:
 - improve: tools/contractx增加 合约地址 显示和链接到explorer
 - improve: tools/contractx增加 节点PoS（多签）
 
+2023.12.29
+- new: tools/contractx增加支持CryptoJunks
+- fix: tools/contractx disable Value inputs
+
