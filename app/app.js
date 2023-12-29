@@ -24,6 +24,10 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
                 templateUrl: 'views/addressInfo.html',
                 controller: 'addressInfoCtrl'
             }).
+            when('/cryptojunks', {
+                templateUrl: 'views/junksInfo.html',
+                controller: 'junksInfoCtrl'
+            }).
             when('/jns/:jnsId', {
                 templateUrl: 'views/jnsInfo.html',
                 controller: 'jnsInfoCtrl'
