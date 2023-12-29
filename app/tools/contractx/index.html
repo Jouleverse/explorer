@@ -26,7 +26,7 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-4">Network ID</div>
-                        <div class="col-sm-8"><span id="network-id">N/A</span></div>
+						<div class="col-sm-8"><span id="network-id"><font color="red">N/A</font></span></div>
                     </div>
                     <div class="row">
                         <div class="col-sm-4">Gas Limit</div>
@@ -43,14 +43,20 @@
             <div class="card wallet-custom">
                 <div class="card-header">Wallet</div>
                 <div class="card-body">
-                    <div class="mb-3">
+					请确认以下设置正确：
+					<ol>
+						<li>已安装MetaMask小狐狸钱包插件</li>
+						<li>添加并切换到Jouleverse网络（左边Network ID显示为3666）<br/>——区块链浏览器首页下方一键添加</li>
+						<li>正确连接钱包地址（左边User Wallet显示正确的钱包地址）<br/>——刷新本页面，小狐狸弹出连接确认界面</li>
+					</ol>
+                    <!--div class="mb-3">
                         <label class="form-label">Address</label>
-                        <input type="text" class="form-control" id="user-wallet-address" placeholder="0x...">
+                        <input disabled type="text" class="form-control" id="user-wallet-address" placeholder="0x...">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Private Key</label>
-                        <input type="text" class="form-control" id="user-private-key" placeholder="">
-                    </div>
+                        <input disabled type="text" class="form-control" id="user-private-key" placeholder="">
+                    </div-->
                 </div>
             </div>
         </div>
@@ -1981,9 +1987,10 @@ window.addEventListener('load', async () => await init());
 
 // when the content of the field user-wallet-address changes then it is going to update
 // the span element "user-wallet"
-document.getElementById('user-wallet-address').addEventListener('input', e => {
+//Jouleverse
+/*document.getElementById('user-wallet-address').addEventListener('input', e => {
     UI.setInnerHtml('user-wallet', e.target.value);
-});
+});*/
 
 /**
  * Initialize the objects and UI for interacting with the blockchain.
