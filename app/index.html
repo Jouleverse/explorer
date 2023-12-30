@@ -87,6 +87,7 @@
 
 					if (__accounts.length > 0) { // 有账户
 						var addr = __accounts[0];
+						$("#connAddrFooter")[0].innerHTML = 'wallet connected: ' + addr;
 						$("#connAddr")[0].innerHTML = addr.substr(0,6) + '...' + addr.substr(-4);
 						$("#connLink").attr('onclick', '');
 						$("#connLink").attr('href', '/address/' + addr);
@@ -100,22 +101,25 @@
 						});
 
 					} else { // 没有账户
+						$("#connAddrFooter")[0].innerHTML = 'wallet disconnected';
 						$("#connAddr")[0].innerHTML = '连接账户';
 						$("#connLink").attr('onclick', 'connect()');
 						$("#connLink").attr('href', '');
 					}
 
 				} else { // 未知网络
+					$("#connAddrFooter")[0].innerHTML = 'wallet disconnected';
 					$("#connAddr")[0].innerHTML = '未知网络';
 					$("#connNet")[0].innerHTML = parseInt(__chainId, 16);
 					$("#connLink").attr('onclick', 'switchNetwork()');
 					$("#connLink").attr('href', '');
 				}
 			} else { // 没有网络
+				$("#connAddrFooter")[0].innerHTML = 'wallet disconnected';
 				$("#connAddr")[0].innerHTML = '';
 				$("#connNet")[0].innerHTML = '?'; // no web3 found
 				$("#connLink").attr('onclick', '');
-				$("#connLink").attr('href', 'https://jnsdao.com/docs/joule-basics/wallet-rpc');
+				$("#connLink").attr('href', 'https://chainlist.org/chain/3666');
 			}
 
 		}
@@ -430,7 +434,9 @@
         <hr>
         <p>
 		<!--a href="http://blockcoach.com">blockcoach</a> open-sourced. no warranty. -->
-		open source. no warranty.
+		<span id="connAddrFooter"></span>
+		<br/>
+		<span>open source. no warranty.</span>
         </p>
     </footer>
 </div>
