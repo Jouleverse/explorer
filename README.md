@@ -151,5 +151,6 @@ TODO:
 - fix: /cryptojunks 打坏的图片，固定宽高，保证排版正确
 - improve: 在页面底部显示当前已连接的钱包地址，以方便手机版用户检查是否连接了正确的钱包
 - improve: [?] 跳转到chainlist.org:3666
+- improve: 【登记npub公钥】按钮文案缩短为【npub】
 
 
