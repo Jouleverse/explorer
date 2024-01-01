@@ -89,8 +89,9 @@
 		  <td>CryptoJunks</td>
 		  <td><span data-ng-repeat="cj in allCryptoJunks">
 				  <div style="float:left; margin-left:1px;">
-					  <div style="background-color: #638596;"><image alt="{{cj.tokenInfo.name}}" height="64px" style="margin:0 2px 2px 0; image-rendering: pixelated;" src="{{cj.tokenInfo.image}}"></image></div>
-					<div style="text-align:center">#{{cj.id}}</div>
+					  <div data-ng-if="cj.tokenInfo != undefined" style="background-color: #638596;"><span style="display:inline-block;width:64px;height:64px;margin:0 2px 2px 0;"><image alt="{{cj.tokenInfo.name}}" height="64px" style="image-rendering: pixelated;" src="{{cj.tokenInfo.image}}"></image></span></div>
+					  <div data-ng-if="cj.tokenInfo == undefined" style="background-color: #638596;"><span style="display:inline-block;width:64px;height:64px;margin:0 2px 2px 0;">空</span></div>
+					  <div style="text-align:center">#{{cj.id}}</div>
 				  </div>
 			  </span>
 		  </td>

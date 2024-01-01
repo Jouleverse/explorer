@@ -153,4 +153,6 @@ TODO:
 - improve: [?] 跳转到chainlist.org:3666
 - improve: 【登记npub公钥】按钮文案缩短为【npub】
 
+2024.1.1
+- fix: broken junks display in profile page should keep in square
 
