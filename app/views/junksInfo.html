@@ -16,8 +16,12 @@
 							<span data-ng-if="i != pageId"><a href="/cryptojunks/page/{{i}}">{{i+1}} </a></span>
 						</span></td>
 				</tr>
+				<tr ng-style="{ 'display': countCryptoJunks > 0 ? 'none' : 'inline-block' }">
+					<td>loading junks... please be patient...</td>
+				</tr>
 				<tr data-ng-if="countCryptoJunks > 0">
-					<td><span data-ng-repeat="cj in allCryptoJunks">
+					<td>
+						<span data-ng-repeat="cj in allCryptoJunks">
 							<div style="float:left; margin-left:1px;">
 								<div id="frame{{cj.id}}" data-ng-if="cj.tokenInfo != undefined" style="background-color: #638596;"><span style="display:inline-block;width:64px;height:64px;margin:0 2px 2px 0;"><image id="junk{{cj.id}}" alt="{{cj.tokenInfo.name}}" height="64px" style="image-rendering: pixelated;" src="{{cj.tokenInfo.image}}"></image></span></div>
 								<div data-ng-if="cj.tokenInfo == undefined" style="background-color: #638596;"><span style="display:inline-block;width:64px;height:64px;margin:0 2px 2px 0;">空</span></div>

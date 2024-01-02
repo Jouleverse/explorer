@@ -13,24 +13,41 @@ angular.module('ethExplorer')
 		$scope.init = function()
 		{
 			if ($routeParams.pageId) {
+				// /#/cryptojunks/:pageId/id/:junkId
+				// /#/cryptojunks/:pageId
 				$scope.pageId = $routeParams.pageId;
 			} else {
+				// /#/cryptojunks
 				$scope.pageId = 0;
 			}
 			console.log('cryptojunks page ' + $scope.pageId);
 
+			if ($routeParams.junkId) {
+				// /#/cryptojunks/:pageId/id/:junkId
+				$scope.junkId = $routeParams.junkId;
+			} else {
+				// /#/cryptojunks/:pageId
+				// /#/cryptojunks
+				$scope.junkId = undefined;
+			}
+			console.log('cryptojunks junk #' + $scope.junkId);
+
+			// page list
 			$scope.allPages = [];
 			for (var i = 0; i < 100; i++) {
 				$scope.allPages.push(i);
 			}
 
+			// punk list
 			$scope.allCryptoJunks = [];
+			// get total supply & rendering
 			getCryptoJunksSupply();
 
+			// dynamically load reference for tagging the golden inscriptions
 			$.get('scripts/misc/punks/' + $scope.pageId + '.json')
 			.success((data) => { //won't execute if json format error!
 				console.log(data);
-				getAllCryptoJunksByPage($scope.pageId, data);
+				getAllCryptoJunksByPage($scope.pageId, $scope.junkId, data);
 			})
 			.fail((xhr, status, err) => {
 				console.log(xhr, status, err);
@@ -54,7 +71,7 @@ angular.module('ethExplorer')
 				});
 			}
 
-			function getAllCryptoJunksByPage(pageId, references) {
+			function getAllCryptoJunksByPage(pageId, junkId, references) {
 				$scope.allCryptoJunks = [];
 
 				const contract = new web3.eth.Contract(cryptojunks_ABI, cryptojunks_contract_address);
@@ -62,8 +79,7 @@ angular.module('ethExplorer')
 				const length = 100; //100 junks per page
 				const begin = pageId * length;
 
-				for (var i = 0; i < length; i++) {
-					const tokenId = begin + i;
+				function getCryptoJunkById(tokenId) {
 					contract.methods.tokenURI(tokenId).call(function (e2, tokenURI) {
 						if (e2) {
 							console.log('token not exists: ' + e2);
@@ -88,6 +104,17 @@ angular.module('ethExplorer')
 							$scope.$apply(); // inform the data updates !
 						}
 					})
+
+				}
+
+				if (junkId == undefined) { // not specified, show all
+					for (var i = 0; i < length; i++) {
+						const tokenId = begin + i;
+						getCryptoJunkById(tokenId);
+					}
+				} else {
+					const tokenId = junkId;
+					getCryptoJunkById(tokenId);
 				}
 			}
 

@@ -403,7 +403,7 @@ angular.module('ethExplorer')
 										} else {
 											var tokenURI = result3;
 											var tokenInfo = parseTokenURI(tokenURI);
-											$scope.allCryptoJunks.push({'id': token_id, 'tokenInfo': tokenInfo});
+											$scope.allCryptoJunks.push({'id': token_id, 'pageId': Math.floor(token_id/100), 'tokenInfo': tokenInfo});
 											$scope.$apply(); // inform the data updates !
 										}
 									});

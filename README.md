@@ -158,4 +158,7 @@ TODO:
 
 2024.1.2
 - improve: /cryptojunks 增加“金色铭文”标记
+- new: /cryptojunks 鉴赏功能增加 单独的铭文页 e.g. /page/10/id/1002
+- improve: profile page 给cryptojunks增加了链接，直接跳转到对应铭文页，方便快速检查自己持仓是否是金色铭文
+- improve: /cryptopunks 全加载前 提示 loading... ，告知用户耐心等待数据加载
 

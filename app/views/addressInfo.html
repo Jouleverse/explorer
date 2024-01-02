@@ -86,12 +86,12 @@
 		  <td><image height="24px" src="{{i2.tokenInfo.image}}" style="filter:invert(5%) sepia(75%) saturate(7378%) hue-rotate(45deg) brightness(114%) contrast(112%);"></image></td>
 		</tr>
 		<tr data-ng-if="countCryptoJunks > 0">
-		  <td>CryptoJunks</td>
+		  <td><a href="/#/cryptojunks">CryptoJunks</a></td>
 		  <td><span data-ng-repeat="cj in allCryptoJunks">
 				  <div style="float:left; margin-left:1px;">
 					  <div data-ng-if="cj.tokenInfo != undefined" style="background-color: #638596;"><span style="display:inline-block;width:64px;height:64px;margin:0 2px 2px 0;"><image alt="{{cj.tokenInfo.name}}" height="64px" style="image-rendering: pixelated;" src="{{cj.tokenInfo.image}}"></image></span></div>
 					  <div data-ng-if="cj.tokenInfo == undefined" style="background-color: #638596;"><span style="display:inline-block;width:64px;height:64px;margin:0 2px 2px 0;">空</span></div>
-					  <div style="text-align:center">#{{cj.id}}</div>
+					  <div style="text-align:center"><a href="/#/cryptojunks/page/{{cj.pageId}}/id/{{cj.id}}">#{{cj.id}}</a></div>
 				  </div>
 			  </span>
 		  </td>
