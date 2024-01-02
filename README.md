@@ -156,3 +156,6 @@ TODO:
 2024.1.1
 - fix: broken junks display in profile page should keep in square
 
+2024.1.2
+- improve: /cryptojunks 增加“金色铭文”标记
+

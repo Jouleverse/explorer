@@ -26,7 +26,19 @@ angular.module('ethExplorer')
 
 			$scope.allCryptoJunks = [];
 			getCryptoJunksSupply();
-			getAllCryptoJunksByPage($scope.pageId);
+
+			$.get('scripts/misc/punks/' + $scope.pageId + '.json')
+			.success((data) => { //won't execute if json format error!
+				console.log(data);
+				getAllCryptoJunksByPage($scope.pageId, data);
+			})
+			.fail((xhr, status, err) => {
+				console.log(xhr, status, err);
+				getAllCryptoJunksByPage($scope.pageId);
+			})
+			.always(() => {
+				console.log('loading ', $scope.pageId + '.json ...');
+			});
 
 			function getCryptoJunksSupply() {
 				const contract = new web3.eth.Contract(cryptojunks_ABI, cryptojunks_contract_address);
@@ -42,7 +54,7 @@ angular.module('ethExplorer')
 				});
 			}
 
-			function getAllCryptoJunksByPage(pageId) {
+			function getAllCryptoJunksByPage(pageId, references) {
 				$scope.allCryptoJunks = [];
 
 				const contract = new web3.eth.Contract(cryptojunks_ABI, cryptojunks_contract_address);
@@ -59,6 +71,15 @@ angular.module('ethExplorer')
 							$scope.$apply(); // inform the data updates !
 						} else {
 							var tokenInfo = parseTokenURI(tokenURI);
+
+							if (references == undefined) {
+								tokenInfo.golden = undefined;
+							} else {
+								if (tokenInfo.image.slice(22) == references[tokenId]) //is punk! set it golden
+									tokenInfo.golden = true;
+								else
+									tokenInfo.golden = false;
+							}
 
 							if (tokenInfo.image == 'data:image/png;base64,')
 								tokenInfo = undefined; //not exists
