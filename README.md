@@ -162,3 +162,6 @@ TODO:
 - improve: profile page 给cryptojunks增加了链接，直接跳转到对应铭文页，方便快速检查自己持仓是否是金色铭文
 - improve: /cryptopunks 全加载前 提示 loading... ，告知用户耐心等待数据加载
 
+2024.1.6
+- improve: /cryptojunks 鉴定页，打坏的灰色铭文，除编号标灰外，背景色也改为棕红色，以示区分
+
