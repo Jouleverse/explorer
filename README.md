@@ -170,4 +170,5 @@ TODO:
 - new: profile 个人地址页也可以打金标（金色铭文标记）/坏标——只有打完不能burn之后才能做到
 - new: profile页 & 鉴定页 头像右上角增加稀缺度标志：传奇(<= 9)；绝品(<= 24)；珍品(<= 88)。
 - improve: /cryptojunks 增加 金标/灰标 注释
+- new: statistics on 鉴定页
 
