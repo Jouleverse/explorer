@@ -9,7 +9,6 @@
             <tbody>
 				<tr>
 					<td>Current supply: {{countCryptoJunks}}. Supply limit: 10000. Sealed: {{ countCryptoJunks && countCryptoJunks == 10000 ? 'set in stone' : 'not yet' }}.
-						(<span style="background-color:#ffd700">金标</span>: 良品, <span style="background-color:#cccccc">灰标</span>: 打坏; 👑: Legend/传奇, 💎: Rare/绝品, 🌟: Precious/珍品)
 					</td>
 				</tr>
 				<tr>
@@ -50,6 +49,12 @@
     </div>
 
 	<div style="text-align:center">
+		<div style="margin: 5px auto 5px auto">
+			<span>annotations</span>
+			<div><span style="background-color:#ffd700">金标</span>: 良品, <span style="background-color:#cccccc">灰标</span>: 打坏; 👑: legend/传奇, 💎: rare/绝品, 🌟: precious/珍品</div>
+		</div>
+
+		<div>
 		<span>statistics</span>
 		<table class="stats">
 			<tr>
@@ -85,6 +90,8 @@
 				<td>10000</td>
 			</tr>
 		</table>
+		</div>
+
 	</div>
 
 </div>
