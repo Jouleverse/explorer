@@ -43,8 +43,9 @@ angular.module('ethExplorer')
 			// get total supply & rendering
 			getCryptoJunksSupply();
 
+			// DONOT DELETE. THIS WAS USED FOR INCOMPLETE INSCRIBING GOLDEN RECOGONITION.
 			// dynamically load reference for tagging the golden inscriptions
-			$.get('scripts/misc/punks/' + $scope.pageId + '.json')
+			/*$.get('scripts/misc/punks/' + $scope.pageId + '.json')
 			.success((data) => { //won't execute if json format error!
 				console.log(data);
 				getAllCryptoJunksByPage($scope.pageId, $scope.junkId, data);
@@ -55,7 +56,21 @@ angular.module('ethExplorer')
 			})
 			.always(() => {
 				console.log('loading ', $scope.pageId + '.json ...');
-			});
+			});*/
+			// dynamically load reference for tagging gold inscriptions
+			// only works while all 10000 junks are inscribed and set in stone (no change anymore)
+			$.get('scripts/misc/punks/golden_idx.json')
+				.success((data) => {
+					console.log(data);
+					getAllCryptoJunksByPage($scope.pageId, $scope.junkId, data);
+				})
+				.fail((xhr, status, err) => {
+					console.log(xhr, status, err);
+					getAllCryptoJunksByPage($scope.pageId);
+				})
+				.always(() => {
+					console.log('loading golden_idx.json ...');
+				});
 
 			function getCryptoJunksSupply() {
 				const contract = new web3.eth.Contract(cryptojunks_ABI, cryptojunks_contract_address);
@@ -88,13 +103,40 @@ angular.module('ethExplorer')
 						} else {
 							var tokenInfo = parseTokenURI(tokenURI);
 
-							if (references == undefined) {
+							// DONOT DELETE. OLD references: punk img base64. must do str comparison for user may burn and re-mint.
+							/*if (references == undefined) {
 								tokenInfo.golden = undefined;
 							} else {
 								if (tokenInfo.image.slice(22) == references[tokenId]) //is punk! set it golden
 									tokenInfo.golden = true;
 								else
 									tokenInfo.golden = false;
+							}*/
+							// new reference data after set in stone is golden_idx
+							const token_id = tokenId;
+							const golden_idx = references;
+							if (golden_idx != undefined) {
+								const is_golden = golden_idx['golden'];
+								const legend_idx = golden_idx['alien'];
+								const rare_idx = golden_idx['ape'];
+								const precious_idx = golden_idx['zombie'];
+
+								if (is_golden[token_id] == '1') 
+									tokenInfo.golden = true;
+								else
+									tokenInfo.golden = false;
+
+								id = parseInt(token_id);
+								if (legend_idx.indexOf(id) > -1) 
+									tokenInfo.rarity = 'legend';
+								else if (rare_idx.indexOf(id) > -1)
+									tokenInfo.rarity = 'rare';
+								else if (precious_idx.indexOf(id) > -1)
+									tokenInfo.rarity = 'precious';
+								else 
+									tokenInfo.rarity = 'normal';
+
+								//console.log(token_id, tokenInfo.golden, tokenInfo.rarity);
 							}
 
 							if (tokenInfo.image == 'data:image/png;base64,')

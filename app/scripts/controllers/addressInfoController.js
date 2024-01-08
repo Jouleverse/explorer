@@ -219,7 +219,20 @@ angular.module('ethExplorer')
 				
 				if (shouldGetAddressNS) getAddressNS();
 
-				getAllCryptoJunks();
+				// dynamically load reference for tagging gold inscriptions
+				// only works while all 10000 junks are inscribed and set in stone (no change anymore)
+				$.get('scripts/misc/punks/golden_idx.json')
+				.success((data) => {
+					console.log(data);
+					getAllCryptoJunks(data);
+				})
+				.fail((xhr, status, err) => {
+					console.log(xhr, status, err);
+					getAllCryptoJunks(undefined);
+				})
+				.always(() => {
+					console.log('loading golden_idx.json ...');
+				});
 
 				getJNSDAOV();
 				getAllJNS();
@@ -379,7 +392,7 @@ angular.module('ethExplorer')
 				});
 			}
 
-			function getAllCryptoJunks() {
+			function getAllCryptoJunks(golden_idx) {
 				$scope.allCryptoJunks = [];
 				var addr = $scope.addressId;
 				var contract = new web3.eth.Contract(cryptojunks_ABI, cryptojunks_contract_address);
@@ -399,10 +412,38 @@ angular.module('ethExplorer')
 									//var tag = token_name + ' #' + token_id;
 									contract.methods.tokenURI(token_id).call(function (err3, result3) {
 										if (err3) {
-											console.log(err3);
+											console.log(err3, token_id, result3);
 										} else {
 											var tokenURI = result3;
 											var tokenInfo = parseTokenURI(tokenURI);
+
+											// if we have reference data
+											if (golden_idx != undefined) {
+
+												const is_golden = golden_idx['golden'];
+												const legend_idx = golden_idx['alien'];
+												const rare_idx = golden_idx['ape'];
+												const precious_idx = golden_idx['zombie'];
+
+												if (is_golden[token_id] == '1') 
+													tokenInfo.golden = true;
+												else
+													tokenInfo.golden = false;
+
+												id = parseInt(token_id);
+												if (legend_idx.indexOf(id) > -1) 
+													tokenInfo.rarity = 'legend';
+												else if (rare_idx.indexOf(id) > -1)
+													tokenInfo.rarity = 'rare';
+												else if (precious_idx.indexOf(id) > -1)
+													tokenInfo.rarity = 'precious';
+												else 
+													tokenInfo.rarity = 'normal';
+
+												console.log(token_id, tokenInfo.rarity);
+
+											}
+
 											$scope.allCryptoJunks.push({'id': token_id, 'pageId': Math.floor(token_id/100), 'tokenInfo': tokenInfo});
 											$scope.$apply(); // inform the data updates !
 										}
