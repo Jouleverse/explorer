@@ -30,7 +30,7 @@
         <tbody>
         <tr>
 			<td><b>能量余额：</b></td>
-			<td>{{balanceInEther || "计算中..."}} J (焦耳)，即 {{balance || "计算中..."}} e (能量单位)</td>
+			<td>{{balanceInEther || "-"}} J (焦耳)，即 {{balance || "-"}} e (能量单位)</td>
         </tr>
         <tr>
 			<td><b>数字资产：</b></td>
@@ -38,7 +38,7 @@
         </tr>
         <tr>
             <td>Wrapped Joule</td>
-            <td>{{wjBalanceInJoule || "计算中..."}} wJ
+            <td>{{wjBalanceInJoule || "-"}} wJ
 				<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == addressId.toLowerCase() ? 'inline-block' : 'none' }">
 					<span ng-style="{ 'display': wjBalance > 0 ? 'inline-block':'none'}">
 						<button ng-click="wjUnwrapDialog()"><font style="color:#0023ed">unwrap</font></button>
@@ -49,26 +49,23 @@
         <tr>
 			<td><b>藏品和徽章：</b></td>
 			<td>
-				JTI: {{countJTI || "统计中..."}} 
+				JTI: {{countJTI || "-"}} 
 				<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == jtiContractOwner.toLowerCase() ? 'inline-block' : 'none' }">
 					<button ng-click="star()">⭐️</button>
 				</span>
-				, 
-				FlyingJ: {{countFlyingJ || "统计中..."}}
-				,
-				CryptoJunks: {{countCryptoJunks || "统计中..."}}
-				,
-				JNSDAO V: {{countJNSDAOV || "统计中..."}}
-				<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == addressId.toLowerCase() ? 'inline-block' : 'none' }">
-					<button ng-click="register()"><font style="color:#c647ba">npub</font></button>
-				</span>
-				, 
-				JNS: {{countJNS || "统计中..."}}
+				<span ng-style="{ 'display': countFlyingJ > 0 ? 'inline-block' : 'none' }">, FlyingJ: {{countFlyingJ}}</span>
+				<span ng-style="{ 'display': countCryptoJunks > 0 ? 'inline-block' : 'none' }">, CryptoJunks: {{countCryptoJunks}}</span>
+				<span ng-style="{ 'display': countJNS > 0 ? 'inline-block' : 'none' }">, JNS: {{countJNS}}</span>
 				<!--span ng-style="{ 'display': chainId == '0xe52' && account == jnsContractOwner ? 'inline-block' : 'none' }">
 					<button ng-click="mint()">🔨</button>
 				</span-->
-				,
-				JNSVote POAP: {{countJNSVote || "统计中..."}}
+				<span ng-style="{ 'display': countJNSVote > 0 ? 'inline-block' : 'none' }">, JNSVote POAP: {{countJNSVote}}</span>
+				<span ng-style="{ 'display': countJNSDAOV > 0 ? 'inline-block' : 'none' }">
+					, JNSDAO V: {{countJNSDAOV || "统计中..."}}
+					<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == addressId.toLowerCase() ? 'inline-block' : 'none' }">
+						<button ng-click="register()"><font style="color:#c647ba">npub</font></button>
+					</span>
+				</span>
 			</td>
         </tr>
 		<tr data-ng-repeat="i5 in allJNSDAOV">

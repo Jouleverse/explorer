@@ -234,9 +234,11 @@ angular.module('ethExplorer')
 					console.log('loading golden_idx.json ...');
 				});
 
-				getJNSDAOV();
-				getAllJNS();
-				getAllJNSVote();
+				// JNS -> JNSDAOV, JNSVote, etc.
+				getAllJNS().then(() => {
+					getJNSDAOV();
+					getAllJNSVote();
+				});
 			}
 
 			function getAddressInfos(){
@@ -512,6 +514,8 @@ angular.module('ethExplorer')
 			}
 
 			function getAllJNS() {
+				var deferred = $q.defer();
+
 				$scope.allJNS = [];
 				var addr = $scope.addressId;
 				var contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
@@ -542,6 +546,9 @@ angular.module('ethExplorer')
 								}
 							});
 						}
+
+						if (balance > 0)
+							deferred.resolve();
 					}
 				});
 
@@ -553,6 +560,9 @@ angular.module('ethExplorer')
 					console.log('[addressInfo] chainId: ', $scope.chainId, 'account: ', $scope.account, 'jnsContractOwner: ', $scope.jnsContractOwner);
 					$scope.$apply();
 				});
+
+
+				return deferred.promise;
 			}
 
 			function getAllJNSVote() {

@@ -1,6 +1,6 @@
-# 元码链区块浏览器
+# Jouleverse区块链浏览器
 
-由blockcoach.com curated，基于etherparty/explorer。
+由blockcoach curated，基于etherparty/explorer。
 
 ## Original License
 
@@ -174,4 +174,6 @@ TODO:
 
 2024.1.9
 - improve: refine some texts
+- improve: DID profile页，藏品列表，如果没有，隐藏之。优化显示。而且JNS如果没有，则不会再加载JNSDAOV和JNSVote，节省网络开销。
+
 
