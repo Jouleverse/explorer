@@ -175,5 +175,6 @@ TODO:
 2024.1.9
 - improve: refine some texts
 - improve: DID profile页，藏品列表，如果没有，隐藏之。优化显示。而且JNS如果没有，则不会再加载JNSDAOV和JNSVote，节省网络开销。
+- improve: 1. unwrap对话框：1.1 优化文案 1.2 扩大输入框 1.3 增加勾选是否保留输入框内容选项；2. 增加二次确认对话框，进行再次确认，避免误操作；3. 改进表述，对扣减WJ释放J进行更准确表达。
 
 

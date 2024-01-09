@@ -125,11 +125,27 @@ angular.module('ethExplorer')
 			$('#dialog-unwrap-wjoule').modal('show');
 		}
 
+		$scope.wjUnwrapToConfirm = function () {
+			const amt = $('#wj-unwrap-amount')[0].value;
+			const to = $('#wj-unwrap-to')[0].value;
+			const save_info = $('#wj-unwrap-save-info')[0].checked;
+			console.log('wjUnwrapTo', amt, to, save_info);
+
+			$('#confirm-unwrap-wj-from').text($scope.addressId);
+			$('#confirm-unwrap-wj-amount').text(amt ? amt : '0');
+			$('#confirm-unwrap-wj-amount2').text(amt ? amt : '0');
+			$('#confirm-unwrap-wj-to').text(to ? to : $scope.addressId);
+
+			$('#dialog-unwrap-wjoule-confirm').modal({keyboard:false, backdrop:'static'});
+			$('#dialog-unwrap-wjoule-confirm').modal('show');
+		}
+
 		$scope.wjUnwrapTo = function () {
 			const DIALOG_TITLE = 'Unwrap wJ';
 			const amt = $('#wj-unwrap-amount')[0].value;
 			const to = $('#wj-unwrap-to')[0].value;
-			console.log('wjUnwrapTo', amt, to);
+			const save_info = $('#wj-unwrap-save-info')[0].checked;
+			console.log('wjUnwrapTo', amt, to, save_info);
 			
 			if (amt && !isNaN(amt)) { // isNaN works, nice.
 				if (!(amt > 0)) {
@@ -148,6 +164,11 @@ angular.module('ethExplorer')
 								wj_contract.methods.withdraw(e)
 									.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
 									.then(handlerShowRct(DIALOG_TITLE));
+
+								if (!save_info) {
+									$('#wj-unwrap-amount')[0].value = '';
+									$('#wj-unwrap-to')[0].value = '';
+								}
 							} else {
 								dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
 							}
@@ -158,6 +179,11 @@ angular.module('ethExplorer')
 								wj_contract.methods.withdrawTo(to, e)
 									.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
 									.then(handlerShowRct(DIALOG_TITLE));
+
+								if (!save_info) {
+									$('#wj-unwrap-amount')[0].value = '';
+									$('#wj-unwrap-to')[0].value = '';
+								}
 							} else {
 								dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
 							}
