@@ -9,13 +9,15 @@ GPL (see LICENSE)
 ## Develop
 
 前置准备：
-- 运行本地geth节点，配置rpc服务（且允许CORS）监听127.0.0.1:8501
+- 安装bower
+
+<!-- 运行本地geth节点，配置rpc服务（且允许CORS）监听127.0.0.1:8501 -->
 
 开始：
-1. git clone the repo.
-2. ./serve.sh
-3. 浏览器打开 http://localhost:8000
-
+1. git clone the repo
+2. bower install安装依赖包
+3. ./serve.sh [A] 或者 http-server app/ [B]
+3. 浏览器打开 http://localhost:8000 [A] 或者 :8080 [B]
 
 ## Change Log
 
@@ -39,7 +41,7 @@ TODO:
 1. 在区块信息插入clique的signer信息（以取代miner）
 2. searchbox遗留问题：无法区分搜索 交易 和 区块哈希（都是0x...且无法通过长度区分？）
 
-...更多histroy待参考git log补充...
+...更多history待参考git log补充...
 
 2023.2.7
 - fix bug: +紫V输入npub地址后不能弹出metamask
@@ -180,3 +182,5 @@ TODO:
 2024.1.10
 - improve: rpc_service hostname自动取主机域名
 - new: 新增错版铭文专页 1001-1003
+- fix: fix some links lacking of '/#' prefix
+
