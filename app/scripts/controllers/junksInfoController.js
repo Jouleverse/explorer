@@ -38,6 +38,9 @@ angular.module('ethExplorer')
 				$scope.allPages.push(i);
 			}
 
+			// ONLY AFTER SEALED: special pages 1000 - 1002 for broken ones (total: 299)
+			$scope.allPages.push(1000, 1001, 1002)
+
 			// punk list
 			$scope.allCryptoJunks = [];
 			// get total supply & rendering
@@ -91,9 +94,31 @@ angular.module('ethExplorer')
 
 				const contract = new web3.eth.Contract(cryptojunks_ABI, cryptojunks_contract_address);
 
+				// calculate which junks to show
 				const length = 100; //100 junks per page
-				const begin = pageId * length;
+				var junkIds = [];
 
+				if (pageId < 100) { // normal #0 - #9999
+					const begin = pageId * length;
+
+					for (var i = 0; i < length; i++) {
+						const tokenId = begin + i;
+						junkIds.push(tokenId);
+					}
+				} else if (pageId >= 1000 && pageId < 1003) { // special pages for broken
+					const golden_idx = references;
+					const broken_idx = golden_idx['broken'];
+
+					const begin = (pageId - 1000) * length;
+
+					for (var i = 0; i < length; i++) {
+						const tokenId = broken_idx[begin + i];
+						junkIds.push(tokenId);
+					}
+				}
+				console.log(junkIds);
+
+				// helper func
 				function getCryptoJunkById(tokenId) {
 					contract.methods.tokenURI(tokenId).call(function (e2, tokenURI) {
 						if (e2) {
@@ -150,11 +175,11 @@ angular.module('ethExplorer')
 				}
 
 				if (junkId == undefined) { // not specified, show all
-					for (var i = 0; i < length; i++) {
-						const tokenId = begin + i;
+					for (const i in junkIds) {
+						const tokenId = junkIds[i];
 						getCryptoJunkById(tokenId);
 					}
-				} else {
+				} else { // specified junkId, show only one
 					const tokenId = junkId;
 					getCryptoJunkById(tokenId);
 				}
