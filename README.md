@@ -186,4 +186,5 @@ TODO:
 
 2024.1.11
 - new: add JNS contract to tools/contractx
+- new: 新手加油 按钮。前置条件：1. 获得JTI认证；2. 地址gas余额为零。新手找组长给他加油。
 

@@ -140,17 +140,44 @@ angular.module('ethExplorer')
 			$('#dialog-unwrap-wjoule-confirm').modal('show');
 		}
 
+		// 新手加油
+		$scope.wjUnwrapToNewbie = function () {
+			$scope.chainId = window.ethereum ? window.ethereum.chainId : '';
+			$scope.account = window.ethereum ? window.ethereum.selectedAddress : '';
+
+			if ($scope.account) { // if having connected account
+				const from = $scope.account;
+				const to = $scope.addressId;
+				const amt = '0.005';
+				console.log('wjUnwrapTo', from, amt, to);
+
+				$('#wj-unwrap-amount').val(amt); // set value, instead of innerText
+				$('#wj-unwrap-to').val(to);
+				$('#wj-unwrap-save-info').prop('checked', false);
+				$('#wj-unwrap-check-balance').prop('checked', false); // don't check newbie's WJ balance
+
+				$('#confirm-unwrap-wj-from').text(from); // set innerText for human reading
+				$('#confirm-unwrap-wj-amount').text(amt ? amt : '0');
+				$('#confirm-unwrap-wj-amount2').text(amt ? amt : '0');
+				$('#confirm-unwrap-wj-to').text(to);
+
+				$('#dialog-unwrap-wjoule-confirm').modal({keyboard:false, backdrop:'static'});
+				$('#dialog-unwrap-wjoule-confirm').modal('show');
+			}
+		}
+		
 		$scope.wjUnwrapTo = function () {
 			const DIALOG_TITLE = 'Unwrap wJ';
 			const amt = $('#wj-unwrap-amount')[0].value;
 			const to = $('#wj-unwrap-to')[0].value;
 			const save_info = $('#wj-unwrap-save-info')[0].checked;
-			console.log('wjUnwrapTo', amt, to, save_info);
+			const check_balance = $('#wj-unwrap-check-balance')[0].checked;
+			console.log('wjUnwrapTo', amt, to, save_info, check_balance);
 			
 			if (amt && !isNaN(amt)) { // isNaN works, nice.
 				if (!(amt > 0)) {
 					dialogShowTxt(DIALOG_TITLE, "错误：wJ数量必须大于0");
-				} else if (!(parseFloat(amt) < parseFloat($scope.wjBalanceInJoule))) {
+				} else if (check_balance && !(parseFloat(amt) < parseFloat($scope.wjBalanceInJoule))) {
 					dialogShowTxt(DIALOG_TITLE, "错误：wJ数量 " + amt + " 不能超过持有量 " + $scope.wjBalanceInJoule);
 				} else if (window.ethereum && window.ethereum.isConnected()) {
 					web3.setProvider(window.ethereum);
@@ -199,6 +226,7 @@ angular.module('ethExplorer')
 			}
 
 		};
+
 
 		//////////////////////////////////////////////////////////////////////////////
 		// read functionalities in page scope                                       //
@@ -468,7 +496,7 @@ angular.module('ethExplorer')
 												else 
 													tokenInfo.rarity = 'normal';
 
-												console.log(token_id, tokenInfo.rarity);
+												//console.log(token_id, tokenInfo.rarity);
 
 											}
 

@@ -30,7 +30,7 @@
         <tbody>
         <tr>
 			<td><b>能量余额：</b></td>
-			<td>{{balanceInEther || "-"}} J (焦耳)，即 {{balance || "-"}} e (能量单位)</td>
+			<td>{{balanceInEther || "-"}} Joule (焦耳)，即 {{balance || "-"}} energy (能量)</td>
         </tr>
         <tr>
 			<td><b>数字资产：</b></td>
@@ -80,7 +80,12 @@
 		</tr>
 		<tr data-ng-repeat="i2 in allJTI">
 		  <td>{{i2.tag}}</td>
-		  <td><image height="24px" src="{{i2.tokenInfo.image}}" style="filter:invert(5%) sepia(75%) saturate(7378%) hue-rotate(45deg) brightness(114%) contrast(112%);"></image></td>
+		  <td>
+			  <image height="24px" src="{{i2.tokenInfo.image}}" style="filter:invert(5%) sepia(75%) saturate(7378%) hue-rotate(45deg) brightness(114%) contrast(112%);"></image>
+			  <span ng-style="{ 'display': balance == 0 && account ? 'inline-block' : 'none' }">
+				  <button ng-click="wjUnwrapToNewbie()"><font style="color:#ae4c4c">新手加油 0.005 J</font></button>
+			  </span>
+		  </td>
 		</tr>
 		<tr data-ng-if="countCryptoJunks > 0">
 		  <td><a href="/#/cryptojunks">CryptoJunks</a></td>
@@ -117,7 +122,7 @@
 		</tr>
         </tbody>
     </table>
-	<small>* 注：J（焦耳）是能量单位。定义 1 J = 1 Ee（E能量）= 10^9 Ge（G能量）= 10^18 e，即 1,000,000,000,000,000,000 e（能量）。</small>
+	<small>* 注：J, Joule（焦耳）是能量单位。定义 1 J = 1 Ee（E能量）= 10^9 Ge（G能量）= 10^18 e，即 1,000,000,000,000,000,000 energy（能量）。</small>
 </div>
 
   <!-- dialog for input to unwrap wJoule -->
@@ -143,6 +148,10 @@
 							</div>
 							<div style="float:right;margin-top:10px;">
 								<input type="checkbox" checked id="wj-unwrap-save-info"><font color="black">点击确定后不清空输入框</font></input>
+							</div>
+							<div style="display:none">
+								<!-- hidden. used for not checking WJ balance (of this address) when 新手加油-->
+								<input type="checkbox" checked id="wj-unwrap-check-balance"></input>
 							</div>
 						</div>
 					</code>
