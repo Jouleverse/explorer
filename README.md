@@ -184,3 +184,6 @@ TODO:
 - new: 新增错版铭文专页 1001-1003
 - fix: fix some links lacking of '/#' prefix
 
+2024.1.11
+- new: add JNS contract to tools/contractx
+
