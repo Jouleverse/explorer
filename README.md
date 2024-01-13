@@ -188,3 +188,7 @@ TODO:
 - new: add JNS contract to tools/contractx
 - new: 新手加油 按钮。前置条件：1. 获得JTI认证；2. 地址gas余额为零。新手找组长给他加油。
 - remove: 旧版本空投 0.017 J 入口
+
+2024.1.13
+- new: /cryptojunks 鉴定页 增加 三类稀缺款 专页
+

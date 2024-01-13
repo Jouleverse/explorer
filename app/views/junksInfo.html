@@ -13,10 +13,14 @@
 				</tr>
 				<tr>
 					<td>Page: <span data-ng-repeat="i in allPages">
-							<span data-ng-if="i > 100">(</span>
+							<span data-ng-if="i > 100 && i < 10000">(</span>
+							<span data-ng-if="i >= 10000">[</span>
 							<span data-ng-if="i == pageId"><font size="5em">{{i+1}}</font></span>
 							<span data-ng-if="i != pageId"><a href="/#/cryptojunks/page/{{i}}">{{i+1}} </a></span>
-							<span data-ng-if="i > 100">)</span>
+							<span data-ng-if="i > 100 && i < 10000">💔)</span>
+							<span data-ng-if="i == 10000">🌟]</span>
+							<span data-ng-if="i == 100000">💎]</span>
+							<span data-ng-if="i == 1000000">👑]</span>
 						</span></td>
 				</tr>
 				<tr ng-style="{ 'display': countCryptoJunks > 0 ? 'none' : 'inline-block' }">

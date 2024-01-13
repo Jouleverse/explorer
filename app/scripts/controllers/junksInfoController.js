@@ -40,6 +40,12 @@ angular.module('ethExplorer')
 
 			// ONLY AFTER SEALED: special pages 1000 - 1002 for broken ones (total: 299)
 			$scope.allPages.push(1000, 1001, 1002)
+			// precious 88
+			$scope.allPages.push(10000)
+			// rare 24
+			$scope.allPages.push(100000)
+			// legend 9
+			$scope.allPages.push(1000000)
 
 			// punk list
 			$scope.allCryptoJunks = [];
@@ -110,6 +116,36 @@ angular.module('ethExplorer')
 					const broken_idx = golden_idx['broken'];
 
 					const begin = (pageId - 1000) * length;
+
+					for (var i = 0; i < length; i++) {
+						const tokenId = broken_idx[begin + i];
+						junkIds.push(tokenId);
+					}
+				} else if (pageId == 10000) { // special pages for precious
+					const golden_idx = references;
+					const broken_idx = golden_idx['zombie'];
+
+					const begin = (pageId - 10000) * length;
+
+					for (var i = 0; i < length; i++) {
+						const tokenId = broken_idx[begin + i];
+						junkIds.push(tokenId);
+					}
+				} else if (pageId == 100000) { // special pages for rare
+					const golden_idx = references;
+					const broken_idx = golden_idx['ape'];
+
+					const begin = (pageId - 100000) * length;
+
+					for (var i = 0; i < length; i++) {
+						const tokenId = broken_idx[begin + i];
+						junkIds.push(tokenId);
+					}
+				} else if (pageId == 1000000) { // special pages for rare
+					const golden_idx = references;
+					const broken_idx = golden_idx['alien'];
+
+					const begin = (pageId - 1000000) * length;
 
 					for (var i = 0; i < length; i++) {
 						const tokenId = broken_idx[begin + i];
