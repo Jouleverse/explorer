@@ -1,33 +1,50 @@
 <div class="container" style="padding-top: 50px;">
 
     <h1>链上红包
-        <small>查看红包信息</small>
+        <small>
+			<span data-ng-if="redpacketId == undefined">
+				创建红包
+			</span>
+			<span data-ng-if="redpacketId !== undefined">
+				抢红包
+			</span>
+		</small>
     </h1>
 
     <div id="redpacket-97785883" class="redpacketdiv">
         <table class="table table-striped" cellpadding="0" cellspacing="0" style="padding:0px;float:left;margin:0px;width:100%">
             <tbody>
             <tr>
-				<th colspan="3" align="left">
-					<span data-ng-if="redpacketId == undefined">
-						创建红包
-					</span>
-					<span data-ng-if="redpacketId !== undefined">
-						抢红包
-					</span>
-				</th>
-            </tr>
-			<tr>
-				<td>红包编号</td>
-				<td>
+				<th colspan="2" align="left">
+					红包编号：
 					<span data-ng-if="redpacketId == undefined">
 						TODO: 自动生成随机Id填充
 					</span>
 					<span data-ng-if="redpacketId !== undefined">
 						{{ redpacketId }}
 					</span>
-				</td>
+				</th>
+            </tr>
+            <tr>
+                <td>说明</td>
+				<td>Joule红包需要持有wJ (wrapped Joule)才可以创建。首先指定红包大小（不超过2000 J）和红包个数（不超过500个），授权扣除wJ，创建红包。将红包链接通过社交网络传播，拥有JTI认证的地址可以抢红包，每个地址每个红包限抢一次。</td>
+            </tr>
+            <tr>
+                <td>红包大小</td>
+				<td><input></input>J (不超过2000 J)</td>
+            </tr>
+            <tr>
+                <td>红包个数</td>
+				<td><input></input>个 (不超过500个)</td>
+            </tr>
+			<tr>
+                <td nowrap>授权扣除wJ</td>
+				<td><button>授权wJ</button></td>
 			</tr>
+            <tr>
+                <td>创建红包</td>
+                <td></td>
+            </tr>
             </tbody>
         </table>
     </div>
