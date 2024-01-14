@@ -1,0 +1,103 @@
+<div class="container" style="padding-top: 50px;">
+
+    <h1>CryptoJunks
+        <small>所有已上链的Junk铭文</small>
+    </h1>
+
+    <div id="junks-97785883" class="junksdiv">
+        <table class="table table-striped" cellpadding="0" cellspacing="0" style="padding:0px;float:left;margin:0px;width:100%">
+            <tbody>
+				<tr>
+					<td>Current supply: {{countCryptoJunks}}. Supply limit: 10000. Sealed: {{ countCryptoJunks && countCryptoJunks == 10000 ? 'set in stone' : 'not yet' }}.
+					</td>
+				</tr>
+				<tr>
+					<td>Page: <span data-ng-repeat="i in allPages">
+							<span data-ng-if="i > 100 && i < 10000">(</span>
+							<span data-ng-if="i >= 10000">[</span>
+							<span data-ng-if="i == pageId"><font size="5em">{{i+1}}</font></span>
+							<span data-ng-if="i != pageId"><a href="/#/cryptojunks/page/{{i}}">{{i+1}} </a></span>
+							<span data-ng-if="i > 100 && i < 10000">💔)</span>
+							<span data-ng-if="i == 10000">🌟]</span>
+							<span data-ng-if="i == 100000">💎]</span>
+							<span data-ng-if="i == 1000000">👑]</span>
+						</span></td>
+				</tr>
+				<tr ng-style="{ 'display': countCryptoJunks > 0 ? 'none' : 'inline-block' }">
+					<td>loading junks... please be patient...</td>
+				</tr>
+				<tr data-ng-if="countCryptoJunks > 0">
+					<td>
+						<span data-ng-repeat="cj in allCryptoJunks">
+							<div style="float:left; margin-left:1px;">
+								<div id="frame{{cj.id}}" style="position:relative" data-ng-if="cj.tokenInfo != undefined" ng-style="{ 'background-color': cj.tokenInfo.golden == undefined ? '#638596' : cj.tokenInfo.golden == true ? '#638596' : '#95554f' }">
+									<div style="position:absolute;top:0;right:2px;">
+										<span data-ng-if="cj.tokenInfo.rarity == 'legend'">👑</span>
+										<span data-ng-if="cj.tokenInfo.rarity == 'rare'">💎</span>
+										<span data-ng-if="cj.tokenInfo.rarity == 'precious'">🌟</span>
+									</div>
+									<div>
+										<span style="display:inline-block;width:64px;height:64px;margin:0 2px 2px 0;"><image id="junk{{cj.id}}" alt="{{cj.tokenInfo.name}}" height="64px" style="image-rendering: pixelated;" src="{{cj.tokenInfo.image}}"></image></span>
+									</div>
+								</div>
+								<div data-ng-if="cj.tokenInfo == undefined" style="background-color: #638596;"><span style="display:inline-block;width:64px;height:64px;margin:0 2px 2px 0;">空</span></div>
+								<div style="text-align:center">
+									<span ng-style="{ 'background-color': cj.tokenInfo.golden == undefined ? 'default' : cj.tokenInfo.golden == true ? '#ffd700' : '#cccccc' }">
+										#{{cj.id}}
+									</span>
+								</div>
+							</div>
+						</span>
+					</td>
+				</tr>
+            </tbody>
+        </table>
+    </div>
+
+	<div style="text-align:center">
+		<div style="margin: 5px auto 5px auto">
+			<span><b>annotations 标注</b></span>
+			<div><span style="background-color:#ffd700">金标</span>: good/良品, <span style="background-color:#cccccc">灰标</span>: broken/打坏; 👑: legend/传奇, 💎: rare/绝品, 🌟: precious/珍品</div>
+		</div>
+
+		<div>
+		<span><b>statistics 统计</b></span>
+		<table class="stats">
+			<tr>
+				<td></td>
+				<td>legend</td>
+				<td>rare</td>
+				<td>precious</td>
+				<td>normal</td>
+				<td>sum</td>
+			</tr>
+			<tr>
+				<td>good</td>
+				<td>9</td>
+				<td>24</td>
+				<td>88</td>
+				<td>9580</td>
+				<td>9701</td>
+			</tr>
+			<tr>
+				<td>broken</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>299</td>
+				<td>299</td>
+			</tr>
+			<tr>
+				<td>total</td>
+				<td>9</td>
+				<td>24</td>
+				<td>88</td>
+				<td>9879</td>
+				<td>10000</td>
+			</tr>
+		</table>
+		</div>
+
+	</div>
+
+</div>

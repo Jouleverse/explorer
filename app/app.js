@@ -24,6 +24,18 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
                 templateUrl: 'views/addressInfo.html',
                 controller: 'addressInfoCtrl'
             }).
+            when('/cryptojunks', {
+                templateUrl: 'views/junksInfo.html',
+                controller: 'junksInfoCtrl'
+            }).
+            when('/cryptojunks/page/:pageId', {
+                templateUrl: 'views/junksInfo.html',
+                controller: 'junksInfoCtrl'
+            }).
+            when('/cryptojunks/page/:pageId/id/:junkId', {
+                templateUrl: 'views/junksInfo.html',
+                controller: 'junksInfoCtrl'
+            }).
             when('/jns/:jnsId', {
                 templateUrl: 'views/jnsInfo.html',
                 controller: 'jnsInfoCtrl'
@@ -42,12 +54,22 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
     .run(function($rootScope) {
         var web3 = new Web3();
 
-	    	var protocol = location.protocol;
+	    	const protocol = location.protocol;
+			const hostname = location.hostname;
+			var rpc_service;
+			if (hostname == 'localhost') {
+				rpc_service = 'rpc.jnsdao.com'; // for dev
+			} else {
+				rpc_service = hostname.replace('jscan', 'rpc'); // jscan to use corresponding rpc, e.g. jscan.jnsdao.com -> rpc.jnsdao.com
+			}
 			//var hostname = 'localhost';
-			var hostname = 'rpc.jnsdao.com'; //'j.blockcoach.com'; //location.hostname; // FIXME manual fix
-			var port = (hostname == 'localhost' || hostname == '127.0.0.1')? 8501 : (protocol == 'http:' ? 8502 : 8503); //XXX yuanma rpc, geth:8501, nginx:8502, nginx-https:8503
+			//var hostname = 'rpc.liujiaolian.com';
+			//var hostname = 'rpc.jnsdao.com'; //location.hostname; // FIXME manual fix
+			var port = protocol == 'http:' ? 8502 : 8503;
+			rpc_service += ':' + port;
+			//var port = (hostname == 'localhost' || hostname == '127.0.0.1')? 8501 : (protocol == 'http:' ? 8502 : 8503); //XXX yuanma rpc, geth:8501, nginx:8502, nginx-https:8503
 	        //var eth_node_url = protocol + '//' + hostname + ':' + port; // adaptive to http & https
-	        var eth_node_url = '//' + hostname + ':' + port; // 使用相对协议，在https页面混合http请求？
+	        var eth_node_url = '//' + rpc_service; // 使用相对协议，在https页面混合http请求？
 
 		web3.setProvider(new web3.providers.HttpProvider(eth_node_url));
         $rootScope.web3 = web3;

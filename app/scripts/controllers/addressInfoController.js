@@ -125,16 +125,59 @@ angular.module('ethExplorer')
 			$('#dialog-unwrap-wjoule').modal('show');
 		}
 
+		$scope.wjUnwrapToConfirm = function () {
+			const amt = $('#wj-unwrap-amount')[0].value;
+			const to = $('#wj-unwrap-to')[0].value;
+			const save_info = $('#wj-unwrap-save-info')[0].checked;
+			console.log('wjUnwrapTo', amt, to, save_info);
+
+			$('#confirm-unwrap-wj-from').text($scope.addressId);
+			$('#confirm-unwrap-wj-amount').text(amt ? amt : '0');
+			$('#confirm-unwrap-wj-amount2').text(amt ? amt : '0');
+			$('#confirm-unwrap-wj-to').text(to ? to : $scope.addressId);
+
+			$('#dialog-unwrap-wjoule-confirm').modal({keyboard:false, backdrop:'static'});
+			$('#dialog-unwrap-wjoule-confirm').modal('show');
+		}
+
+		// 新手加油
+		$scope.wjUnwrapToNewbie = function () {
+			$scope.chainId = window.ethereum ? window.ethereum.chainId : '';
+			$scope.account = window.ethereum ? window.ethereum.selectedAddress : '';
+
+			if ($scope.account) { // if having connected account
+				const from = $scope.account;
+				const to = $scope.addressId;
+				const amt = '0.005';
+				console.log('wjUnwrapTo', from, amt, to);
+
+				$('#wj-unwrap-amount').val(amt); // set value, instead of innerText
+				$('#wj-unwrap-to').val(to);
+				$('#wj-unwrap-save-info').prop('checked', false);
+				$('#wj-unwrap-check-balance').prop('checked', false); // don't check newbie's WJ balance
+
+				$('#confirm-unwrap-wj-from').text(from); // set innerText for human reading
+				$('#confirm-unwrap-wj-amount').text(amt ? amt : '0');
+				$('#confirm-unwrap-wj-amount2').text(amt ? amt : '0');
+				$('#confirm-unwrap-wj-to').text(to);
+
+				$('#dialog-unwrap-wjoule-confirm').modal({keyboard:false, backdrop:'static'});
+				$('#dialog-unwrap-wjoule-confirm').modal('show');
+			}
+		}
+		
 		$scope.wjUnwrapTo = function () {
 			const DIALOG_TITLE = 'Unwrap wJ';
 			const amt = $('#wj-unwrap-amount')[0].value;
 			const to = $('#wj-unwrap-to')[0].value;
-			console.log('wjUnwrapTo', amt, to);
+			const save_info = $('#wj-unwrap-save-info')[0].checked;
+			const check_balance = $('#wj-unwrap-check-balance')[0].checked;
+			console.log('wjUnwrapTo', amt, to, save_info, check_balance);
 			
 			if (amt && !isNaN(amt)) { // isNaN works, nice.
 				if (!(amt > 0)) {
 					dialogShowTxt(DIALOG_TITLE, "错误：wJ数量必须大于0");
-				} else if (!(parseFloat(amt) < parseFloat($scope.wjBalanceInJoule))) {
+				} else if (check_balance && !(parseFloat(amt) < parseFloat($scope.wjBalanceInJoule))) {
 					dialogShowTxt(DIALOG_TITLE, "错误：wJ数量 " + amt + " 不能超过持有量 " + $scope.wjBalanceInJoule);
 				} else if (window.ethereum && window.ethereum.isConnected()) {
 					web3.setProvider(window.ethereum);
@@ -148,6 +191,11 @@ angular.module('ethExplorer')
 								wj_contract.methods.withdraw(e)
 									.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
 									.then(handlerShowRct(DIALOG_TITLE));
+
+								if (!save_info) {
+									$('#wj-unwrap-amount')[0].value = '';
+									$('#wj-unwrap-to')[0].value = '';
+								}
 							} else {
 								dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
 							}
@@ -158,6 +206,11 @@ angular.module('ethExplorer')
 								wj_contract.methods.withdrawTo(to, e)
 									.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
 									.then(handlerShowRct(DIALOG_TITLE));
+
+								if (!save_info) {
+									$('#wj-unwrap-amount')[0].value = '';
+									$('#wj-unwrap-to')[0].value = '';
+								}
 							} else {
 								dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
 							}
@@ -173,6 +226,7 @@ angular.module('ethExplorer')
 			}
 
 		};
+
 
 		//////////////////////////////////////////////////////////////////////////////
 		// read functionalities in page scope                                       //
@@ -206,6 +260,7 @@ angular.module('ethExplorer')
 				});
 
 				// fix '统计中...'
+				$scope.allCryptoJunks = [];
 				$scope.allFlyingJ = [];
 				$scope.allJTI = [];
 				$scope.allJNS = [];
@@ -218,9 +273,26 @@ angular.module('ethExplorer')
 				
 				if (shouldGetAddressNS) getAddressNS();
 
-				getJNSDAOV();
-				getAllJNS();
-				getAllJNSVote();
+				// dynamically load reference for tagging gold inscriptions
+				// only works while all 10000 junks are inscribed and set in stone (no change anymore)
+				$.get('scripts/misc/punks/golden_idx.json')
+				.success((data) => {
+					console.log(data);
+					getAllCryptoJunks(data);
+				})
+				.fail((xhr, status, err) => {
+					console.log(xhr, status, err);
+					getAllCryptoJunks(undefined);
+				})
+				.always(() => {
+					console.log('loading golden_idx.json ...');
+				});
+
+				// JNS -> JNSDAOV, JNSVote, etc.
+				getAllJNS().then(() => {
+					getJNSDAOV();
+					getAllJNSVote();
+				});
 			}
 
 			function getAddressInfos(){
@@ -376,6 +448,69 @@ angular.module('ethExplorer')
 				});
 			}
 
+			function getAllCryptoJunks(golden_idx) {
+				$scope.allCryptoJunks = [];
+				var addr = $scope.addressId;
+				var contract = new web3.eth.Contract(cryptojunks_ABI, cryptojunks_contract_address);
+				contract.methods.balanceOf(addr).call(function (err1, result1) {
+					if (err1) {
+						console.log(err1);
+					} else {
+						var balance = result1.toString();
+						$scope.countCryptoJunks = balance || "0";
+						for (var i = 0; i < balance; i++) {
+							var token_name = "CryptoJunks";
+							contract.methods.tokenOfOwnerByIndex(addr, i).call(function (err2, result2) {
+								if (err2) {
+									console.log(err2);
+								} else {
+									var token_id = result2.toString();
+									//var tag = token_name + ' #' + token_id;
+									contract.methods.tokenURI(token_id).call(function (err3, result3) {
+										if (err3) {
+											console.log(err3, token_id, result3);
+										} else {
+											var tokenURI = result3;
+											var tokenInfo = parseTokenURI(tokenURI);
+
+											// if we have reference data
+											if (golden_idx != undefined) {
+
+												const is_golden = golden_idx['golden'];
+												const legend_idx = golden_idx['alien'];
+												const rare_idx = golden_idx['ape'];
+												const precious_idx = golden_idx['zombie'];
+
+												if (is_golden[token_id] == '1') 
+													tokenInfo.golden = true;
+												else
+													tokenInfo.golden = false;
+
+												id = parseInt(token_id);
+												if (legend_idx.indexOf(id) > -1) 
+													tokenInfo.rarity = 'legend';
+												else if (rare_idx.indexOf(id) > -1)
+													tokenInfo.rarity = 'rare';
+												else if (precious_idx.indexOf(id) > -1)
+													tokenInfo.rarity = 'precious';
+												else 
+													tokenInfo.rarity = 'normal';
+
+												//console.log(token_id, tokenInfo.rarity);
+
+											}
+
+											$scope.allCryptoJunks.push({'id': token_id, 'pageId': Math.floor(token_id/100), 'tokenInfo': tokenInfo});
+											$scope.$apply(); // inform the data updates !
+										}
+									});
+								}
+							});
+						}
+					}
+				});
+			}
+
 			function getAllFlyingJ() {
 				$scope.allFlyingJ = [];
 				var addr = $scope.addressId;
@@ -433,6 +568,8 @@ angular.module('ethExplorer')
 			}
 
 			function getAllJNS() {
+				var deferred = $q.defer();
+
 				$scope.allJNS = [];
 				var addr = $scope.addressId;
 				var contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
@@ -463,6 +600,9 @@ angular.module('ethExplorer')
 								}
 							});
 						}
+
+						if (balance > 0)
+							deferred.resolve();
 					}
 				});
 
@@ -474,6 +614,9 @@ angular.module('ethExplorer')
 					console.log('[addressInfo] chainId: ', $scope.chainId, 'account: ', $scope.account, 'jnsContractOwner: ', $scope.jnsContractOwner);
 					$scope.$apply();
 				});
+
+
+				return deferred.promise;
 			}
 
 			function getAllJNSVote() {

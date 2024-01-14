@@ -42,3 +42,18 @@
 .zoom:hover {
 	transform: scale(1.5);
 }
+
+.stats {
+	border: 1px solid;
+	margin: 3px auto 3px auto;
+}
+
+.stats tr {
+	border: 1px solid;
+}
+
+.stats td {
+	border: 1px solid;
+	padding: 0 3px 0 3px;
+}
+
