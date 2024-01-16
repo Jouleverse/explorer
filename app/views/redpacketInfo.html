@@ -27,22 +27,28 @@
             </tr>
             <tr>
                 <td>说明</td>
-				<td>Joule红包需要持有wJ (wrapped Joule)才可以创建。首先指定红包大小（不超过2000 J）和红包个数（不超过500个），授权扣除wJ，创建红包。将红包链接通过社交网络传播，拥有JTI认证的地址可以抢红包，每个地址每个红包限抢一次。</td>
+				<td data-ng-if="redpacketId == undefined">Joule红包需要持有wJ (wrapped Joule)才可以创建。首先指定红包大小（不超过2000 J）和红包个数（不超过500个），授权扣除wJ，创建红包。将红包链接通过社交网络传播，拥有JTI认证的地址可以抢红包，每个地址每个红包限抢一次。</td>
+                <td data-ng-if="redpacketId !== undefined">Joule红包需要持有J，并且JTI认证后才可以抢。请保证URL中的红包ID是正确的。</td>
             </tr>
-            <tr>
+            <tr data-ng-if="redpacketId == undefined">
                 <td>红包大小</td>
 				<td><input></input>J (不超过2000 J)</td>
             </tr>
-            <tr>
+            <tr data-ng-if="redpacketId !== undefined">
+                <td>幸运数字</td>
+				<td><input></input>(0 ~ 2^256-1 整数)</td>
+            </tr>
+            <tr data-ng-if="redpacketId == undefined">
                 <td>红包个数</td>
 				<td><input></input>个 (不超过500个)</td>
             </tr>
-			<tr>
+			<tr data-ng-if="redpacketId == undefined">
                 <td nowrap>授权扣除wJ</td>
 				<td><button>授权wJ</button></td>
 			</tr>
             <tr>
-                <td>创建红包</td>
+                <td data-ng-if="redpacketId == undefined"><button>创建红包</button></td>
+                <td data-ng-if="redpacketId !== undefined"><button>抢红包</button></td>
                 <td></td>
             </tr>
             </tbody>
