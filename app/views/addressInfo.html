@@ -55,16 +55,18 @@
 				</span>
 				<span ng-style="{ 'display': countFlyingJ > 0 ? 'inline-block' : 'none' }">, FlyingJ: {{countFlyingJ}}</span>
 				<span ng-style="{ 'display': countCryptoJunks > 0 ? 'inline-block' : 'none' }">, CryptoJunks: {{countCryptoJunks}}</span>
-				<span ng-style="{ 'display': countJNS > 0 ? 'inline-block' : 'none' }">, JNS: {{countJNS}}</span>
-				<!--span ng-style="{ 'display': chainId == '0xe52' && account == jnsContractOwner ? 'inline-block' : 'none' }">
-					<button ng-click="mint()">🔨</button>
-				</span-->
-				<span ng-style="{ 'display': countJNSVote > 0 ? 'inline-block' : 'none' }">, JNSVote POAP: {{countJNSVote}}</span>
-				<span ng-style="{ 'display': countJNSDAOV > 0 ? 'inline-block' : 'none' }">
-					, JNSDAO V: {{countJNSDAOV || "统计中..."}}
-					<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == addressId.toLowerCase() ? 'inline-block' : 'none' }">
-						<button ng-click="register()"><font style="color:#c647ba">npub</font></button>
-					</span>
+				<span ng-style="{ 'display': countJNS > 0 ? 'inline-block' : 'none' }">
+					<span>, JNS: {{countJNS}}</span>
+					<!--span ng-style="{ 'display': chainId == '0xe52' && account == jnsContractOwner ? 'inline-block' : 'none' }">
+						<button ng-click="mint()">🔨</button>
+						</span-->
+						<span>, JNSVote POAP: {{countJNSVote || "-"}}</span>
+						<span>
+							, JNSDAO V: {{countJNSDAOV || "-"}}
+							<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == addressId.toLowerCase() ? 'inline-block' : 'none' }">
+								<button ng-click="register()"><font style="color:#c647ba">npub</font></button>
+							</span>
+						</span>
 				</span>
 			</td>
         </tr>
