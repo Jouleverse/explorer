@@ -177,7 +177,7 @@
 						<h4 class="modal-title"><span id="">Unwrap wJ, 再次确认</span></h4>
                 </div></center>
                 <div class="modal-body">
-					<code>
+					<code style="color:#0000ff">
 						<div style="word-break:break-all;" id="">
 							将从地址：<span id="confirm-unwrap-wj-from"></span>
 							减少：<span id="confirm-unwrap-wj-amount"></span> wJ
@@ -185,7 +185,10 @@
 							释放到地址：<span id="confirm-unwrap-wj-to"></span>
 							作为gas使用。
 						</div>
-						<div style="float:right;">确认吗？</div>
+						<div style="color:#ff0000;font-weight:bold;margin:5px 0 5px 0">
+							警告：WJ释放为J的过程不可逆，释放的J不能移动、不能恢复，只能作为gas使用。
+						</div>
+						<div style="float:right;">确定吗？</div>
 					</code>
                 </div>
 				<div class="modal-footer">
