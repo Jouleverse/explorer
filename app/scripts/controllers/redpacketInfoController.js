@@ -36,8 +36,8 @@ angular.module('ethExplorer')
 				// TODO 抢红包
 
 			} else {
-				
 				// TODO 创建红包
+				$scope.newPacketId = web3.utils.randomHex(32).toString();
 			}
 
 
