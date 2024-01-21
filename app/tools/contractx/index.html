@@ -176,6 +176,7 @@ const contractDetailsJson = [
     },
     {
         "contractName": "CryptoJunks",
+				"contractSource": "source/cryptojunks.sol",
         "abi": abi_cryptojunks,
         "networks": {
             "3666": {
@@ -267,7 +268,8 @@ async function bootContracts(contractDetails) {
         await window.ethExp.loadContact(
             contractDetails[key].networks[netId].address, 
             contractDetails[key].abi, 
-            contractDetails[key].contractName
+            contractDetails[key].contractName,
+            contractDetails[key].contractSource,
         );
     }
 }
@@ -506,6 +508,12 @@ function addContractToDashboard(contract, active=false) {
     const cName = contract.contractName;
 	//Jouleverse
     const cAddress = contract.address;
+		const cSource = contract.contractSource;
+	  console.log(cName, cSource);
+	  var cSourceLink = "";
+	  if (cSource !== undefined) {
+			cSourceLink = '<a target="_blank" href="' + cSource + '">合约源码</a>✅';
+		}
 
     // adding a tab HTML element with the name of the smart contract
     document.getElementById('contracts-tab-nav').innerHTML += `
@@ -520,7 +528,7 @@ function addContractToDashboard(contract, active=false) {
     document.getElementById('contracts-tab-content').innerHTML += `
         <div class="tab-pane p-4 fade ${active ? 'active show' : ''} smart-contract-content" id="contract-tab-${cName}">
 			<h3 class="pb-3"><b>${cName}</b> <small>智能合约</small></h3>
-			<p><small>合约地址：<a target="_blank" href="https://jscan.jnsdao.com/address/${cAddress}">${cAddress}</a></small></p>
+		<p><small>合约地址：<a target="_blank" href="https://jscan.jnsdao.com/address/${cAddress}">${cAddress}</a> ${cSourceLink}</small></p>
             <div class="row">
                 <div class="col-md-4">
                     <div class="card">
@@ -889,11 +897,12 @@ class EthereumExplorer {
      * @param   {Object}  contractAbi      The ABI of the contract.
      * @param   {string}  contractName     The name of the contract, useful if you deal with more than one smart contract.
      */
-    loadContact(contractAddress, contractAbi, contractName='default') {
+    loadContact(contractAddress, contractAbi, contractName='default', contractSource) {
         this.contractDetails[contractName] = {};
         this.contractDetails[contractName].address = contractAddress;
         this.contractDetails[contractName].abi = contractAbi;
         this.contractDetails[contractName].contractName = contractName;
+        this.contractDetails[contractName].contractSource = contractSource;
 
         this.contracts[contractName] = new this.web3.eth.Contract(contractAbi, contractAddress);
     }
