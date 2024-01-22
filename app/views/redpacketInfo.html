@@ -18,7 +18,7 @@
 				<th colspan="2" align="left">
 					红包编号：
 					<span data-ng-if="redpacketId == undefined">
-						{{ newPacketId }}
+						{{ newpacketId }}
 					</span>
 					<span data-ng-if="redpacketId !== undefined">
 						{{ redpacketId }}
@@ -32,7 +32,7 @@
             </tr>
             <tr data-ng-if="redpacketId == undefined">
                 <td>红包大小</td>
-				<td><input></input>J (不超过2000 J)</td>
+				<td><input type="text" id="new-redpacket-amount"></input>J (不超过2000 J)</td>
             </tr>
             <tr data-ng-if="redpacketId !== undefined">
                 <td>幸运数字</td>
@@ -40,15 +40,15 @@
             </tr>
             <tr data-ng-if="redpacketId == undefined">
                 <td>红包个数</td>
-				<td><input></input>个 (不超过500个)</td>
+				<td><input type="text" id="new-redpacket-quantity"></input>个 (不超过500个)</td>
             </tr>
 			<tr data-ng-if="redpacketId == undefined">
                 <td nowrap>授权扣除wJ</td>
 				<td><button>授权wJ</button></td>
 			</tr>
             <tr>
-                <td data-ng-if="redpacketId == undefined"><button>创建红包</button></td>
-                <td data-ng-if="redpacketId !== undefined"><button>抢红包</button></td>
+                <td data-ng-if="redpacketId == undefined"><button ng-click="createRedPacket()">创建红包</button></td>
+                <td data-ng-if="redpacketId !== undefined"><button ng-click="openRedPacket()">抢红包</button></td>
                 <td></td>
             </tr>
             </tbody>

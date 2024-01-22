@@ -1,4 +1,4 @@
-var redpacket_contract_address = "0x"; // mainnet
+var redpacket_contract_address = "0x0dc46592ACf76e149B108BDe2E56D8429a2D6046"; // mainnet
 var redpacket_ABI = 
 	[
 		{

@@ -7,17 +7,60 @@ angular.module('ethExplorer')
 		// write functionalities in page scope                                      //
 		//////////////////////////////////////////////////////////////////////////////
 
-		$scope.createRedPacket = function (redpacketId) 
+		$scope.createRedPacket = function () 
 		{
 			const DIALOG_TITLE = '创建红包';
+			const newpacketId = $scope.newpacketId;
+			const amount = $('#new-redpacket-amount')[0].value;
+			const quantity = $('#new-redpacket-quantity')[0].value;
+			var inputError = '';
 
-			// TODO
+			console.log('Dialog title: ' + DIALOG_TITLE);
+			console.log('Packet ID: ' + newpacketId);
+			console.log('Packet amount: ' + amount);
+			console.log('Packet quantity: ' + quantity);
 			
+			// Input validation
+			if (parseFloat(amount) < 0 || parseFloat(amount) > 2000) {
+				inputError += '红包大小非法: 输入红包大小必须在0~2000J之间。';
+			}
+
+			if (parseFloat(quantity) < 0 || parseFloat(quantity) > 500) {
+				inputError += ' 红包个数非法: 输入红包个数必须在0~500之间。';
+			}
+
+			if (inputError.length > 0) {
+				dialogShowTxt(DIALOG_TITLE, inputError);
+				return;
+			}
+
+			if (window.ethereum && window.ethereum.isConnected()) {
+				web3.setProvider(window.ethereum);
+				const connectedAccount = window.ethereum.selectedAddress;
+				const redpacket_contract = new web3.eth.Contract(redpacket_ABI, redpacket_contract_address);
+
+				redpacket_contract.methods.create(newpacketId, quantity, amount).estimateGas({from: connectedAccount}, (err, gas) => {
+					if (!err) {
+						redpacket_contract.methods.create(newpacketId, quantity, amount)
+							.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
+							.then(handlerShowRct(DIALOG_TITLE));
+					} else {
+						dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
+					}
+				});
+			}
 		}
 
-		$scope.openRedPacket = function (redpacketId)
+		$scope.openRedPacket = function ()
 		{
 			const DIALOG_TITLE = '打开红包';
+			const redpacketId = $scope.redpacketId;
+
+			console.log('Dialog title: ' + DIALOG_TITLE);
+
+			if (redpacketId.substr(0, 2) !== '0x') {
+				dialogShowTxt(DIALOG_TITLE, '红包地址格式错误');
+			}
 
 			// TODO
 
@@ -36,8 +79,8 @@ angular.module('ethExplorer')
 				// TODO 抢红包
 
 			} else {
-				// TODO 创建红包
-				$scope.newPacketId = web3.utils.randomHex(32).toString();
+				// Random create new red packet Id
+				$scope.newpacketId = web3.utils.randomHex(32).toString();
 			}
 
 
