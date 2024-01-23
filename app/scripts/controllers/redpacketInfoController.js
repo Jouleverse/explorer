@@ -55,14 +55,42 @@ angular.module('ethExplorer')
 		{
 			const DIALOG_TITLE = '打开红包';
 			const redpacketId = $scope.redpacketId;
+			const luckynum = $('#open-redpacket-luckynum')[0].value;
+			var inputError = '';
 
 			console.log('Dialog title: ' + DIALOG_TITLE);
+			console.log('Packet ID: ' + redpacketId);
+			console.log('Lucky Number: ' + luckynum);
 
+			// Input validation
 			if (redpacketId.substr(0, 2) !== '0x') {
-				dialogShowTxt(DIALOG_TITLE, '红包地址格式错误');
+				inputError += '红包地址非法: 必须以0x开头。';
 			}
 
-			// TODO
+			if (!Number.isInteger(parseFloat(luckynum)) || parseFloat(luckynum) < 0 || parseFloat(luckynum) > 2 ** 256 - 1) {
+				inputError += '红包幸运数字非法: 必须是 0 ~ 2^256-1 之间的整数。';
+			}
+
+			if (inputError.length > 0) {
+				dialogShowTxt(DIALOG_TITLE, inputError);
+				return;
+			}
+
+			if (window.ethereum && window.ethereum.isConnected()) {
+				web3.setProvider(window.ethereum);
+				const connectedAccount = window.ethereum.selectedAddress;
+				const redpacket_contract = new web3.eth.Contract(redpacket_ABI, redpacket_contract_address);
+
+				redpacket_contract.methods.open(redpacketId, luckynum).estimateGas({from: connectedAccount}, (err, gas) => {
+					if (!err) {
+						redpacket_contract.methods.open(redpacketId, luckynum)
+							.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
+							.then(handlerShowRct(DIALOG_TITLE));
+					} else {
+						dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
+					}
+				});
+			}
 
 		}
 
