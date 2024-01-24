@@ -55,16 +55,18 @@
 				</span>
 				<span ng-style="{ 'display': countFlyingJ > 0 ? 'inline-block' : 'none' }">, FlyingJ: {{countFlyingJ}}</span>
 				<span ng-style="{ 'display': countCryptoJunks > 0 ? 'inline-block' : 'none' }">, CryptoJunks: {{countCryptoJunks}}</span>
-				<span ng-style="{ 'display': countJNS > 0 ? 'inline-block' : 'none' }">, JNS: {{countJNS}}</span>
-				<!--span ng-style="{ 'display': chainId == '0xe52' && account == jnsContractOwner ? 'inline-block' : 'none' }">
-					<button ng-click="mint()">🔨</button>
-				</span-->
-				<span ng-style="{ 'display': countJNSVote > 0 ? 'inline-block' : 'none' }">, JNSVote POAP: {{countJNSVote}}</span>
-				<span ng-style="{ 'display': countJNSDAOV > 0 ? 'inline-block' : 'none' }">
-					, JNSDAO V: {{countJNSDAOV || "统计中..."}}
-					<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == addressId.toLowerCase() ? 'inline-block' : 'none' }">
-						<button ng-click="register()"><font style="color:#c647ba">npub</font></button>
-					</span>
+				<span ng-style="{ 'display': countJNS > 0 ? 'inline-block' : 'none' }">
+					<span>, JNS: {{countJNS}}</span>
+					<!--span ng-style="{ 'display': chainId == '0xe52' && account == jnsContractOwner ? 'inline-block' : 'none' }">
+						<button ng-click="mint()">🔨</button>
+						</span-->
+						<span>, JNSVote POAP: {{countJNSVote || "-"}}</span>
+						<span>
+							, JNSDAO V: {{countJNSDAOV || "-"}}
+							<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == addressId.toLowerCase() ? 'inline-block' : 'none' }">
+								<button ng-click="register()"><font style="color:#c647ba">npub</font></button>
+							</span>
+						</span>
 				</span>
 			</td>
         </tr>
@@ -175,7 +177,7 @@
 						<h4 class="modal-title"><span id="">Unwrap wJ, 再次确认</span></h4>
                 </div></center>
                 <div class="modal-body">
-					<code>
+					<code style="color:#0000ff">
 						<div style="word-break:break-all;" id="">
 							将从地址：<span id="confirm-unwrap-wj-from"></span>
 							减少：<span id="confirm-unwrap-wj-amount"></span> wJ
@@ -183,7 +185,10 @@
 							释放到地址：<span id="confirm-unwrap-wj-to"></span>
 							作为gas使用。
 						</div>
-						<div style="float:right;">确认吗？</div>
+						<div style="color:#ff0000;font-weight:bold;margin:5px 0 5px 0">
+							警告：WJ释放为J的过程不可逆，释放的J不能移动、不能恢复，只能作为gas使用。
+						</div>
+						<div style="float:right;">确定吗？</div>
 					</code>
                 </div>
 				<div class="modal-footer">
