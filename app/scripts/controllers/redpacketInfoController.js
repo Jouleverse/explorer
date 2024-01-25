@@ -7,6 +7,57 @@ angular.module('ethExplorer')
 		// write functionalities in page scope                                      //
 		//////////////////////////////////////////////////////////////////////////////
 
+		$scope.wjApproveDialog = function ()
+		{
+			// Red packet contract address from contractx page
+			$scope.redPacketContractxAddr = '0x7fba9BB966189Db8C4fE33B7bf67Bfa24203c6AD';
+			$scope.redpacketAmount = $('#new-redpacket-amount')[0].value;
+
+			$('#dialog-approve-wjoule').modal({keyboard:false, backdrop:'static'});
+			$('#dialog-approve-wjoule').modal('show');
+		}
+
+		$scope.wjApproveConfirm = function (redPacketContractxAddr, redpacketAmount)
+		{
+			console.log('Approve redPacketContractxAddr: ' + redPacketContractxAddr);
+			console.log('Approve redpacketAmount: ' + redpacketAmount);
+
+			const DIALOG_TITLE = '授权WJ';
+			var inputError = '';
+
+			// Validate input
+			if (redPacketContractxAddr.substr(0, 2) !== '0x') {
+				inputError += '红包合约地址非法: 必须以0x开头。';
+			}
+
+			if (parseFloat(redpacketAmount) < 0 || parseFloat(redpacketAmount) > 2000) {
+				inputError += '授权红包大小非法: 授权红包大小必须在0~2000J之间。';
+			}
+
+			if (inputError.length > 0) {
+				dialogShowTxt(DIALOG_TITLE, inputError);
+				return;
+			}
+
+			if (window.ethereum && window.ethereum.isConnected()) {
+				web3.setProvider(window.ethereum);
+				const connectedAccount = window.ethereum.selectedAddress;
+
+				const e = web3.utils.toWei(redpacketAmount);
+				const wj_contract = new web3.eth.Contract(wj_ABI, wj_contract_address);
+
+				wj_contract.methods.approve(redPacketContractxAddr, e).estimateGas({from: connectedAccount}, (err, gas) => {
+					if (!err) {
+						wj_contract.methods.approve(redPacketContractxAddr, e)
+							.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
+							.then(handlerShowRct(DIALOG_TITLE));
+					} else {
+						dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
+					}
+				});
+			}
+		}
+
 		$scope.createRedPacket = function () 
 		{
 			const DIALOG_TITLE = '创建红包';
