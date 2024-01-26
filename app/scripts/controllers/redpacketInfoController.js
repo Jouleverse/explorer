@@ -30,8 +30,8 @@ angular.module('ethExplorer')
 				inputError += '红包合约地址非法: 必须以0x开头。';
 			}
 
-			if (parseFloat(redpacketAmount) < 0 || parseFloat(redpacketAmount) > 2000) {
-				inputError += '授权红包大小非法: 授权红包大小必须在0~2000J之间。';
+			if (Number.isNaN(parseFloat(redpacketAmount)) || parseFloat(redpacketAmount) < 0 || parseFloat(redpacketAmount) > 2000) {
+				inputError += '授权红包大小非法: 红包大小必须在0~2000J之间用于授权。';
 			}
 
 			if (inputError.length > 0) {
