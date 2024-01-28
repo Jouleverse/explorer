@@ -7,29 +7,23 @@ angular.module('ethExplorer')
 		// write functionalities in page scope                                      //
 		//////////////////////////////////////////////////////////////////////////////
 
-		$scope.wjApproveDialog = function ()
+		$scope.redpacketWjApproveDialog = function ()
 		{
-			// Red packet contract address from contractx page
-			$scope.redPacketContractxAddr = '0x7fba9BB966189Db8C4fE33B7bf67Bfa24203c6AD';
+			$scope.redPacketContractAddr = redpacket_contract_address;
 			$scope.redpacketAmount = $('#new-redpacket-amount')[0].value;
 
 			$('#dialog-approve-wjoule').modal({keyboard:false, backdrop:'static'});
 			$('#dialog-approve-wjoule').modal('show');
 		}
 
-		$scope.wjApproveConfirm = function (redPacketContractxAddr, redpacketAmount)
+		$scope.redPacketWjApproveConfirm = function (redpacketAmount)
 		{
-			console.log('Approve redPacketContractxAddr: ' + redPacketContractxAddr);
 			console.log('Approve redpacketAmount: ' + redpacketAmount);
 
-			const DIALOG_TITLE = '授权WJ';
+			const DIALOG_TITLE = '红包授权WJ';
 			var inputError = '';
 
 			// Validate input
-			if (redPacketContractxAddr.substr(0, 2) !== '0x') {
-				inputError += '红包合约地址非法: 必须以0x开头。';
-			}
-
 			if (Number.isNaN(parseFloat(redpacketAmount)) || parseFloat(redpacketAmount) < 0 || parseFloat(redpacketAmount) > 2000) {
 				inputError += '授权红包大小非法: 红包大小必须在0~2000J之间用于授权。';
 			}
@@ -46,9 +40,9 @@ angular.module('ethExplorer')
 				const e = web3.utils.toWei(redpacketAmount);
 				const wj_contract = new web3.eth.Contract(wj_ABI, wj_contract_address);
 
-				wj_contract.methods.approve(redPacketContractxAddr, e).estimateGas({from: connectedAccount}, (err, gas) => {
+				wj_contract.methods.approve(redpacket_contract_address, e).estimateGas({from: connectedAccount}, (err, gas) => {
 					if (!err) {
-						wj_contract.methods.approve(redPacketContractxAddr, e)
+						wj_contract.methods.approve(redpacket_contract_address, e)
 							.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
 							.then(handlerShowRct(DIALOG_TITLE));
 					} else {
@@ -154,9 +148,8 @@ angular.module('ethExplorer')
 			console.log($scope.redpacketId);
 
 			if ($scope.redpacketId !== undefined) {
-
-				// TODO 抢红包
-
+				// Random generate a (0 ~ 10000) luck number if users do not want to input one
+				$scope.preGenLuckyNum = Math.floor(Math.random() * 10001);
 			} else {
 				// Random create new red packet Id
 				$scope.newpacketId = web3.utils.randomHex(32).toString();
