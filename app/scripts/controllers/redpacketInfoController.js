@@ -25,7 +25,7 @@ angular.module('ethExplorer')
 
 			// Validate input
 			if (Number.isNaN(parseFloat(redpacketAmount)) || parseFloat(redpacketAmount) < 0 || parseFloat(redpacketAmount) > 2000) {
-				inputError += '授权红包大小非法: 红包大小必须在0~2000J之间用于授权。';
+				inputError += '授权红包大小非法: 红包大小必须在0~2000WJ之间用于授权。';
 			}
 
 			if (inputError.length > 0) {
@@ -37,7 +37,7 @@ angular.module('ethExplorer')
 				web3.setProvider(window.ethereum);
 				const connectedAccount = window.ethereum.selectedAddress;
 
-				const e = web3.utils.toWei(redpacketAmount);
+				const e = web3.utils.toWei(redpacketAmount, 'ether');
 				const wj_contract = new web3.eth.Contract(wj_ABI, wj_contract_address);
 
 				wj_contract.methods.approve(redpacket_contract_address, e).estimateGas({from: connectedAccount}, (err, gas) => {
@@ -67,7 +67,7 @@ angular.module('ethExplorer')
 			
 			// Input validation
 			if (parseFloat(amount) < 0 || parseFloat(amount) > 2000) {
-				inputError += '红包大小非法: 输入红包大小必须在0~2000J之间。';
+				inputError += '红包大小非法: 输入红包大小必须在0~2000WJ之间。';
 			}
 
 			if (parseFloat(quantity) < 0 || parseFloat(quantity) > 500) {
@@ -83,10 +83,11 @@ angular.module('ethExplorer')
 				web3.setProvider(window.ethereum);
 				const connectedAccount = window.ethereum.selectedAddress;
 				const redpacket_contract = new web3.eth.Contract(redpacket_ABI, redpacket_contract_address);
+				const redpacket_amount = web3.utils.toWei(amount, 'ether');
 
-				redpacket_contract.methods.create(newpacketId, quantity, amount).estimateGas({from: connectedAccount}, (err, gas) => {
+				redpacket_contract.methods.create(newpacketId, quantity, redpacket_amount).estimateGas({from: connectedAccount}, (err, gas) => {
 					if (!err) {
-						redpacket_contract.methods.create(newpacketId, quantity, amount)
+						redpacket_contract.methods.create(newpacketId, quantity, redpacket_amount)
 							.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
 							.then(handlerShowRct(DIALOG_TITLE));
 					} else {
@@ -150,16 +151,45 @@ angular.module('ethExplorer')
 			if ($scope.redpacketId !== undefined) {
 				// Random generate a (0 ~ 10000) luck number if users do not want to input one
 				$scope.preGenLuckyNum = Math.floor(Math.random() * 10001);
+				displayRedPacketInfo($scope.redpacketId);
 			} else {
 				// Random create new red packet Id
 				$scope.newpacketId = web3.utils.randomHex(32).toString();
 			}
 
+			function displayRedPacketInfo(redpacketId) {
+				getRedPacketInfo(redpacketId).then(function(redpacketInfo){
+					console.log('Redpacket address info: ' + redpacketInfo.creator.toString());
+					$scope.redpacketInfo_totalamt = redpacketInfo.total_e;
+					$scope.redpacketInfo_totaln = redpacketInfo.total_n;
+					$scope.redpacketInfo_leftamt = redpacketInfo.left_e;
+					$scope.redpacketInfo_leftn = redpacketInfo.left_n;
+				});
+			}
 
 			function getRedPacketInfo(redpacketId) {
 				var deferred = $q.defer();
+				var redpacket_contract = new web3.eth.Contract(redpacket_ABI, redpacket_contract_address);
+				redpacket_contract.methods.redpackets(redpacketId).call(function (err, redpacketInfo) {
+					if (!err) {
+						deferred.resolve({
+							created: redpacketInfo.created,
+							creator: redpacketInfo.creator,
+							expiry: redpacketInfo.expiry,
+							total_e: web3.utils.fromWei(redpacketInfo.total_e, 'ether'),
+							total_n: redpacketInfo.total_n,
+							left_e: web3.utils.fromWei(redpacketInfo.left_e, 'ether'),
+							left_n: redpacketInfo.left_n,
+							final_e: redpacketInfo.final_e,
+							final_n: redpacketInfo.final_n,
+							last_seed: redpacketInfo.last_seed,
+						});
+					} else {
+						deferred.reject(err);
+					}
+				});
 
-				// TODO
+				return deferred.promise;
 			}
 
 		};
