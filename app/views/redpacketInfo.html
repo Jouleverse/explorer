@@ -81,6 +81,25 @@
 
 	</div>
 
+    <div><br></div>
+
+    <div style="text-align:center" data-ng-if="redpacketId !== undefined">
+		<div>
+		<span><b>红包开启历史</b></span>
+		<table class="stats">
+			<tr>
+				<td>抢到的人</td>
+				<td>金额(WJ)</td>
+			</tr>
+            <tr data-ng-repeat="rhi in redPacketOpenHistoryList">
+				<td>{{ rhi.opener }}</td>
+				<td>{{ rhi.amount }}</td>
+			</tr>
+		</table>
+		</div>
+
+	</div>
+
 </div>
 
   <!-- dialog for approve wJoule -->

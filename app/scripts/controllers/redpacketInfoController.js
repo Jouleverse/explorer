@@ -164,6 +164,9 @@ angular.module('ethExplorer')
 					$scope.redpacketInfo_totaln = redpacketInfo.total_n;
 					$scope.redpacketInfo_leftamt = redpacketInfo.left_e;
 					$scope.redpacketInfo_leftn = redpacketInfo.left_n;
+
+					// Fill redpacket history info list here so we do not need to query redpacket info again.
+					displayRedpacketOpenHistory(redpacketId);
 				});
 			}
 
@@ -192,6 +195,37 @@ angular.module('ethExplorer')
 				return deferred.promise;
 			}
 
+			function displayRedpacketOpenHistory(redpacketId) {
+				// redpacket open history list
+				$scope.redPacketOpenHistoryList = [];
+				const packetOpenedMaxIdx = parseFloat($scope.redpacketInfo_totaln) - parseFloat($scope.redpacketInfo_leftn);
+				console.log('Redpacket open history max idx: ' + packetOpenedMaxIdx);
+
+				for (var i = 0; i < packetOpenedMaxIdx; i++) {
+					getSingleRedPacketOpenHistoryByIdx(redpacketId, i).then(function(openHistoryItem){
+						console.log('Redpacket address history opener: ' + openHistoryItem.opener.toString());
+						$scope.redPacketOpenHistoryList.push({'amount': web3.utils.fromWei(openHistoryItem.amount, 'ether'), 'opener': openHistoryItem.opener.substr(0, 6) + '...'});
+					});
+				}
+			}
+
+			function getSingleRedPacketOpenHistoryByIdx(redpacketId, idx) {
+				var deferred = $q.defer();
+				var redpacket_contract = new web3.eth.Contract(redpacket_ABI, redpacket_contract_address);
+				redpacket_contract.methods.inspect(redpacketId, idx).call(function (err, openHistoryItem) {
+					if (!err) {
+						deferred.resolve({
+							amount: openHistoryItem.e,
+							opener: openHistoryItem.opener,
+							block_height: openHistoryItem.block_height,
+						});
+					} else {
+						deferred.reject(err);
+					}
+				});
+
+				return deferred.promise;
+			}
 		};
 
 		$scope.init();
