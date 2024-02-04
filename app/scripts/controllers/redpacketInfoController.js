@@ -9,8 +9,8 @@ angular.module('ethExplorer')
 
 		$scope.redpacketWjApproveDialog = function ()
 		{
-			$scope.redPacketContractAddr = redpacket_contract_address;
 			$scope.redpacketAmount = $('#new-redpacket-amount')[0].value;
+			$('#approve-wj-to').text(redpacket_contract_address);
 
 			$('#dialog-approve-wjoule').modal({keyboard:false, backdrop:'static'});
 			$('#dialog-approve-wjoule').modal('show');
@@ -89,12 +89,34 @@ angular.module('ethExplorer')
 					if (!err) {
 						redpacket_contract.methods.create(newpacketId, quantity, redpacket_amount)
 							.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
-							.then(handlerShowRct(DIALOG_TITLE));
+							.then(displayRedPacketInfoToCopy(newpacketId, amount, quantity));
 					} else {
 						dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
 					}
 				});
 			}
+
+			function displayRedPacketInfoToCopy(newpacketId, amount, quantity) {
+				return (receipt) => {
+					const newpacketCopyUrl = $location.absUrl() + '/' + newpacketId;
+					
+					$('#newpacket-copy-url').text(newpacketCopyUrl);
+					$('#newpacket-copy-amount').text(amount);
+					$('#newpacket-copy-quantity').text(quantity);
+					$('#dialog-display-redpacketinfo-tocopy').modal({keyboard:false, backdrop:'static'});
+					$('#dialog-display-redpacketinfo-tocopy').modal('show');
+				}
+			}
+		}
+
+		$scope.copyRedpacketInfoToClipboard = function ()
+		{
+			var redpacketClipboardValue = '红包地址：' + document.getElementById('newpacket-copy-url').innerHTML + '\n \n';
+			redpacketClipboardValue += '红包大小：' + document.getElementById('newpacket-copy-amount').innerHTML + '\n \n';
+			redpacketClipboardValue += '红包个数：' + document.getElementById('newpacket-copy-quantity').innerHTML;
+			console.log('Clipboard value: ' + redpacketClipboardValue);
+			
+			navigator.clipboard.writeText(redpacketClipboardValue);
 		}
 
 		$scope.openRedPacket = function ()
