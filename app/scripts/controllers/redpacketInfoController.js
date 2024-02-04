@@ -168,7 +168,10 @@ angular.module('ethExplorer')
 		$scope.init = function()
 		{
 			$scope.redpacketId = $routeParams.redpacketId; // must in format 0x...
+			$scope.connectedToJ = window.ethereum?.chainId === '0xe52';
+			
 			console.log($scope.redpacketId);
+			console.log('ChainId: ' + $scope.connectedToJ);
 
 			if ($scope.redpacketId !== undefined) {
 				// Random generate a (0 ~ 10000) luck number if users do not want to input one
