@@ -69,13 +69,13 @@
 				<td></td>
                 <td data-ng-if="redpacketId == undefined">
                     <button data-ng-disabled="!connectedToJ() || !account" ng-click="createRedPacket()">
-                        <span data-ng-if="connectedToJ()">创建红包</span>
+                        <span>创建红包</span>
                     </button>
                 </td>
                 <td data-ng-if="redpacketId !== undefined">
                     <button data-ng-disabled="!connectedToJ() || !account || redpacketInfo_leftn === '0'" ng-click="openRedPacket()">
-                        <span data-ng-if="connectedToJ() && redpacketInfo_leftn !== '0'">抢红包</span>
-                        <span data-ng-if="connectedToJ() && redpacketInfo_leftn === '0'">抢完了</span>
+                        <span data-ng-if="redpacketInfo_leftn !== '0'">抢红包</span>
+                        <span data-ng-if="redpacketInfo_leftn === '0'">抢完了</span>
                     </button>
                     &nbsp;&nbsp;
                     <a href="/#/redpacket">我也发一个</a>

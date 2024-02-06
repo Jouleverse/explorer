@@ -209,22 +209,24 @@ angular.module('ethExplorer')
 			return deferred.promise;
 		}
 
-
 		$scope.init = function()
 		{
 			$scope.redpacketId = $routeParams.redpacketId; // must in format 0x...
 
-			$scope.chainId = window.ethereum?.chainId;
-			$scope.account= window.ethereum?.selectedAddress;
+			// synchronized methods may not work...
+			//$scope.chainId = window.ethereum?.chainId;
+			//$scope.account= window.ethereum?.selectedAddress;
 
-			$scope.connectedToJ = () => { return  $scope.chainId === '0xe52' }; //use closure for responsiveness
+			$scope.connectedToJ = () => { return $scope.chainId === '0xe52' }; //use closure for responsiveness
+
+			// used for data-ng-if to display WJ allowance in a responsive way
 			$scope.updateWJAllowance = () => {
 				$scope.getWJAllowance().then((allowance) => {
 					$scope.wjAllowance = allowance;
 				});
 				return true;
 			};
-		
+
 			console.log('[redpacketInfo] redpacketId: ', $scope.redpacketId);
 			console.log('[redpacketInfo] wj allowance: ', $scope.wjAllowance);
 			console.log('[redpacketInfo] chain id, connected account: ', $scope.chainId, $scope.account);
@@ -338,6 +340,20 @@ angular.module('ethExplorer')
 					$scope.account = accounts[0];
 					$scope.$apply();
 				});
+
+				window.ethereum
+					.request({ method: 'eth_chainId' })
+					.then((chainId) => {
+						console.log(`[redpacketInfo] got chain id: ${parseInt(chainId, 16)}`);
+						$scope.chainId = chainId;
+						const account = window.ethereum.selectedAddress;
+						$scope.account = account;
+						console.log("[redpacketInfo] connected account is: ", account);
+						$scope.$apply()
+					})
+					.catch((error) => {
+						console.error(`[redpacketInfo] error fetching chainId: ${error.code}: ${error.message}`);
+					});
 			}
 		};
 
