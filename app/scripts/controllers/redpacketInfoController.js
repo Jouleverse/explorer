@@ -105,6 +105,8 @@ angular.module('ethExplorer')
 
 			function displayRedPacketInfoToCopy(newpacketId, amount, quantity) {
 				return (receipt) => {
+					dialogHide();
+
 					const newpacketCopyUrl = $location.absUrl() + '/' + newpacketId;
 					
 					$('#newpacket-copy-url').text(newpacketCopyUrl);
@@ -119,7 +121,7 @@ angular.module('ethExplorer')
 		$scope.copyRedpacketInfoToClipboard = function ()
 		{
 			var redpacketClipboardValue = '红包地址：' + document.getElementById('newpacket-copy-url').innerHTML + '\n \n';
-			redpacketClipboardValue += '红包大小：' + document.getElementById('newpacket-copy-amount').innerHTML + '\n \n';
+			redpacketClipboardValue += '红包大小：' + document.getElementById('newpacket-copy-amount').innerHTML + ' WJ\n \n';
 			redpacketClipboardValue += '红包个数：' + document.getElementById('newpacket-copy-quantity').innerHTML;
 			console.log('Clipboard value: ' + redpacketClipboardValue);
 			

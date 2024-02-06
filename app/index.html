@@ -16,6 +16,10 @@
 
 	<script>
 		// global helpers
+		function dialogHide() {
+			$('#dialog-warning').modal('hide');
+		}
+
 		function dialogShowTxt(title, content) {
 			$("#warning-title").text(title);
 			$("#warning-content").text(content);

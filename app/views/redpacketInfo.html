@@ -27,11 +27,11 @@
             </tr>
             <tr>
                 <td>说明</td>
-				<td data-ng-if="redpacketId == undefined">Joule红包需要持有wJ (wrapped Joule)才可以创建。首先指定红包大小（不超过2000 WJ）和红包个数（不超过500个），授权扣除wJ，创建红包。将红包链接通过社交网络传播，拥有JTI认证的地址可以抢红包，每个地址每个红包限抢一次。</td>
+				<td data-ng-if="redpacketId == undefined">Joule红包需要持有wJ (wrapped Joule)才可以创建。首先指定红包总额（不超过2000 WJ）和红包个数（不超过500个），授权扣除wJ，创建红包。将红包链接通过社交网络传播，拥有JTI认证的地址可以抢红包，每个地址每个红包限抢一次。</td>
                 <td data-ng-if="redpacketId !== undefined">Joule红包需要持有J，并且JTI认证后才可以抢。请保证URL中的红包ID是正确的。</td>
             </tr>
             <tr data-ng-if="redpacketId == undefined">
-                <td>红包大小</td>
+                <td>红包总额</td>
 				<td><input type="text" id="new-redpacket-amount"></input>WJ (不超过2000 WJ)</td>
             </tr>
             <tr data-ng-if="redpacketId !== undefined">
@@ -90,7 +90,7 @@
 		<span><b>红包信息</b></span>
 		<table class="stats">
 			<tr>
-				<td>金额大小(WJ)</td>
+				<td>总额(WJ)</td>
 				<td>总个数</td>
 				<td>剩余金额(WJ)</td>
 				<td>剩余个数</td>
@@ -175,7 +175,7 @@
                     </div>
                     <div><br></div>
                     <div style="word-break:break-all;" id="">
-                        红包大小：<span id="newpacket-copy-amount"></span>
+                        红包总额：<span id="newpacket-copy-amount"></span> WJ
                     </div>
                     <div><br></div>
                     <div style="word-break:break-all;" id="">
