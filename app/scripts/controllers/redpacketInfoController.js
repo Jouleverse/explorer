@@ -156,6 +156,7 @@ angular.module('ethExplorer')
 			if (window.ethereum && window.ethereum.isConnected()) {
 				web3.setProvider(window.ethereum);
 				const connectedAccount = window.ethereum.selectedAddress;
+				console.log('[redpacket > openRedPacket] connectedAccount: ', connectedAccount);
 				const redpacket_contract = new web3.eth.Contract(redpacket_ABI, redpacket_contract_address);
 
 				redpacket_contract.methods.open(redpacketId, luckynum).estimateGas({from: connectedAccount}, (err, gas) => {

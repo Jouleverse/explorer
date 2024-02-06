@@ -42,7 +42,7 @@
                 <td>红包个数</td>
 				<td><input type="text" id="new-redpacket-quantity"></input>个 (不超过500个)</td>
             </tr>
-			<tr data-ng-if="redpacketId == undefined">
+			<tr>
                 <td nowrap>账户地址</td>
 				<td>
 					<span data-ng-if="!connectedToJ()">
@@ -68,12 +68,12 @@
             <tr>
 				<td></td>
                 <td data-ng-if="redpacketId == undefined">
-                    <button data-ng-disabled="!connectedToJ()" ng-click="createRedPacket()">
+                    <button data-ng-disabled="!connectedToJ() || !account" ng-click="createRedPacket()">
                         <span data-ng-if="connectedToJ()">创建红包</span>
                     </button>
                 </td>
                 <td data-ng-if="redpacketId !== undefined">
-                    <button data-ng-disabled="!connectedToJ() || redpacketInfo_leftn === '0'" ng-click="openRedPacket()">
+                    <button data-ng-disabled="!connectedToJ() || !account || redpacketInfo_leftn === '0'" ng-click="openRedPacket()">
                         <span data-ng-if="connectedToJ() && redpacketInfo_leftn !== '0'">抢红包</span>
                         <span data-ng-if="connectedToJ() && redpacketInfo_leftn === '0'">抢完了</span>
                     </button>
