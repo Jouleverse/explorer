@@ -61,7 +61,7 @@
             <tr data-ng-if="redpacketId == undefined && connectedToJ() && account">
                 <td nowrap>WJ授权</td>
 				<td>
-					<span data-ng-if="updateWJAllowance()">已授权从上述地址最多扣除 {{ wjAllowance.value }} WJ装入红包</span>
+					<span>已授权从上述地址最多扣除 {{ wjAllowance }} WJ装入红包</span>
 					<button ng-click="redpacketWjApproveDialog()">变更授权</button>
 				</td>
             </tr>

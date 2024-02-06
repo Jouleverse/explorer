@@ -117,6 +117,11 @@ angular.module('ethExplorer')
 						localStorage.setItem('TotalRedPackets', n + 1);
 					}
 
+					// update the allowance value
+					$scope.getWJAllowance().then((allowance) => {
+						$scope.wjAllowance = allowance;
+					});
+
 					// show info of redpacket for copying to clipboard
 					const newpacketCopyUrl = $location.absUrl() + '/' + newpacketId;
 					
@@ -190,20 +195,25 @@ angular.module('ethExplorer')
 		{
 			var deferred = $q.defer();
 
-			if ($scope.connectedToJ() && $scope.account) {
+			//if ($scope.connectedToJ() && $scope.account) {
+			if (window.ethereum && window.ethereum.isConnected()) {
+				web3.setProvider(window.ethereum);
+				const connectedAccount = window.ethereum.selectedAddress;
+				console.log('[redpacket > openRedPacket] connectedAccount: ', connectedAccount);
+
 				const wj_contract = new web3.eth.Contract(wj_ABI, wj_contract_address);
-				wj_contract.methods.allowance($scope.account, redpacket_contract_address)
+				wj_contract.methods.allowance(connectedAccount, redpacket_contract_address)
 					.call(function (err, allowance) {
 						if (!err) {
-							deferred.resolve({
-								value: web3.utils.fromWei(allowance, 'ether')
-							});
+							deferred.resolve(
+								web3.utils.fromWei(allowance, 'ether')
+							);
 						} else {
 							deferred.reject(err);
 						}
 					});
 			} else {
-				deferred.resolve(null);
+				deferred.resolve('---');
 			}
 
 			return deferred.promise;
@@ -219,13 +229,9 @@ angular.module('ethExplorer')
 
 			$scope.connectedToJ = () => { return $scope.chainId === '0xe52' }; //use closure for responsiveness
 
-			// used for data-ng-if to display WJ allowance in a responsive way
-			$scope.updateWJAllowance = () => {
-				$scope.getWJAllowance().then((allowance) => {
-					$scope.wjAllowance = allowance;
-				});
-				return true;
-			};
+			$scope.getWJAllowance().then((allowance) => {
+				$scope.wjAllowance = allowance;
+			});
 
 			console.log('[redpacketInfo] redpacketId: ', $scope.redpacketId);
 			console.log('[redpacketInfo] wj allowance: ', $scope.wjAllowance);
