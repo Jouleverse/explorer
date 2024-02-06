@@ -19,7 +19,7 @@ angular.module('ethExplorer')
 
 		$scope.redPacketWjApproveConfirm = function (redpacketAmount)
 		{
-			console.log('Approve redpacketAmount: ' + redpacketAmount);
+			console.log('[redpacketInfo] Approve redpacketAmount: ' + redpacketAmount);
 
 			const DIALOG_TITLE = '红包授权WJ';
 			var inputError = '';
@@ -67,10 +67,10 @@ angular.module('ethExplorer')
 			const quantity = $('#new-redpacket-quantity')[0].value;
 			var inputError = '';
 
-			console.log('Dialog title: ' + DIALOG_TITLE);
-			console.log('Packet ID: ' + newpacketId);
-			console.log('Packet amount: ' + amount);
-			console.log('Packet quantity: ' + quantity);
+			console.log('[redpacketInfo] Dialog title: ' + DIALOG_TITLE);
+			console.log('[redpacketInfo] Packet ID: ' + newpacketId);
+			console.log('[redpacketInfo] Packet amount: ' + amount);
+			console.log('[redpacketInfo] Packet quantity: ' + quantity);
 			
 			// Input validation
 			if (amount == '' ||parseFloat(amount) < 0 || parseFloat(amount) > 2000) {
@@ -123,7 +123,7 @@ angular.module('ethExplorer')
 			var redpacketClipboardValue = '红包地址：' + document.getElementById('newpacket-copy-url').innerHTML + '\n \n';
 			redpacketClipboardValue += '红包大小：' + document.getElementById('newpacket-copy-amount').innerHTML + ' WJ\n \n';
 			redpacketClipboardValue += '红包个数：' + document.getElementById('newpacket-copy-quantity').innerHTML;
-			console.log('Clipboard value: ' + redpacketClipboardValue);
+			console.log('[redpacketInfo] Clipboard value: ' + redpacketClipboardValue);
 			
 			navigator.clipboard.writeText(redpacketClipboardValue);
 		}
@@ -135,9 +135,9 @@ angular.module('ethExplorer')
 			const luckynum = $('#open-redpacket-luckynum')[0].value;
 			var inputError = '';
 
-			console.log('Dialog title: ' + DIALOG_TITLE);
-			console.log('Packet ID: ' + redpacketId);
-			console.log('Lucky Number: ' + luckynum);
+			console.log('[redpacketInfo] Dialog title: ' + DIALOG_TITLE);
+			console.log('[redpacketInfo] Packet ID: ' + redpacketId);
+			console.log('[redpacketInfo] Lucky Number: ' + luckynum);
 
 			// Input validation
 			if (redpacketId.substr(0, 2) !== '0x') {
@@ -229,7 +229,7 @@ angular.module('ethExplorer')
 
 			function displayRedPacketInfo(redpacketId) {
 				getRedPacketInfo(redpacketId).then(function(redpacketInfo){
-					console.log('Redpacket address info: ' + redpacketInfo.creator.toString());
+					console.log('[redpacketInfo] Redpacket address info: ' + redpacketInfo.creator.toString());
 					$scope.redpacketInfo_totalamt = redpacketInfo.total_e;
 					$scope.redpacketInfo_totaln = redpacketInfo.total_n;
 					$scope.redpacketInfo_leftamt = redpacketInfo.left_e;
@@ -269,11 +269,11 @@ angular.module('ethExplorer')
 				// redpacket open history list
 				$scope.redPacketOpenHistoryList = [];
 				const packetOpenedMaxIdx = parseFloat($scope.redpacketInfo_totaln) - parseFloat($scope.redpacketInfo_leftn);
-				console.log('Redpacket open history max idx: ' + packetOpenedMaxIdx);
+				console.log('[redpacketInfo] Redpacket open history max idx: ' + packetOpenedMaxIdx);
 
 				for (var i = 0; i < packetOpenedMaxIdx; i++) {
 					getSingleRedPacketOpenHistoryByIdx(redpacketId, i).then(function(openHistoryItem){
-						console.log('Redpacket address history opener: ' + openHistoryItem.opener.toString());
+						console.log('[redpacketInfo] Redpacket address history opener: ' + openHistoryItem.opener.toString());
 						$scope.redPacketOpenHistoryList.push({'amount': web3.utils.fromWei(openHistoryItem.amount, 'ether'), 'opener': openHistoryItem.opener.substr(0, 6) + '...'});
 					});
 				}
