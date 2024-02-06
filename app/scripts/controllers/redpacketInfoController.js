@@ -236,14 +236,9 @@ angular.module('ethExplorer')
 			function getWJAllowance() {
 				var deferred = $q.defer();
 
-				//if ($scope.connectedToJ() && $scope.account) {
-				if (window.ethereum && window.ethereum.isConnected()) {
-					web3.setProvider(window.ethereum);
-					const connectedAccount = window.ethereum.selectedAddress;
-					console.log('[redpacket > openRedPacket] connectedAccount: ', connectedAccount);
-
+				if ($scope.connectedToJ() && $scope.account) {
 					const wj_contract = new web3.eth.Contract(wj_ABI, wj_contract_address);
-					wj_contract.methods.allowance(connectedAccount, redpacket_contract_address)
+					wj_contract.methods.allowance($scope.account, redpacket_contract_address)
 						.call(function (err, allowance) {
 							if (!err) {
 								deferred.resolve(
