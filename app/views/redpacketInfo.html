@@ -43,31 +43,43 @@
 				<td><input type="text" id="new-redpacket-quantity"></input>个 (不超过500个)</td>
             </tr>
 			<tr data-ng-if="redpacketId == undefined">
-                <td nowrap>授权扣除wJ</td>
+                <td nowrap>账户地址</td>
 				<td>
-                    <button data-ng-disabled="!connectedToJ" ng-click="redpacketWjApproveDialog()">
-                        <span data-ng-if="!connectedToJ" ng-style="{ 'color': 'red' }">请链接到Jouleverse链</span>
-                        <span data-ng-if="connectedToJ">授权wJ</span>
-                    </button>
+					<span data-ng-if="!connectedToJ()">
+						<span ng-style="{ 'color': 'red' }">请先切换到Jouleverse网络</span>
+						<button onclick="switchNetwork()">切换网络</button>
+					</span>
+					<span data-ng-if="connectedToJ() && !account">
+						<span ng-style="{ 'color': 'red' }">请先连接钱包账户</span>
+						<button onclick="connect()">连接账户</button>
+					</span>
+					<span data-ng-if="connectedToJ() && account">
+						{{ account }}
+					</span>
                 </td>
 			</tr>
+            <tr data-ng-if="redpacketId == undefined && connectedToJ() && account">
+                <td nowrap>WJ授权</td>
+				<td>
+					<span data-ng-if="updateWJAllowance()">已授权从上述地址扣除 {{ wjAllowance.value }} WJ装入红包</span>
+					<button ng-click="redpacketWjApproveDialog()">点击授权</button>
+				</td>
+            </tr>
             <tr>
+				<td></td>
                 <td data-ng-if="redpacketId == undefined">
-                    <button data-ng-disabled="!connectedToJ" ng-click="createRedPacket()">
-                        <span data-ng-if="!connectedToJ" ng-style="{ 'color': 'red' }">请链接到Jouleverse链</span>
-                        <span data-ng-if="connectedToJ">创建红包</span>
+                    <button data-ng-disabled="!connectedToJ()" ng-click="createRedPacket()">
+                        <span data-ng-if="connectedToJ()">创建红包</span>
                     </button>
                 </td>
                 <td data-ng-if="redpacketId !== undefined">
-                    <button data-ng-disabled="!connectedToJ || redpacketInfo_leftn === '0'" ng-click="openRedPacket()">
-                        <span data-ng-if="!connectedToJ" ng-style="{ 'color': 'red' }">请链接到Jouleverse链</span>
-                        <span data-ng-if="connectedToJ && redpacketInfo_leftn !== '0'">抢红包</span>
-                        <span data-ng-if="connectedToJ && redpacketInfo_leftn === '0'">抢完了</span>
+                    <button data-ng-disabled="!connectedToJ() || redpacketInfo_leftn === '0'" ng-click="openRedPacket()">
+                        <span data-ng-if="connectedToJ() && redpacketInfo_leftn !== '0'">抢红包</span>
+                        <span data-ng-if="connectedToJ() && redpacketInfo_leftn === '0'">抢完了</span>
                     </button>
                     &nbsp;&nbsp;
                     <a href="/#/redpacket">我也发一个</a>
                 </td>
-                <td></td>
             </tr>
             </tbody>
         </table>
@@ -128,6 +140,7 @@
                 <code style="color:#0000ff">
                     <div style="word-break:break-all;" id="">
                         授权红包合约地址：<span id="approve-wj-to"></span>
+						从：<span id="approve-wj-from"></span>
                         扣除：<span id="approve-wj-amount"> {{ redpacketAmount }} </span> wJ
                         作为红包金额。
                     </div>

@@ -11,6 +11,7 @@ angular.module('ethExplorer')
 		{
 			$scope.redpacketAmount = $('#new-redpacket-amount')[0].value;
 			$('#approve-wj-to').text(redpacket_contract_address);
+			$('#approve-wj-from').text($scope.account);
 
 			$('#dialog-approve-wjoule').modal({keyboard:false, backdrop:'static'});
 			$('#dialog-approve-wjoule').modal('show');
@@ -44,7 +45,13 @@ angular.module('ethExplorer')
 					if (!err) {
 						wj_contract.methods.approve(redpacket_contract_address, e)
 							.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
-							.then(handlerShowRct(DIALOG_TITLE));
+							.then((receipt) => {
+								dialogShowTxt(DIALOG_TITLE, '上链成功！');
+								// let's update the allowance.value
+								$scope.getWJAllowance().then((allowance) => {
+									$scope.wjAllowance = allowance;
+								});
+							});
 					} else {
 						dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
 					}
@@ -66,11 +73,11 @@ angular.module('ethExplorer')
 			console.log('Packet quantity: ' + quantity);
 			
 			// Input validation
-			if (parseFloat(amount) < 0 || parseFloat(amount) > 2000) {
+			if (amount == '' ||parseFloat(amount) < 0 || parseFloat(amount) > 2000) {
 				inputError += '红包大小非法: 输入红包大小必须在0~2000WJ之间。';
 			}
 
-			if (parseFloat(quantity) < 0 || parseFloat(quantity) > 500) {
+			if (quantity == '' || parseFloat(quantity) < 0 || parseFloat(quantity) > 500) {
 				inputError += ' 红包个数非法: 输入红包个数必须在0~500之间。';
 			}
 
@@ -165,13 +172,48 @@ angular.module('ethExplorer')
 		//////////////////////////////////////////////////////////////////////////////
 		// read functionalities in page scope                                       //
 		//////////////////////////////////////////////////////////////////////////////
+		$scope.getWJAllowance = function () 
+		{
+			var deferred = $q.defer();
+
+			if ($scope.connectedToJ() && $scope.account) {
+				const wj_contract = new web3.eth.Contract(wj_ABI, wj_contract_address);
+				wj_contract.methods.allowance($scope.account, redpacket_contract_address)
+					.call(function (err, allowance) {
+						if (!err) {
+							deferred.resolve({
+								value: web3.utils.fromWei(allowance, 'ether')
+							});
+						} else {
+							deferred.reject(err);
+						}
+					});
+			} else {
+				deferred.resolve(null);
+			}
+
+			return deferred.promise;
+		}
+
+
 		$scope.init = function()
 		{
 			$scope.redpacketId = $routeParams.redpacketId; // must in format 0x...
-			$scope.connectedToJ = window.ethereum?.chainId === '0xe52';
-			
-			console.log($scope.redpacketId);
-			console.log('ChainId: ' + $scope.connectedToJ);
+
+			$scope.chainId = window.ethereum?.chainId;
+			$scope.account= window.ethereum?.selectedAddress;
+
+			$scope.connectedToJ = () => { return  $scope.chainId === '0xe52' }; //use closure for responsiveness
+			$scope.updateWJAllowance = () => {
+				$scope.getWJAllowance().then((allowance) => {
+					$scope.wjAllowance = allowance;
+				});
+				return true;
+			};
+		
+			console.log('[redpacketInfo] redpacketId: ', $scope.redpacketId);
+			console.log('[redpacketInfo] wj allowance: ', $scope.wjAllowance);
+			console.log('[redpacketInfo] chain id, connected account: ', $scope.chainId, $scope.account);
 
 			if ($scope.redpacketId !== undefined) {
 				// Random generate a (0 ~ 10000) luck number if users do not want to input one
@@ -250,6 +292,22 @@ angular.module('ethExplorer')
 				});
 
 				return deferred.promise;
+			}
+
+			//////////////// add listeners /////////////////
+			if (window.ethereum) {
+				
+				window.ethereum.on('chainChanged', function (chainId) {
+					console.log("[redpacketInfo] switched to chain id: ", parseInt(chainId, 16));
+					$scope.chainId = chainId;
+					$scope.$apply();
+				});
+
+				window.ethereum.on('accountsChanged', function (accounts) {
+					console.log("[redpacketInfo] switched to account: ", accounts[0]);
+					$scope.account = accounts[0];
+					$scope.$apply();
+				});
 			}
 		};
 
