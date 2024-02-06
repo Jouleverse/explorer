@@ -17,10 +17,10 @@
             <tr>
 				<th colspan="2" align="left">
 					红包编号：
-					<span data-ng-if="redpacketId == undefined">
+					<span style="word-break:break-all;" data-ng-if="redpacketId == undefined">
 						{{ newpacketId }}
 					</span>
-					<span data-ng-if="redpacketId !== undefined">
+					<span style="word-break:break-all;" data-ng-if="redpacketId !== undefined">
 						{{ redpacketId }}
 					</span>
 				</th>
@@ -61,8 +61,8 @@
             <tr data-ng-if="redpacketId == undefined && connectedToJ() && account">
                 <td nowrap>WJ授权</td>
 				<td>
-					<span data-ng-if="updateWJAllowance()">已授权从上述地址扣除 {{ wjAllowance.value }} WJ装入红包</span>
-					<button ng-click="redpacketWjApproveDialog()">点击授权</button>
+					<span data-ng-if="updateWJAllowance()">已授权从上述地址最多扣除 {{ wjAllowance.value }} WJ装入红包</span>
+					<button ng-click="redpacketWjApproveDialog()">变更授权</button>
 				</td>
             </tr>
             <tr>
@@ -107,6 +107,25 @@
 	</div>
 
     <div><br></div>
+
+	<div style="text-align:center" data-ng-if="redpacketId == undefined">
+		<div>
+			<span><b>刚刚创建过的红包</b>(本地缓存信息)</span>
+			<table class="stats">
+				<tr>
+					<td>红包编号</td>
+					<td nowrap>红包总额(WJ)</td>
+					<td nowrap>红包个数</td>
+				</tr>
+				<tr data-ng-repeat="rhi in myRedPacketList">
+					<td style="word-break:break-all;"><a href='/#/redpacket/{{ rhi.id }}'>{{ rhi.id }}</a></td>
+					<td>{{ rhi.amount }}</td>
+					<td>{{ rhi.quantity }}</td>
+				</tr>
+			</table>
+			<button onclick='localStorage.clear();location.reload()'>clear</button>
+		</div>
+	</div>
 
     <div style="text-align:center" data-ng-if="redpacketId !== undefined">
 		<div>

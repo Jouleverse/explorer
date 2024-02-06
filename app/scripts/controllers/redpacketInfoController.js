@@ -26,7 +26,7 @@ angular.module('ethExplorer')
 
 			// Validate input
 			if (Number.isNaN(parseFloat(redpacketAmount)) || parseFloat(redpacketAmount) < 0 || parseFloat(redpacketAmount) > 2000) {
-				inputError += '授权红包大小非法: 红包大小必须在0~2000WJ之间用于授权。';
+				inputError += '授权红包总额非法: 红包总额必须在0~2000 WJ之间用于授权。';
 			}
 
 			if (inputError.length > 0) {
@@ -74,7 +74,7 @@ angular.module('ethExplorer')
 			
 			// Input validation
 			if (amount == '' ||parseFloat(amount) < 0 || parseFloat(amount) > 2000) {
-				inputError += '红包大小非法: 输入红包大小必须在0~2000WJ之间。';
+				inputError += '红包总额非法: 输入红包总额必须在0~2000 WJ之间。';
 			}
 
 			if (quantity == '' || parseFloat(quantity) < 0 || parseFloat(quantity) > 500) {
@@ -105,8 +105,19 @@ angular.module('ethExplorer')
 
 			function displayRedPacketInfoToCopy(newpacketId, amount, quantity) {
 				return (receipt) => {
+					// hide the default dialog showing tx info.
 					dialogHide();
 
+					// save the red packet id to local storage for later retrieval
+					if (typeof(Storage) !== 'undefined') {
+						const n = parseInt(localStorage.getItem('TotalRedPackets') || 0);
+						localStorage.setItem('RedPacket' + n + 'Id', newpacketId);
+						localStorage.setItem('RedPacket' + n + 'Amount', amount);
+						localStorage.setItem('RedPacket' + n + 'Quantity', quantity);
+						localStorage.setItem('TotalRedPackets', n + 1);
+					}
+
+					// show info of redpacket for copying to clipboard
 					const newpacketCopyUrl = $location.absUrl() + '/' + newpacketId;
 					
 					$('#newpacket-copy-url').text(newpacketCopyUrl);
@@ -121,7 +132,7 @@ angular.module('ethExplorer')
 		$scope.copyRedpacketInfoToClipboard = function ()
 		{
 			var redpacketClipboardValue = '红包地址：' + document.getElementById('newpacket-copy-url').innerHTML + '\n \n';
-			redpacketClipboardValue += '红包大小：' + document.getElementById('newpacket-copy-amount').innerHTML + ' WJ\n \n';
+			redpacketClipboardValue += '红包总额：' + document.getElementById('newpacket-copy-amount').innerHTML + ' WJ\n \n';
 			redpacketClipboardValue += '红包个数：' + document.getElementById('newpacket-copy-quantity').innerHTML;
 			console.log('[redpacketInfo] Clipboard value: ' + redpacketClipboardValue);
 			
@@ -225,6 +236,22 @@ angular.module('ethExplorer')
 			} else {
 				// Random create new red packet Id
 				$scope.newpacketId = web3.utils.randomHex(32).toString();
+
+				// Retrieve all created red packets on this machine
+				$scope.myRedPacketList = [];
+				if (typeof(Storage) !== 'undefined') {
+					const total = localStorage.getItem('TotalRedPackets') || 0;
+					for (var i = 0; i < total; i++) {
+						const newpacketId = localStorage.getItem('RedPacket' + i + 'Id');
+						const amount = localStorage.getItem('RedPacket' + i + 'Amount');
+						const quantity = localStorage.getItem('RedPacket' + i + 'Quantity');
+						$scope.myRedPacketList.unshift({
+							'id': newpacketId,
+							'amount': amount,
+							'quantity': quantity
+						});
+					}
+				}
 			}
 
 			function displayRedPacketInfo(redpacketId) {
