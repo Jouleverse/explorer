@@ -36,6 +36,14 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
                 templateUrl: 'views/junksInfo.html',
                 controller: 'junksInfoCtrl'
             }).
+            when('/redpacket/:redpacketId', {
+                templateUrl: 'views/redpacketInfo.html',
+                controller: 'redpacketInfoCtrl'
+            }).
+            when('/redpacket', {
+                templateUrl: 'views/redpacketInfo.html',
+                controller: 'redpacketInfoCtrl'
+            }).
             when('/jns/:jnsId', {
                 templateUrl: 'views/jnsInfo.html',
                 controller: 'jnsInfoCtrl'
