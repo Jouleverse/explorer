@@ -55,6 +55,13 @@
                 <td>数字身份 DID</td>
 				<td><a href="./#/did/{{jnsId}}">{{jnsId}}（点击进入该数字身份DID资料页面）</a></td>
 			</tr>
+            <tr data-ng-if="boundAddress !== undefined && boundAddress !== '未绑定'">
+                <td>
+                    <button data-ng-disabled="!connectedToJ() || !account" ng-click="endorseJns()">
+                        <span>打赏</span>
+                    </button>
+                </td>
+			</tr>
 
             </tbody>
         </table>

@@ -138,6 +138,11 @@ angular.module('ethExplorer')
 			
 		}
 
+		$scope.endorseJns = function() {
+			const DIALOG_TITLE = '打赏';
+			console.log('Button clicked: ' + DIALOG_TITLE);
+		}
+
 		//////////////////////////////////////////////////////////////////////////////
 		// read functionalities in page scope                                       //
 		//////////////////////////////////////////////////////////////////////////////
@@ -147,6 +152,8 @@ angular.module('ethExplorer')
 			// pre-process two exceptions: GM.j Nana.j
 			if ($scope.jnsId == "gm.j") $scope.jnsId = "GM.j";
 			if ($scope.jnsId == "nana.j") $scope.jnsId = "Nana.j";
+
+			$scope.connectedToJ = () => { return $scope.chainId === '0xe52' };
 
 			if ($scope.jnsId !== undefined) {
 
@@ -173,6 +180,7 @@ angular.module('ethExplorer')
 					$scope.jnsIdError = "该名字不存在";
 				});
 
+				//////////////// listeners for chainId and accountId /////////////////
 				if (window.ethereum) {
 					window.ethereum.on('chainChanged', function (chainId) {
 						console.log("[jns] switched to chain id: ", parseInt(chainId, 16));
@@ -184,6 +192,21 @@ angular.module('ethExplorer')
 						console.log("[jns] switched to account: ", accounts[0]);
 						$scope.account = accounts[0];
 						$scope.$apply();
+					});
+
+					window.ethereum
+					.request({ method: 'eth_chainId' })
+					.then((chainId) => {
+						console.log(`[jns] got chain id: ${parseInt(chainId, 16)}`);
+						$scope.chainId = chainId;
+						const account = window.ethereum.selectedAddress;
+						$scope.account = account;
+						console.log("[jns] connected account is: ", account);
+						$scope.$apply()
+						$scope.updateWJAllowance();
+					})
+					.catch((error) => {
+						console.error(`[jns] error fetching chainId: ${error.code}: ${error.message}`);
 					});
 				}
 
