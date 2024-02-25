@@ -140,8 +140,18 @@ angular.module('ethExplorer')
 
 		$scope.endorseJNSAmountDialog = function() {
 			const DIALOG_TITLE = '打赏金额';
-			$scope.disableManualInputAmount = true;
 
+			// init amount input field
+			var radioAmount = document.getElementsByName('jns-endorse-amount');
+			
+			for (i = 0; i < radioAmount.length; i++) {
+				if (radioAmount[i].checked && radioAmount[i].value === 'other') {
+					$scope.disableManualInputAmount = false;
+				} else if (radioAmount[i].checked) {
+					$scope.disableManualInputAmount = true;
+				}
+            }
+			
 			$('#dialog-endorsejns-amount').modal({keyboard:false, backdrop:'static'});
 			$('#dialog-endorsejns-amount').modal('show');
 		}
