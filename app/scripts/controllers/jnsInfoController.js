@@ -138,9 +138,41 @@ angular.module('ethExplorer')
 			
 		}
 
-		$scope.endorseJns = function() {
-			const DIALOG_TITLE = '打赏';
-			console.log('Button clicked: ' + DIALOG_TITLE);
+		$scope.endorseJNSAmountDialog = function() {
+			const DIALOG_TITLE = '打赏金额';
+			$scope.disableManualInputAmount = true;
+
+			$('#dialog-endorsejns-amount').modal({keyboard:false, backdrop:'static'});
+			$('#dialog-endorsejns-amount').modal('show');
+		}
+
+		$scope.endorseJNSApproveDialog = function() {
+			const DIALOG_TITLE = '授权打赏金额';
+
+			var endorseAmount = 0;
+			var radioAmount = document.getElementsByName('jns-endorse-amount');
+
+			for (i = 0; i < radioAmount.length; i++) {
+				if (radioAmount[i].checked && radioAmount[i].value === 'other') {
+					endorseAmount = parseInt($('#jns-endorse-amount-other-input')[0].value);
+				} else if (radioAmount[i].checked) {
+					endorseAmount = parseInt(radioAmount[i].value);
+				}
+            }
+
+			console.log('button clicked: ' + DIALOG_TITLE);
+			console.log('endorseAmount: ' + endorseAmount);
+		}
+
+		$scope.disableAmountInput = function() {
+			$scope.disableManualInputAmount = true;
+			$scope.endorseAmountInputValue = ""; 
+			console.log('disableAmountInput: ' + $scope.disableManualInputAmount);
+		}
+
+		$scope.enableAmountInput = function() {
+			$scope.disableManualInputAmount = false;
+			console.log('enableAmountInput: ' + $scope.disableManualInputAmount);
 		}
 
 		//////////////////////////////////////////////////////////////////////////////
@@ -203,7 +235,6 @@ angular.module('ethExplorer')
 						$scope.account = account;
 						console.log("[jns] connected account is: ", account);
 						$scope.$apply()
-						$scope.updateWJAllowance();
 					})
 					.catch((error) => {
 						console.error(`[jns] error fetching chainId: ${error.code}: ${error.message}`);
