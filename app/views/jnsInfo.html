@@ -94,10 +94,40 @@
                 </code>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="endorseJNSApproveDialog()">确定</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="endorseJNSConfirmDialog()">确定</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
             </div>
         </div>
     </div>
 </div>
 <!-- end of dialog for input endorse JNS amount -->
+
+<!-- dialog for endorse jns confirm -->
+<div id="dialog-endorsejns-confirm" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <center><div class="modal-header">
+                    <h4 class="modal-title"><span id="">打赏确认</span></h4>
+            </div></center>
+            <div class="modal-body">
+                <code style="color:#0000ff">
+                    <div style="word-break:break-all;" id="">
+                        向地址：<span id="jns-endorse-to"> {{realBoundAddress}} </span>
+                        打赏: <span id="jns-endorse-amount"> {{endorseJNSAmount}} </span> WJ
+                    </div>
+                    <div style="color:#ff0000;font-weight:bold;margin:5px 0 5px 0">
+                        警告: JNS打赏的过程不可逆。
+                    </div>
+                    <div style="float:right;">确定吗？</div>
+                </code>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="endorseJNSTransfer(realBoundAddress, endorseJNSAmount)">确定</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end of dialog for endorse jns confirm -->

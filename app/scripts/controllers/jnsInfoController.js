@@ -143,7 +143,7 @@ angular.module('ethExplorer')
 
 			// init amount input field
 			var radioAmount = document.getElementsByName('jns-endorse-amount');
-			
+
 			for (i = 0; i < radioAmount.length; i++) {
 				if (radioAmount[i].checked && radioAmount[i].value === 'other') {
 					$scope.disableManualInputAmount = false;
@@ -156,7 +156,7 @@ angular.module('ethExplorer')
 			$('#dialog-endorsejns-amount').modal('show');
 		}
 
-		$scope.endorseJNSApproveDialog = function() {
+		$scope.endorseJNSConfirmDialog = function() {
 			const DIALOG_TITLE = '授权打赏金额';
 
 			var endorseAmount = 0;
@@ -170,8 +170,19 @@ angular.module('ethExplorer')
 				}
             }
 
-			console.log('button clicked: ' + DIALOG_TITLE);
+			if (Number.isNaN(endorseAmount) || endorseAmount < 0 || endorseAmount > 100) {
+				dialogShowTxt(DIALOG_TITLE, '打赏金额必须是0 ~ 100WJ 的整数');
+				return;
+			}
+
+			// convert endorseAmount to int
+			endorseAmount = Math.floor(endorseAmount);
+			$scope.endorseJNSAmount = endorseAmount;
+			$scope.realBoundAddress = $scope.boundAddress.substr(4);
 			console.log('endorseAmount: ' + endorseAmount);
+
+			$('#dialog-endorsejns-confirm').modal({keyboard:false, backdrop:'static'});
+			$('#dialog-endorsejns-confirm').modal('show');
 		}
 
 		$scope.disableAmountInput = function() {
@@ -183,6 +194,13 @@ angular.module('ethExplorer')
 		$scope.enableAmountInput = function() {
 			$scope.disableManualInputAmount = false;
 			console.log('enableAmountInput: ' + $scope.disableManualInputAmount);
+		}
+
+		$scope.endorseJNSTransfer = function(realBoundAddress, endorseJNSAmount) {
+			const DIALOG_TITLE = '转移打赏金额';
+			
+			console.log('boundAddress: ' + realBoundAddress);
+			console.log('endorseJNSAmount: ' + endorseJNSAmount);
 		}
 
 		//////////////////////////////////////////////////////////////////////////////
