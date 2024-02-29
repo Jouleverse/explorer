@@ -138,8 +138,9 @@ angular.module('ethExplorer')
 			
 		}
 
-		$scope.endorseJNSAmountDialog = function() {
-			const DIALOG_TITLE = '打赏金额';
+		$scope.endorseJNSAmountDialog = function() 
+		{
+			const DIALOG_TITLE = '输入打赏金额';
 
 			// init amount input field
 			var radioAmount = document.getElementsByName('jns-endorse-amount');
@@ -156,8 +157,9 @@ angular.module('ethExplorer')
 			$('#dialog-endorsejns-amount').modal('show');
 		}
 
-		$scope.endorseJNSConfirmDialog = function() {
-			const DIALOG_TITLE = '授权打赏金额';
+		$scope.endorseJNSConfirmDialog = function() 
+		{
+			const DIALOG_TITLE = '确认打赏金额';
 
 			var endorseAmount = 0;
 			var radioAmount = document.getElementsByName('jns-endorse-amount');
@@ -179,28 +181,51 @@ angular.module('ethExplorer')
 			endorseAmount = Math.floor(endorseAmount);
 			$scope.endorseJNSAmount = endorseAmount;
 			$scope.realBoundAddress = $scope.boundAddress.substr(4);
-			console.log('endorseAmount: ' + endorseAmount);
+			console.log('[jns] endorseJNSConfirmDialog endorseAmount: ' + endorseAmount);
 
 			$('#dialog-endorsejns-confirm').modal({keyboard:false, backdrop:'static'});
 			$('#dialog-endorsejns-confirm').modal('show');
 		}
 
-		$scope.disableAmountInput = function() {
+		$scope.disableAmountInput = function() 
+		{
 			$scope.disableManualInputAmount = true;
 			$scope.endorseAmountInputValue = ""; 
-			console.log('disableAmountInput: ' + $scope.disableManualInputAmount);
+			console.log('[jns] disableAmountInput: ' + $scope.disableManualInputAmount);
 		}
 
-		$scope.enableAmountInput = function() {
+		$scope.enableAmountInput = function() 
+		{
 			$scope.disableManualInputAmount = false;
-			console.log('enableAmountInput: ' + $scope.disableManualInputAmount);
+			console.log('[jns] enableAmountInput: ' + $scope.disableManualInputAmount);
 		}
 
-		$scope.endorseJNSTransfer = function(realBoundAddress, endorseJNSAmount) {
+		$scope.endorseJNSTransfer = function(realBoundAddress, endorseJNSAmount) 
+		{
 			const DIALOG_TITLE = '转移打赏金额';
 			
-			console.log('boundAddress: ' + realBoundAddress);
-			console.log('endorseJNSAmount: ' + endorseJNSAmount);
+			console.log('[jns] endorseJNSTransfer boundAddress: ' + realBoundAddress);
+			console.log('[jns] endorseJNSTransfer endorseJNSAmount: ' + endorseJNSAmount);
+
+			if (window.ethereum && window.ethereum.isConnected()) {
+				web3.setProvider(window.ethereum);
+				const connectedAccount = window.ethereum.selectedAddress;
+
+				const e = web3.utils.toWei(endorseJNSAmount.toString(), 'ether');
+				const wj_contract = new web3.eth.Contract(wj_ABI, wj_contract_address);
+
+				wj_contract.methods.transfer(realBoundAddress, e).estimateGas({from: connectedAccount}, (err, gas) => {
+					if (!err) {
+						wj_contract.methods.transfer(realBoundAddress, e)
+							.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
+							.then((receipt) => {
+								dialogShowTxt(DIALOG_TITLE, '打赏成功！');
+							});
+					} else {
+						dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
+					}
+				});
+			}
 		}
 
 		//////////////////////////////////////////////////////////////////////////////
