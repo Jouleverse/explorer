@@ -172,8 +172,8 @@ angular.module('ethExplorer')
 				}
             }
 
-			if (Number.isNaN(endorseAmount) || endorseAmount < 0 || endorseAmount > 100) {
-				dialogShowTxt(DIALOG_TITLE, '打赏金额必须是0 ~ 100WJ 的整数');
+			if (Number.isNaN(endorseAmount) || endorseAmount < 1 || endorseAmount > 100) {
+				dialogShowTxt(DIALOG_TITLE, '打赏金额必须是1 ~ 100WJ 的整数');
 				return;
 			}
 
