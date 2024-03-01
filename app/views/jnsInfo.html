@@ -14,7 +14,7 @@
 						<button ng-click="mintJNS(jnsId)">🔨</button>
 					</span>
 
-					<span class="pull-right"><image height="14px" src="{{logo}}"></image> {{boundAddress}}</span>
+					<span class="pull-right"><image height="14px" src="{{logo}}"></image> {{boundAddressTag}}</span>
 				</th>
             </tr>
             </tbody>
@@ -48,14 +48,14 @@
             <tr>
                 <td>绑定地址</td>
                 <td>
-					{{boundAddress}}
+					{{boundAddressTag}}
                 </td>
             </tr>
-			<tr data-ng-if="boundAddress !== undefined && boundAddress !== '未绑定'">
+			<tr data-ng-if="boundAddressTag !== undefined && boundAddressTag !== '未绑定'">
                 <td>数字身份 DID</td>
 				<td><a href="./#/did/{{jnsId}}">{{jnsId}}（点击进入该数字身份DID资料页面）</a></td>
 			</tr>
-            <tr data-ng-if="boundAddress !== undefined && boundAddress !== '未绑定'">
+            <tr data-ng-if="boundAddressTag !== undefined && boundAddressTag !== '未绑定'">
                 <td>
                     <button data-ng-disabled="!connectedToJ() || !account" ng-click="endorseJNSAmountDialog()">
                         <span>打赏</span>
@@ -88,7 +88,7 @@
                             <div><input type="radio" name="jns-endorse-amount" value="5" ng-click="disableAmountInput()"> 5 WJ</div>
                             <div><input type="radio" name="jns-endorse-amount" value="10" ng-click="disableAmountInput()"> 10 WJ</div>
                             <div><input type="radio" name="jns-endorse-amount" value="other" ng-click="enableAmountInput()"> 手动输入</div>
-                            <div>输入金额(1 ~ 100WJ 整数): <input type="text" id="jns-endorse-amount-other-input" data-ng-disabled="disableManualInputAmount" ng-model="endorseAmountInputValue"></input> WJ</div>
+                            <div>输入金额(大于0小于100 WJ): <input type="text" id="jns-endorse-amount-other-input" data-ng-disabled="disableManualInputAmount" ng-model="endorseAmountInputValue"></input> WJ</div>
                         </div>
                     </div>
                 </code>

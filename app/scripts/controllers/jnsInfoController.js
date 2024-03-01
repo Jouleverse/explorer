@@ -166,21 +166,20 @@ angular.module('ethExplorer')
 
 			for (i = 0; i < radioAmount.length; i++) {
 				if (radioAmount[i].checked && radioAmount[i].value === 'other') {
-					endorseAmount = parseInt($('#jns-endorse-amount-other-input')[0].value);
+					endorseAmount = parseFloat($('#jns-endorse-amount-other-input')[0].value);
 				} else if (radioAmount[i].checked) {
-					endorseAmount = parseInt(radioAmount[i].value);
+					endorseAmount = parseFloat(radioAmount[i].value);
 				}
             }
 
-			if (Number.isNaN(endorseAmount) || endorseAmount < 1 || endorseAmount > 100) {
-				dialogShowTxt(DIALOG_TITLE, '打赏金额必须是1 ~ 100WJ 的整数');
+			if (Number.isNaN(endorseAmount) || endorseAmount <= 0 || endorseAmount > 100) {
+				dialogShowTxt(DIALOG_TITLE, '打赏金额须大于0且不超过100 WJ');
 				return;
 			}
 
-			// convert endorseAmount to int
-			endorseAmount = Math.floor(endorseAmount);
+			// float number allowed
 			$scope.endorseJNSAmount = endorseAmount;
-			$scope.realBoundAddress = $scope.boundAddress.substr(4);
+			$scope.realBoundAddress = $scope.boundAddress;
 			console.log('[jns] endorseJNSConfirmDialog endorseAmount: ' + endorseAmount);
 
 			$('#dialog-endorsejns-confirm').modal({keyboard:false, backdrop:'static'});
@@ -256,6 +255,7 @@ angular.module('ethExplorer')
 					$scope.nftId = result.tokenId;
 					$scope.ownerAddress = result.ownerAddress;
 					$scope.boundAddress = result.boundAddress;
+					$scope.boundAddressTag = result.boundAddressTag;
 					$scope.logo = result.logo;
 					$scope.bindCalldata = result.bindCalldata;
 					$scope.unbindCalldata = result.unbindCalldata;
@@ -322,7 +322,8 @@ angular.module('ethExplorer')
 								var owner_addr = result2.toString();
 								jns_contract.methods._bound(token_id).call(function (error3, result3) {
 									if (!error3) {
-										var bound_addr = (result3 == 0)? "未绑定" : ('已绑定 ' + result3.toString());
+										var bound_addr = result3.toString();
+										var bound_addr_tag = (result3 == 0)? "未绑定" : ('已绑定 ' + result3.toString());
 										jns_contract.methods.tokenURI(token_id).call(function (error4, result4) {
 											if (!error4) {
 												var img = parseTokenURI(result4.toString()).image;
@@ -335,6 +336,7 @@ angular.module('ethExplorer')
 														tokenId: token_id,
 														ownerAddress: owner_addr,
 														boundAddress: bound_addr,
+														boundAddressTag: bound_addr_tag,
 														logo: img,
 														bindCalldata: jns_contract.methods.bind(token_id).encodeABI(),
 														unbindCalldata: jns_contract.methods.unbind(token_id).encodeABI(),
