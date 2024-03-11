@@ -417,7 +417,8 @@ angular.module('ethExplorer')
 						var balance = result1.toString();
 						$scope.countJTI = balance;
 						for (var i = 0; i < balance; i++) {
-							var token_name = "J Trusted Identity";
+							//var token_name = "J Trusted Identity";
+							var token_name = "JTI可信身份认证";
 							contract.methods.tokenOfOwnerByIndex(addr, i).call(function (err2, result2) {
 								if (err2) {
 									console.log(err2);
