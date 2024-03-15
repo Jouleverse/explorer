@@ -210,3 +210,6 @@ TODO:
 - improve: 区块详情页，增加“区块哈希”字样
 - improve: 增加若干well known合约地址的显示
 
+2024.3.15
+- improve: use wei(维) 作为最小能量单位
+
