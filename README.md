@@ -213,3 +213,6 @@ TODO:
 2024.3.15
 - improve: use wei(维) 作为最小能量单位
 
+2024.3.19
+- improve: 合约工具支持提示合约是否有唯一控制者
+- new: 合约工具增加BoredApe
