@@ -175,7 +175,10 @@ angular.module('ethExplorer')
 					if (!err) {
 						redpacket_contract.methods.open(redpacketId, luckynum)
 							.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
-							.then(handlerShowRct(DIALOG_TITLE));
+							.then(() => {
+								handlerShowRct(DIALOG_TITLE)
+								$scope.displayRedPacketInfo($scope.redpacketId)
+							})
 					} else {
 						dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
 					}
@@ -323,6 +326,10 @@ angular.module('ethExplorer')
 				});
 
 				return deferred.promise;
+			}
+
+			$scope.displayRedPacketInfo = (redpacketId) => {
+				displayRedPacketInfo(redpacketId)
 			}
 
 			//////////////// add listeners /////////////////
