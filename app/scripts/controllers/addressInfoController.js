@@ -295,6 +295,8 @@ angular.module('ethExplorer')
 					getJNSDAOV();
 					getAllJNSVote();
 				});
+
+				getAllBoredApes();
 			}
 
 			function getAddressInfos(){
@@ -656,6 +658,41 @@ angular.module('ethExplorer')
 					}
 				});
 
+			}
+
+			function getAllBoredApes() {
+				$scope.allBoredApes = [];
+				var addr = $scope.addressId;
+				var contract = new web3.eth.Contract(boredape_ABI, boredape_contract_address);
+				contract.methods.balanceOf(addr).call(function (err1, result1) {
+					if (err1) {
+						console.log(err1);
+					} else {
+						var balance = result1.toString();
+						$scope.countBoredApes = balance || "0";
+						for (var i = 0; i < balance; i++) {
+							contract.methods.tokenOfOwnerByIndex(addr, i).call(function (err2, result2) {
+								if (err2) {
+									console.log(err2);
+								} else {
+									var token_id = result2.toString();
+									//var tag = token_name + ' #' + token_id;
+									contract.methods.tokenURI(token_id).call(function (err3, result3) {
+										if (err3) {
+											console.log(err3, token_id, result3);
+										} else {
+											var tokenURI = result3;
+											var tokenInfo = parseTokenURI(tokenURI);
+
+											$scope.allBoredApes.push({'id': token_id, 'pageId': Math.floor(token_id/100), 'tokenInfo': tokenInfo});
+											$scope.$apply(); // inform the data updates !
+										}
+									});
+								}
+							});
+						}
+					}
+				});
 			}
 
 			//////////////// add listeners /////////////////
