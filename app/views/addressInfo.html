@@ -68,6 +68,7 @@
 							</span>
 						</span>
 				</span>
+				<span ng-style="{ 'display': countBoredApes > 0 ? 'inline-block' : 'none' }">, BoredApes: {{countBoredApes}}</span>
 			</td>
         </tr>
 		<tr data-ng-repeat="i5 in allJNSDAOV">
@@ -122,6 +123,22 @@
 		  <td>{{i4.tag}}</td>
 		  <td><a href="/#/jns/{{i4.tokenInfo.description}}"><image height="20px" src="{{i4.tokenInfo.image}}"></image></a></td>
 		</tr>
+		<tr data-ng-if="countBoredApes > 0">
+			<td>BoredApes</td>
+			<td><span data-ng-repeat="cj in allBoredApes">
+					<div style="float:left; margin-left:1px;">
+						<div id="frame{{cj.id}}" style="position:relative" data-ng-if="cj.tokenInfo != undefined" ng-style="{ 'background-color': 'transparent' }">
+							<div><span style="display:inline-block;width:128px;height:128px;margin:0 2px 2px 0;"><image id="junk{{cj.id}}" alt="{{cj.tokenInfo.name}}" height="128px" style="image-rendering: pixelated;" src="{{cj.tokenInfo.image}}"></image></span></div>
+						</div>
+						<div style="text-align:center">
+							<span ng-style="{ 'background-color': '#cccccc' }">
+								#{{cj.id}}
+							</span>
+						</div>
+					</div>
+				</span>
+			</td>
+		  </tr>
         </tbody>
     </table>
 	<small>* 注：J, Joule (焦耳)和 wei (维)是能量单位。定义 1 J = 1 Ewei（艾维, exa-wei）= 10^9 Gwei（吉维, giga-wei）= 10^18 wei，即 1,000,000,000,000,000,000 wei energy（维能量）。</small>
