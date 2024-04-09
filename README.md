@@ -15,9 +15,17 @@ GPL (see LICENSE)
 
 开始：
 1. git clone the repo
-2. bower install安装依赖包
-3. ./serve.sh [A] 或者 http-server app/ [B]
-3. 浏览器打开 http://localhost:8000 [A] 或者 :8080 [B]
+2. bower install 安装依赖包
+3. git checkout core && git pull 拉取核心
+4. ./serve.sh [A] 或者 http-server app/ [B]
+5. 浏览器打开 http://localhost:8000 [A] 或者 :8080 [B]
+
+分支说明：
+```
+-- core contribs -------\
+                         >===> master ===> 
+-- ecosystem contribs --/
+```
 
 ## Change Log
 
@@ -212,4 +220,19 @@ TODO:
 
 2024.3.15
 - improve: use wei(维) 作为最小能量单位
+
+2024.3.19
+- improve: 合约工具支持提示合约是否有唯一控制者
+- new: 合约工具增加BoredApe (not in branch:core)
+
+2024.3.21
+- new: 合约工具增加CJDAO多签
+
+2024.3.31
+- merge contrib: 合并生态贡献：BoredApe在地址页的展示（负责人：楼兰渔夫） (not in branch:core)
+
+2024.4.9
+- use branch:core
+- improve: README开发流程，增加切换为core。先开发core feature，然后再merge to master.
+- improve: 地址页，wei energy 简化为 wei
 
