@@ -237,4 +237,5 @@ TODO:
 - improve: 地址页，wei energy 简化为 wei
 - improve: nginx config example for standalone deployment
 - fix: use Jouleverse instead of Jouleverse Mainnet, for better compatibility while click to add network (e.g. imtoken)
+- use rev: @footer of index.html, starting from 0.10.100 from now on 每次发布都增加这个版本号（遵从semantic versioning）
 
