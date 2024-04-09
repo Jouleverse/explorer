@@ -239,14 +239,14 @@
 					env.request({ method: 'wallet_addEthereumChain', 
 						params: [{ 
 							chainId: `0xe52`,
-							chainName: 'Jouleverse Mainnet',
+							chainName: 'Jouleverse',
 							nativeCurrency: {
 								name: 'Joule',
 								symbol: 'J ',
 								decimals: 18
 							},
-							rpcUrls: ['http://rpc.jnsdao.com:8502', 'https://rpc.jnsdao.com:8503'],
-								iconUrls: ['https://jnsdao.com/img/logo.svg'],
+							rpcUrls: ['https://rpc.jnsdao.com:8503'],
+								//iconUrls: ['https://jnsdao.com/img/logo.svg'], //not available by metmask
 								blockExplorerUrls: ['https://jscan.jnsdao.com'],
 							}] })
 					.then((res) => {
@@ -269,7 +269,7 @@
 						.catch((error) => {
 							console.error(`Error switch chain: ${error.code}: ${error.message}`);
 							dialogShowHtml(`未找到区块链网络(${error.code})`, `请先添加Jouleverse区块链主网：
-								<ul><li>网络名称: Jouleverse Mainnet</li>
+								<ul><li>网络名称: Jouleverse</li>
 								<li>网络 URL: https://rpc.jnsdao.com:8503</li>
 								<li>链 ID: 3666</li>
 								<li>代币符号: J</li>

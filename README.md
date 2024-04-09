@@ -236,4 +236,5 @@ TODO:
 - improve: README开发流程，增加切换为core。先开发core feature，然后再merge to master.
 - improve: 地址页，wei energy 简化为 wei
 - improve: nginx config example for standalone deployment
+- fix: use Jouleverse instead of Jouleverse Mainnet, for better compatibility while click to add network (e.g. imtoken)
 
