@@ -22,10 +22,12 @@ GPL (see LICENSE)
 
 分支说明：
 ```
--- core contribs -------\
-                         >===> master ===> 
--- ecosystem contribs --/
+-- core contribs (核心贡献) --> core --\
+                                        +>===> master ===> 
+-- ecosystem contribs (生态贡献) ------/
+
 ```
+因此，core分支是master分支的子集。开发核心功能，需先发布到core分支后，再merge到master。
 
 ## Change Log
 
