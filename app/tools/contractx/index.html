@@ -474,7 +474,7 @@ async function handleSmartContractCall(e) {
 
     // getting the data coming from the submitted form
     const data = new FormData(e.target);
-    var options = { gasLimit: 1000000 }; // Jouleverse: lower the gas limit from block.gaslimit 3m to 1m
+    var options = { gasLimit: 10000000 }; // Jouleverse: lower the gas limit from block.gaslimit 3m to 1m
     const contractName = data.get('contract-name'); // name of the smart contract
     const scFnc = data.get('function-name');  // name of the smart contract's function
 
