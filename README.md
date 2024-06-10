@@ -241,3 +241,6 @@ TODO:
 - fix: use Jouleverse instead of Jouleverse Mainnet, for better compatibility while click to add network (e.g. imtoken)
 - use rev: @footer of index.html, starting from 0.10.100 from now on 每次发布都增加这个版本号（遵从semantic versioning）
 
+2024.6.10
+- new: contract/toolx, add timelock core and timelock eco
+
