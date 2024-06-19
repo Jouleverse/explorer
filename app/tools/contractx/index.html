@@ -1104,7 +1104,10 @@ async function handleSmartContractCall(e) {
 
     var params = []; // is going to store all the parameters required from the smart contract's function
 
+    var dryrun = false; // just simulate it locally
+
     for (const [name, val] of data) {
+        if (name == 'dryrun' && val == 'on') dryrun = true;
         if (! name.includes('input[')) continue;
         params.push(val);
     }
@@ -1121,38 +1124,45 @@ async function handleSmartContractCall(e) {
         var userAddress = await getUserAddress(); // getting the user address (from the field or from the default user wallet)
         var userPrivateKey = getUserPrivateKey(); // getting the eventual private key from the input field of the UI
 
-        // calling a function that is PURE or VIEW
-        if (window.ethExp.methodIsViewOrPure(scFnc, contractName)) {
-            // NOTE: msg.sender is 0x0 on the VIEW methods. The client must set
-            // {from: userAddress} when calling the smart contract
-            var res = await window.ethExp.call(scFnc, params, contractName, {from: userAddress});
-            UI.consoleSuccess(res);
-        } 
-        // calling a function that is NON PAYABLE
-        else if (window.ethExp.methodIsNonPayable(scFnc, contractName)) {
-            (await window.ethExp.sendTxToSmartContract(userAddress, userPrivateKey, scFnc, params, options, contractName))
-                .on('transactionHash', transactionHash => UI.consoleSuccess({ transactionHash }))
-                .on('receipt', receipt => UI.consoleSuccess({ receipt }))
-                .on('error', error => {
-                    UI.consoleError('Error occurred: ' + error.message);
-                    console.log(error);
-                });
-        } 
-        // calling a function that is PAYABLE
-		// Jouleverse: WE WILL NEVER USE THIS
-        else if (window.ethExp.methodIsPayable(scFnc, contractName)) {
-            (await window.ethExp.sendTxToSmartContract(userAddress, userPrivateKey, scFnc, params, options, contractName))
-                .on('transactionHash', transactionHash => UI.consoleSuccess({ transactionHash }))
-                .on('receipt', receipt => UI.consoleSuccess({ receipt }))
-                .on('error', error => {
-                    UI.consoleError('Error occurred: ' + error.message);
-                    console.log(error);
-                });
-        }
-        // Throwing an error in case of the state mutability is not fund
-        else {
-            throw new Error('The stateMutability of the smart contract function ' + scFnc + ' is not defined.');
-        }
+		// Jouleverse: Encode and show calldata for facility
+		const calldata = window.ethExp.contract(contractName).methods[scFnc](...params).encodeABI();
+		UI.consoleSuccess('Jouleverse: calldata: ' + calldata);
+
+		console.log('dryrun: ' + dryrun);
+		if (!dryrun) {
+			// calling a function that is PURE or VIEW
+			if (window.ethExp.methodIsViewOrPure(scFnc, contractName)) {
+				// NOTE: msg.sender is 0x0 on the VIEW methods. The client must set
+				// {from: userAddress} when calling the smart contract
+				var res = await window.ethExp.call(scFnc, params, contractName, {from: userAddress});
+				UI.consoleSuccess(res);
+			} 
+			// calling a function that is NON PAYABLE
+			else if (window.ethExp.methodIsNonPayable(scFnc, contractName)) {
+				(await window.ethExp.sendTxToSmartContract(userAddress, userPrivateKey, scFnc, params, options, contractName))
+					.on('transactionHash', transactionHash => UI.consoleSuccess({ transactionHash }))
+					.on('receipt', receipt => UI.consoleSuccess({ receipt }))
+					.on('error', error => {
+						UI.consoleError('Error occurred: ' + error.message);
+						console.log(error);
+					});
+			} 
+			// calling a function that is PAYABLE
+			// Jouleverse: WE WILL NEVER USE THIS
+			else if (window.ethExp.methodIsPayable(scFnc, contractName)) {
+				(await window.ethExp.sendTxToSmartContract(userAddress, userPrivateKey, scFnc, params, options, contractName))
+					.on('transactionHash', transactionHash => UI.consoleSuccess({ transactionHash }))
+					.on('receipt', receipt => UI.consoleSuccess({ receipt }))
+					.on('error', error => {
+						UI.consoleError('Error occurred: ' + error.message);
+						console.log(error);
+					});
+			}
+			// Throwing an error in case of the state mutability is not fund
+			else {
+				throw new Error('The stateMutability of the smart contract function ' + scFnc + ' is not defined.');
+			}
+		}
     } catch (error) {
         if (error.message.includes('invalid arrayify value')) {
             var message = 'probably you input a wrong type as parameter.' + '<br>ERROR DETAIL:' + error.message;
@@ -1295,6 +1305,7 @@ function addFncToDashboard(contractName, abiItem) {
                     </div>
                 </div>
                 <div class="card-footer">
+					<input type="checkbox" name="dryrun" unchecked> Dry run?</input> <br>
                     <button type="submit" class="btn btn-danger btn-sm">Execute</button>
                 </div>
             </div>

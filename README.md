@@ -244,3 +244,7 @@ TODO:
 2024.6.10
 - new: contract/toolx, add timelock core and timelock eco
 
+2024.6.19
+- new: tools/contractx: encode & show calldata
+- new: tools/contractx: dryrun
+
