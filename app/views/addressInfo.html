@@ -49,6 +49,7 @@
         <tr>
 			<td><b>藏品和徽章：</b></td>
 			<td>
+				Planet: {{countPlanet || "-"}} , 
 				JTI: {{countJTI || "-"}} 
 				<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == jtiContractOwner.toLowerCase() ? 'inline-block' : 'none' }">
 					<button ng-click="star()">⭐️</button>
@@ -71,15 +72,10 @@
 				<span ng-style="{ 'display': countBoredApes > 0 ? 'inline-block' : 'none' }">, BoredApes: {{countBoredApes}}</span>
 			</td>
         </tr>
-		<tr data-ng-repeat="i5 in allJNSDAOV">
-		  <td>{{i5.tag}}</td>
-		  <td><img height="14px" src="{{jns_info.image}}" /> <image height="14px" src="{{i5.tokenInfo.image}}"></image> 
-			  <div style="color:#aaa;font-size:small;word-break:break-all;">{{i5.tokenInfo.npubkey}}</div>
-		  </td>
-		</tr>
-		<tr data-ng-repeat="i1 in allFlyingJ">
-		  <td>{{i1.tag}}</td>
-		  <td><image height="64px" src="{{i1.tokenInfo.image}}"></image></td>
+
+		<tr data-ng-repeat="i6 in allPlanet">
+		  <td>{{i6.tag}}</td>
+		  <td><image height="20px" src="{{i6.tokenInfo.image}}"></image></td>
 		</tr>
 		<tr data-ng-repeat="i2 in allJTI">
 		  <td>{{i2.tag}}</td>
@@ -90,6 +86,18 @@
 			  </span>
 		  </td>
 		</tr>
+
+		<tr data-ng-repeat="i1 in allFlyingJ">
+		  <td>{{i1.tag}}</td>
+		  <td><image height="64px" src="{{i1.tokenInfo.image}}"></image></td>
+		</tr>
+		<tr data-ng-repeat="i5 in allJNSDAOV">
+		  <td>{{i5.tag}}</td>
+		  <td><img height="14px" src="{{jns_info.image}}" /> <image height="14px" src="{{i5.tokenInfo.image}}"></image> 
+			  <div style="color:#aaa;font-size:small;word-break:break-all;">{{i5.tokenInfo.npubkey}}</div>
+		  </td>
+		</tr>
+
 		<tr data-ng-if="countCryptoJunks > 0">
 		  <td><a href="/#/cryptojunks">CryptoJunks</a></td>
 		  <td><span data-ng-repeat="cj in allCryptoJunks">

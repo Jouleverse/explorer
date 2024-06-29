@@ -264,6 +264,7 @@ angular.module('ethExplorer')
 				// fix '统计中...'
 				$scope.allCryptoJunks = [];
 				$scope.allFlyingJ = [];
+				$scope.allPlanet = [];
 				$scope.allJTI = [];
 				$scope.allJNS = [];
 				$scope.allJNSDAOV = [];
@@ -272,6 +273,7 @@ angular.module('ethExplorer')
 				// fetch & update
 				getAllJTI();
 				getAllFlyingJ();
+				getAllPlanet();
 				
 				if (shouldGetAddressNS) getAddressNS();
 
@@ -506,6 +508,41 @@ angular.module('ethExplorer')
 											}
 
 											$scope.allCryptoJunks.push({'id': token_id, 'pageId': Math.floor(token_id/100), 'tokenInfo': tokenInfo});
+											$scope.$apply(); // inform the data updates !
+										}
+									});
+								}
+							});
+						}
+					}
+				});
+			}
+
+			function getAllPlanet() {
+				$scope.allPlanet = [];
+				var addr = $scope.addressId;
+				var contract = new web3.eth.Contract(planet_ABI, planet_contract_address);
+				contract.methods.balanceOf(addr).call(function (err1, result1) {
+					if (err1) {
+						console.log(err1);
+					} else {
+						var balance = result1.toString();
+						$scope.countPlanet = balance || "0";
+						for (var i = 0; i < balance; i++) {
+							var token_name = "Planet";
+							contract.methods.tokenOfOwnerByIndex(addr, i).call(function (err2, result2) {
+								if (err2) {
+									console.log(err2);
+								} else {
+									var token_id = result2.toString();
+									var tag = token_name + ' #' + token_id;
+									contract.methods.tokenURI(token_id).call(function (err3, result3) {
+										if (err3) {
+											console.log(err3);
+										} else {
+											var tokenURI = result3;
+											var tokenInfo = parseTokenURI(tokenURI);
+											$scope.allPlanet.push({'tag': tag, 'tokenInfo': tokenInfo});
 											$scope.$apply(); // inform the data updates !
 										}
 									});
