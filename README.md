@@ -251,4 +251,6 @@ TODO:
 2024.6.29
 - new: planet show in did page.
 - new tools/contractx: planet & jti2config
+- improve: did page, add planet to top. and, bound jns can be clicked to jump to did page.
+
 
