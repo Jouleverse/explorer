@@ -243,8 +243,17 @@ TODO:
 
 2024.6.10
 - new: contract/toolx, add timelock core and timelock eco
+- release 0.10.101
 
 2024.6.19
 - new: tools/contractx: encode & show calldata
 - new: tools/contractx: dryrun
+- release 0.10.102
+
+2024.6.29
+- new: planet show in did page.
+- new tools/contractx: planet & jti2config
+- improve: did page, add planet to top. and, bound jns can be clicked to jump to did page.
+- improve: did page, jns list to compact list show.
+- release 0.10.103
 
