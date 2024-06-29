@@ -633,7 +633,7 @@ angular.module('ethExplorer')
 										} else {
 											var tokenURI = result3;
 											var tokenInfo = parseTokenURI(tokenURI);
-											$scope.allJNS.push({'tag': tag, 'tokenInfo': tokenInfo});
+											$scope.allJNS.push({'id': token_id, 'tag': tag, 'tokenInfo': tokenInfo});
 											$scope.$apply(); // inform the data updates !
 										}
 									});

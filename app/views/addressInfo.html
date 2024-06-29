@@ -136,9 +136,19 @@
 			  </span>
 		  </td>
 		</tr>
-		<tr data-ng-repeat="i4 in allJNS">
+		<!--tr data-ng-repeat="i4 in allJNS">
 		  <td>{{i4.tag}}</td>
 		  <td><a href="/#/jns/{{i4.tokenInfo.description}}"><image height="20px" src="{{i4.tokenInfo.image}}"></image></a></td>
+		</tr-->
+		<tr data-ng-if="countJNS > 0">
+			<td><a href="https://jnsdao.com">JNS</a></td>
+			<td><span data-ng-repeat="jns in allJNS">
+					<div style="float:left; margin-left:10px;">
+						<div><span style="display:inline-block;"><a href="/#/jns/{{jns.tokenInfo.description}}"><image id="jns{{jns.id}}" alt="{{jns.tokenInfo.name}}" height="20px" src="{{jns.tokenInfo.image}}"></image></a></span></div>
+						<div style="text-align:center;color:#999">#{{jns.id}}</div>
+					</div>
+				</span>
+			</td>
 		</tr>
         </tbody>
     </table>
