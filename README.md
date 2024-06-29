@@ -248,3 +248,7 @@ TODO:
 - new: tools/contractx: encode & show calldata
 - new: tools/contractx: dryrun
 
+2024.6.29
+- new: planet show in did page.
+- new tools/contractx: planet & jti2config
+
