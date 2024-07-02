@@ -257,3 +257,8 @@ TODO:
 - improve: did page, jns list to compact list show.
 - release 0.10.103
 
+2024.7.2
+- fix: contract tool: owner address 修正
+- improve: contract tool: ownertag 更好公示控制者身份
+- release 0.10.104
+

@@ -1604,7 +1604,8 @@ const contractDetailsJson = [
         "networks": {
             "3666": {
                 "address": "0x9c100856f5C60a3ec87Aa408567304DB2AfC241F",
-				"ownership": "0x99EfD90ff3B3aEE2c298D6b315C544750213e978"
+				"ownership": "0xB313C0de794F530Ab08e0a71C31Ee022e875Fe76",
+				"ownertag": "jl.j"
             }
         }
     },
@@ -1614,7 +1615,8 @@ const contractDetailsJson = [
         "networks": {
             "3666": {
                 "address": "0x77136ef358f55E20E7d51259fa47D3D68C9324db",
-				"ownership": "0x99EfD90ff3B3aEE2c298D6b315C544750213e978"
+				"ownership": "0xB313C0de794F530Ab08e0a71C31Ee022e875Fe76",
+				"ownertag": "jl.j"
             }
         }
     },
@@ -1624,7 +1626,8 @@ const contractDetailsJson = [
         "networks": {
             "3666": {
                 "address": "0xf8AbF36Bb2dc525b1E566d6B42F6Fd1BB2035b89",
-				"ownership": "0x4eF599b6E39D950D6Ddbd830fF5f95e06770C1B3"
+				"ownership": "0x4eF599b6E39D950D6Ddbd830fF5f95e06770C1B3",
+				"ownertag": "JNSDAO多签"
             }
         }
     },
@@ -1652,7 +1655,8 @@ const contractDetailsJson = [
         "networks": {
             "3666": {
                 "address": "0x628beb88dD440A8c5e4cC89Ab33a041f521e4323",
-				"ownership": "0x3B717119878E2db1AA7df46F5AdcF9766A01706F"
+				"ownership": "0x3B717119878E2db1AA7df46F5AdcF9766A01706F",
+				"ownertag": "创世金库"
             }
         }
     },
@@ -1662,7 +1666,8 @@ const contractDetailsJson = [
         "networks": {
             "3666": {
                 "address": "0xbb6b53Fadf85B73258cb6A54F1343Ac4D5F99773",
-				"ownership": "0x3B717119878E2db1AA7df46F5AdcF9766A01706F"
+				"ownership": "0x3B717119878E2db1AA7df46F5AdcF9766A01706F",
+				"ownertag": "创世金库"
             }
         }
     },
@@ -1825,6 +1830,7 @@ async function bootContracts(contractDetails) {
         await window.ethExp.loadContact(
             contractDetails[key].networks[netId].address, 
             contractDetails[key].networks[netId].ownership, 
+            contractDetails[key].networks[netId].ownertag, 
             contractDetails[key].abi, 
             contractDetails[key].contractName,
             contractDetails[key].contractSource,
@@ -2079,6 +2085,7 @@ function addContractToDashboard(contract, active=false) {
 	//Jouleverse
     const cAddress = contract.address;
     const cOwnership = contract.ownership;
+    const cOwnerTag = contract.ownertag;
 	const cSource = contract.contractSource;
 	const cSourceVerified = contract.sourceVerified;
 	console.log(cName, cSource);
@@ -2093,9 +2100,9 @@ function addContractToDashboard(contract, active=false) {
 
 	var cOwnershipLink = "";
 	if (cOwnership !== undefined) {
-		cOwnershipLink = '⚠️<font color="red">本合约具有唯一控制者</font>：<a target="_blank" href="/#/address/' + cOwnership + '">' + cOwnership + '</a>';
+		cOwnershipLink = '❗️<font color="red">提示：本合约具有owner或admin</font>：<a target="_blank" href="/#/address/' + cOwnership + '">' + cOwnerTag + '</a>';
 	} else {
-		cOwnershipLink = '✅<font color="darkgreen">本合约为无主(headless)合约，没有唯一控制者</font>';
+		cOwnershipLink = '✅<font color="darkgreen">本合约没有owner或admin</font>';
 	}
 
     // adding a tab HTML element with the name of the smart contract
@@ -2470,7 +2477,10 @@ class EthereumExplorer {
             throw 'The network ID does not exist in the JSON of the contract. Probably you have to change network. Current network: ' + netId;
         }
 
-        this.loadContact(contractJson.networks[netId].address, contractJson.abi, contractName);
+        this.loadContact(contractJson.networks[netId].address,
+			contractJson.networks[netId].ownership,
+			contractJson.networks[netId].ownertag,
+			contractJson.abi, contractName);
     }
 
     /**
@@ -2482,10 +2492,11 @@ class EthereumExplorer {
      * @param   {Object}  contractAbi      The ABI of the contract.
      * @param   {string}  contractName     The name of the contract, useful if you deal with more than one smart contract.
      */
-    loadContact(contractAddress, contractOwnership, contractAbi, contractName='default', contractSource, sourceVerified) {
+    loadContact(contractAddress, contractOwnership, contractOwnerTag, contractAbi, contractName='default', contractSource, sourceVerified) {
         this.contractDetails[contractName] = {};
         this.contractDetails[contractName].address = contractAddress;
         this.contractDetails[contractName].ownership = contractOwnership;
+        this.contractDetails[contractName].ownertag = contractOwnerTag;
         this.contractDetails[contractName].abi = contractAbi;
         this.contractDetails[contractName].contractName = contractName;
         this.contractDetails[contractName].contractSource = contractSource;
