@@ -1,19 +1,20 @@
 <div class="container" style="padding-top: 50px;">
 	<h1>
 		<span data-ng-if="jnsId !== undefined">
-			<p><img height="32px" src="{{jns_info.image}}" />
+			<img height="32px" src="{{jns_info.image}}" />
 			<span ng-style="{ 'display': countPlanet > 0 ? 'inline-block' : 'none' }">
 				<small>from</small>
 				<image height="20px" src="{{allPlanet[0].tokenInfo.image}}"></image>
 			</span>
-			</p>
-			{{jns_info.description}}
+			<p>{{jns_info.description}}
 			<small>查看该DID数字身份的资料</small>
+			</p>
 		</span>
 		<span data-ng-if="jnsId === undefined">
-			<p style="color:#050">{{ addressId.substr(0,6) + '...' + addressId.substr(-4) }}</p>
-			链地址
+			<span style="color:#050">{{ addressId.substr(0,6) + '...' + addressId.substr(-4) }}</span>
+			<p>链地址
 			<small>查看链地址信息</small>
+			</p>
 		</span>
 		<!--span class="zoom" ng-style="{ 'display': balance == 0 ? 'inline-block' : 'none' }">
 			<button ng-click="airdrop()">🎁</button>
@@ -31,7 +32,11 @@
 				<span data-ng-if="jns_info !== undefined">
 					<a href="/#/did/{{jns_info.description}}"><img height="14px" src="{{jns_info.image}}" /></a>
 				</span>
-				{{addressId}} <span class="pull-right"></span>
+				{{addressId}}
+				<span ng-style="{ 'display': countJTI2 > 0 ? 'inline-block' : 'none' }">
+					<image height="16px" style="margin-top:-3px" src="{{allJTI2[0].tokenInfo.image}}"></image>
+				</span>
+				<span class="pull-right"></span>
 			</th>
         </tr>
         </tbody>
@@ -59,8 +64,9 @@
         <tr>
 			<td><b>藏品和徽章：</b></td>
 			<td>
-				Planet: {{countPlanet || "-"}} , 
-				JTI: {{countJTI || "-"}} 
+				Planet: {{countPlanet || "-"}}
+				, JTI2: {{countJTI2 || "-"}} 
+				, JTI: {{countJTI || "-"}} 
 				<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == jtiContractOwner.toLowerCase() ? 'inline-block' : 'none' }">
 					<button ng-click="star()">⭐️</button>
 				</span>
@@ -86,6 +92,11 @@
 		  <td>{{i6.tag}}</td>
 		  <td><image height="20px" src="{{i6.tokenInfo.image}}"></image></td>
 		</tr>
+		<tr data-ng-repeat="i7 in allJTI2">
+		  <td>{{i7.tag}}</td>
+		  <td><image height="16px" style="margin-top:-3px" src="{{i7.tokenInfo.image}}"></image> 可信身份 编号：{{i7.tokenInfo.id}} 认证时间：{{toLocaleDateString(i7.tokenInfo.sinceTimestamp)}}</td>
+		</tr>
+
 		<tr data-ng-repeat="i2 in allJTI">
 		  <td>{{i2.tag}}</td>
 		  <td>
