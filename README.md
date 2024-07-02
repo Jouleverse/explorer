@@ -261,4 +261,7 @@ TODO:
 - fix: contract tool: owner address 修正
 - improve: contract tool: ownertag 更好公示控制者身份
 - release 0.10.104
+- new: contract tool: jti2 identity support
+- new: did page: jti2 show
+- release 0.10.104
 
