@@ -94,7 +94,7 @@
 		</tr>
 		<tr data-ng-repeat="i7 in allJTI2">
 		  <td>{{i7.tag}}</td>
-		  <td><image height="16px" style="margin-top:-3px" src="{{i7.tokenInfo.image}}"></image> 可信身份 编号：{{i7.tokenInfo.id}} 认证时间：{{toLocaleDateString(i7.tokenInfo.sinceTimestamp)}}</td>
+		  <td><image height="16px" style="margin-top:-3px" src="{{i7.tokenInfo.image}}"></image> <font color="gray">(<small>已认证, 编号: {{i7.tokenInfo.id}}, 日期: {{toLocaleDateString(i7.tokenInfo.sinceTimestamp)}}</small>)</font></td>
 		</tr>
 
 		<tr data-ng-repeat="i2 in allJTI">
