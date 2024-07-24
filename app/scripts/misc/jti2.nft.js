@@ -1,4 +1,4 @@
-var jti2_contract_address = "0x39098bdC930435e26133746Aa6AcA455e071d13c"; // mainnet
+var jti2_contract_address = "0x7e722837Ff19BE2687c2089DBf70D064fB9622AE"; // mainnet
 var jti2_ABI = [
 	{
 		"inputs": [
@@ -88,6 +88,24 @@ var jti2_ABI = [
 		"inputs": [
 			{
 				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "byPlanetId",
+				"type": "uint256"
+			}
+		],
+		"name": "assign",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
 				"name": "newConfigAddress",
 				"type": "address"
 			}
@@ -119,19 +137,6 @@ var jti2_ABI = [
 			}
 		],
 		"name": "changePlanetAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "tokenId",
-				"type": "uint256"
-			}
-		],
-		"name": "distrust",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -179,8 +184,44 @@ var jti2_ABI = [
 		"type": "event"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "byPlanetId",
+				"type": "uint256"
+			}
+		],
+		"name": "reassign",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "revoke",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -227,7 +268,7 @@ var jti2_ABI = [
 			},
 			{
 				"internalType": "bytes",
-				"name": "data",
+				"name": "_data",
 				"type": "bytes"
 			}
 		],
@@ -311,24 +352,6 @@ var jti2_ABI = [
 			}
 		],
 		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "byPlanetId",
-				"type": "uint256"
-			}
-		],
-		"name": "trust",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"

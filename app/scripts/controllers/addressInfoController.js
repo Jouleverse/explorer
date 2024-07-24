@@ -273,14 +273,14 @@ angular.module('ethExplorer')
 				$scope.allCryptoJunks = [];
 				$scope.allFlyingJ = [];
 				$scope.allPlanet = [];
-				$scope.allJTI = [];
+				//$scope.allJTI = [];
 				$scope.allJTI2 = [];
 				$scope.allJNS = [];
 				$scope.allJNSDAOV = [];
 				$scope.allJNSVote = [];
 
 				// fetch & update
-				getAllJTI();
+				//getAllJTI();
 				getAllJTI2();
 				getAllFlyingJ();
 				getAllPlanet();
@@ -420,7 +420,7 @@ angular.module('ethExplorer')
 				});
 			}
 
-			function getAllJTI() {
+			/*function getAllJTI() {
 				$scope.allJTI = [];
 				var addr = $scope.addressId;
 				var contract = new web3.eth.Contract(jti_ABI, jti_contract_address);
@@ -464,6 +464,7 @@ angular.module('ethExplorer')
 					$scope.$apply();
 				});
 			}
+			*/
 
 			function getAllJTI2() {
 				$scope.allJTI2 = [];
@@ -476,7 +477,7 @@ angular.module('ethExplorer')
 						var balance = result1.toString();
 						$scope.countJTI2 = balance;
 						for (var i = 0; i < balance; i++) {
-							var token_name = "JTI v2";
+							var token_name = "JTI";
 							contract.methods.tokenOfOwnerByIndex(addr, i).call(function (err2, result2) {
 								if (err2) {
 									console.log(err2);
