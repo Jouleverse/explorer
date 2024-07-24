@@ -45,7 +45,13 @@
         <tbody>
         <tr>
 			<td><b>能量余额：</b></td>
-			<td>{{balanceInEther || "-"}} Joule (焦耳)，即 {{balance || "-"}} wei (维)</td>
+			<td>
+				{{balanceInEther || "-"}} Joule (焦耳)，即 {{balance || "-"}} wei (维)
+
+				<span ng-style="{ 'display': allJTI2.length > 0 && balance == 0 && account ? 'inline-block' : 'none' }">
+					<button ng-click="wjUnwrapToNewbie()"><font style="color:#ae4c4c">新手加油 0.005 J</font></button>
+				</span>
+			</td>
         </tr>
         <tr>
 			<td><b>数字资产：</b></td>
@@ -65,11 +71,12 @@
 			<td><b>藏品和徽章：</b></td>
 			<td>
 				Planet: {{countPlanet || "-"}}
-				, JTI2: {{countJTI2 || "-"}} 
-				, JTI: {{countJTI || "-"}} 
+				, JTI(v2): {{countJTI2 || "-"}} 
+				<!--, JTI: {{countJTI || "-"}} 
 				<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == jtiContractOwner.toLowerCase() ? 'inline-block' : 'none' }">
 					<button ng-click="star()">⭐️</button>
 				</span>
+				-->
 				<span ng-style="{ 'display': countFlyingJ > 0 ? 'inline-block' : 'none' }">, FlyingJ: {{countFlyingJ}}</span>
 				<span ng-style="{ 'display': countCryptoJunks > 0 ? 'inline-block' : 'none' }">, CryptoJunks: {{countCryptoJunks}}</span>
 				<span ng-style="{ 'display': countJNS > 0 ? 'inline-block' : 'none' }">
@@ -94,10 +101,12 @@
 		</tr>
 		<tr data-ng-repeat="i7 in allJTI2">
 		  <td>{{i7.tag}}</td>
-		  <td><image height="16px" style="margin-top:-3px" src="{{i7.tokenInfo.image}}"></image> <font color="gray">(<small>已认证, 编号: {{i7.tokenInfo.id}}, 日期: {{toLocaleDateString(i7.tokenInfo.sinceTimestamp)}}</small>)</font></td>
+		  <td>
+			  <image height="16px" style="margin-top:-3px" src="{{i7.tokenInfo.image}}"></image> <font color="gray">(<small>已认证, 编号: {{i7.tokenInfo.id}}, 日期: {{toLocaleDateString(i7.tokenInfo.sinceTimestamp)}}</small>)</font>
+		  </td>
 		</tr>
 
-		<tr data-ng-repeat="i2 in allJTI">
+		<!--tr data-ng-repeat="i2 in allJTI">
 		  <td>{{i2.tag}}</td>
 		  <td>
 			  <image height="24px" src="{{i2.tokenInfo.image}}" style="filter:invert(5%) sepia(75%) saturate(7378%) hue-rotate(45deg) brightness(114%) contrast(112%);"></image>
@@ -105,7 +114,7 @@
 				  <button ng-click="wjUnwrapToNewbie()"><font style="color:#ae4c4c">新手加油 0.005 J</font></button>
 			  </span>
 		  </td>
-		</tr>
+		</tr-->
 
 		<tr data-ng-repeat="i1 in allFlyingJ">
 		  <td>{{i1.tag}}</td>

@@ -269,3 +269,7 @@ TODO:
 - improve: new version of jti2
 - release 0.10.105
 
+2024.7.25
+- improve: delete jti v1
+- release 0.10.106
+
