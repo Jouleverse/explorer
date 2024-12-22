@@ -241,3 +241,35 @@ TODO:
 - fix: use Jouleverse instead of Jouleverse Mainnet, for better compatibility while click to add network (e.g. imtoken)
 - use rev: @footer of index.html, starting from 0.10.100 from now on 每次发布都增加这个版本号（遵从semantic versioning）
 
+2024.6.10
+- new: contract/toolx, add timelock core and timelock eco
+- release 0.10.101
+
+2024.6.19
+- new: tools/contractx: encode & show calldata
+- new: tools/contractx: dryrun
+- release 0.10.102
+
+2024.6.29
+- new: planet show in did page.
+- new tools/contractx: planet & jti2config
+- improve: did page, add planet to top. and, bound jns can be clicked to jump to did page.
+- improve: did page, jns list to compact list show.
+- release 0.10.103
+
+2024.7.2
+- fix: contract tool: owner address 修正
+- improve: contract tool: ownertag 更好公示控制者身份
+- release 0.10.104
+- new: contract tool: jti2 identity support
+- new: did page: jti2 show
+- release 0.10.104
+
+2024.7.23
+- improve: new version of jti2
+- release 0.10.105
+
+2024.7.25
+- improve: delete jti v1
+- release 0.10.106
+

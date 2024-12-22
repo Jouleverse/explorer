@@ -1,14 +1,20 @@
 <div class="container" style="padding-top: 50px;">
 	<h1>
 		<span data-ng-if="jnsId !== undefined">
-			<p><img height="32px" src="{{jns_info.image}}" /></p>
-			{{jns_info.description}}
-			<small>查看该数字身份DID的资料</small>
+			<img height="32px" src="{{jns_info.image}}" />
+			<span ng-style="{ 'display': countPlanet > 0 ? 'inline-block' : 'none' }">
+				<small>from</small>
+				<image height="20px" src="{{allPlanet[0].tokenInfo.image}}"></image>
+			</span>
+			<p>{{jns_info.description}}
+			<small>查看该DID数字身份的资料</small>
+			</p>
 		</span>
 		<span data-ng-if="jnsId === undefined">
-			<p style="color:#050">{{ addressId.substr(0,6) + '...' + addressId.substr(-4) }}</p>
-			链地址
+			<span style="color:#050">{{ addressId.substr(0,6) + '...' + addressId.substr(-4) }}</span>
+			<p>链地址
 			<small>查看链地址信息</small>
+			</p>
 		</span>
 		<!--span class="zoom" ng-style="{ 'display': balance == 0 ? 'inline-block' : 'none' }">
 			<button ng-click="airdrop()">🎁</button>
@@ -22,7 +28,16 @@
     <table class="table table-striped" cellpadding="0" cellspacing="0" style="padding:0px;float:left;margin:0px;width:100%">
         <tbody>
         <tr>
-			<th colspan="3" align="left"><img height="14px" src="{{jns_info.image}}" /> {{addressId}} <span class="pull-right"></span></th>
+			<th colspan="3" align="left">
+				<span data-ng-if="jns_info !== undefined">
+					<a href="/#/did/{{jns_info.description}}"><img height="14px" src="{{jns_info.image}}" /></a>
+				</span>
+				{{addressId}}
+				<span ng-style="{ 'display': countJTI2 > 0 ? 'inline-block' : 'none' }">
+					<image height="16px" style="margin-top:-3px" src="{{allJTI2[0].tokenInfo.image}}"></image>
+				</span>
+				<span class="pull-right"></span>
+			</th>
         </tr>
         </tbody>
     </table>
@@ -30,7 +45,13 @@
         <tbody>
         <tr>
 			<td><b>能量余额：</b></td>
-			<td>{{balanceInEther || "-"}} Joule (焦耳)，即 {{balance || "-"}} wei (维)</td>
+			<td>
+				{{balanceInEther || "-"}} Joule (焦耳)，即 {{balance || "-"}} wei (维)
+
+				<span ng-style="{ 'display': allJTI2.length > 0 && balance == 0 && account ? 'inline-block' : 'none' }">
+					<button ng-click="wjUnwrapToNewbie()"><font style="color:#ae4c4c">新手加油 0.005 J</font></button>
+				</span>
+			</td>
         </tr>
         <tr>
 			<td><b>数字资产：</b></td>
@@ -49,10 +70,13 @@
         <tr>
 			<td><b>藏品和徽章：</b></td>
 			<td>
-				JTI: {{countJTI || "-"}} 
+				Planet: {{countPlanet || "-"}}
+				, JTI(v2): {{countJTI2 || "-"}} 
+				<!--, JTI: {{countJTI || "-"}} 
 				<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == jtiContractOwner.toLowerCase() ? 'inline-block' : 'none' }">
 					<button ng-click="star()">⭐️</button>
 				</span>
+				-->
 				<span ng-style="{ 'display': countFlyingJ > 0 ? 'inline-block' : 'none' }">, FlyingJ: {{countFlyingJ}}</span>
 				<span ng-style="{ 'display': countCryptoJunks > 0 ? 'inline-block' : 'none' }">, CryptoJunks: {{countCryptoJunks}}</span>
 				<span ng-style="{ 'display': countJNS > 0 ? 'inline-block' : 'none' }">
@@ -71,17 +95,19 @@
 				<span ng-style="{ 'display': countBoredApes > 0 ? 'inline-block' : 'none' }">, BoredApes: {{countBoredApes}}</span>
 			</td>
         </tr>
-		<tr data-ng-repeat="i5 in allJNSDAOV">
-		  <td>{{i5.tag}}</td>
-		  <td><img height="14px" src="{{jns_info.image}}" /> <image height="14px" src="{{i5.tokenInfo.image}}"></image> 
-			  <div style="color:#aaa;font-size:small;word-break:break-all;">{{i5.tokenInfo.npubkey}}</div>
+
+		<tr data-ng-repeat="i6 in allPlanet">
+		  <td>{{i6.tag}}</td>
+		  <td><image height="20px" src="{{i6.tokenInfo.image}}"></image></td>
+		</tr>
+		<tr data-ng-repeat="i7 in allJTI2">
+		  <td>{{i7.tag}}</td>
+		  <td>
+			  <image height="16px" style="margin-top:-3px" src="{{i7.tokenInfo.image}}"></image> <font color="gray">(<small>已认证, 编号: {{i7.tokenInfo.id}}, 日期: {{toLocaleDateString(i7.tokenInfo.sinceTimestamp)}}</small>)</font>
 		  </td>
 		</tr>
-		<tr data-ng-repeat="i1 in allFlyingJ">
-		  <td>{{i1.tag}}</td>
-		  <td><image height="64px" src="{{i1.tokenInfo.image}}"></image></td>
-		</tr>
-		<tr data-ng-repeat="i2 in allJTI">
+
+		<!--tr data-ng-repeat="i2 in allJTI">
 		  <td>{{i2.tag}}</td>
 		  <td>
 			  <image height="24px" src="{{i2.tokenInfo.image}}" style="filter:invert(5%) sepia(75%) saturate(7378%) hue-rotate(45deg) brightness(114%) contrast(112%);"></image>
@@ -89,7 +115,19 @@
 				  <button ng-click="wjUnwrapToNewbie()"><font style="color:#ae4c4c">新手加油 0.005 J</font></button>
 			  </span>
 		  </td>
+		</tr-->
+
+		<tr data-ng-repeat="i1 in allFlyingJ">
+		  <td>{{i1.tag}}</td>
+		  <td><image height="64px" src="{{i1.tokenInfo.image}}"></image></td>
 		</tr>
+		<tr data-ng-repeat="i5 in allJNSDAOV">
+		  <td>{{i5.tag}}</td>
+		  <td><img height="14px" src="{{jns_info.image}}" /> <image height="14px" src="{{i5.tokenInfo.image}}"></image> 
+			  <div style="color:#aaa;font-size:small;word-break:break-all;">{{i5.tokenInfo.npubkey}}</div>
+		  </td>
+		</tr>
+
 		<tr data-ng-if="countCryptoJunks > 0">
 		  <td><a href="/#/cryptojunks">CryptoJunks</a></td>
 		  <td><span data-ng-repeat="cj in allCryptoJunks">
@@ -119,9 +157,19 @@
 			  </span>
 		  </td>
 		</tr>
-		<tr data-ng-repeat="i4 in allJNS">
+		<!--tr data-ng-repeat="i4 in allJNS">
 		  <td>{{i4.tag}}</td>
 		  <td><a href="/#/jns/{{i4.tokenInfo.description}}"><image height="20px" src="{{i4.tokenInfo.image}}"></image></a></td>
+		</tr-->
+		<tr data-ng-if="countJNS > 0">
+			<td><a href="https://jnsdao.com">JNS</a></td>
+			<td><span data-ng-repeat="jns in allJNS">
+					<div style="float:left; margin-left:10px;">
+						<div><span style="display:inline-block;"><a href="/#/jns/{{jns.tokenInfo.description}}"><image id="jns{{jns.id}}" alt="{{jns.tokenInfo.name}}" height="20px" src="{{jns.tokenInfo.image}}"></image></a></span></div>
+						<div style="text-align:center;color:#999">#{{jns.id}}</div>
+					</div>
+				</span>
+			</td>
 		</tr>
 		<tr data-ng-if="countBoredApes > 0">
 			<td>BoredApes</td>
