@@ -278,8 +278,14 @@ angular.module('ethExplorer')
 				$scope.allJNS = [];
 				$scope.allJNSDAOV = [];
 				$scope.allJNSVote = [];
+				// proof of liveness
+				$scope.allJVCore = [];
+				$scope.allPOP = []; //POP Badges
 
 				// fetch & update
+				getAllJVCore();
+				getAllPOP();
+
 				//getAllJTI();
 				getAllJTI2();
 				getAllFlyingJ();
@@ -414,6 +420,78 @@ angular.module('ethExplorer')
 								var jns_tokenURI = result2;
 								$scope.jns_info = parseTokenURI(jns_tokenURI);
 								$scope.$apply(); //update
+							});
+						}
+					}
+				});
+			}
+
+			function getAllJVCore() {
+				$scope.allPlanet = [];
+				var addr = $scope.addressId;
+				var contract = new web3.eth.Contract(jvcore_ABI, jvcore_contract_address);
+				contract.methods.balanceOf(addr).call(function (err1, result1) {
+					if (err1) {
+						console.log(err1);
+					} else {
+						var balance = result1.toString();
+						$scope.countJVCore = balance || "0";
+						for (var i = 0; i < balance; i++) {
+							var token_name = "JVCore";
+							contract.methods.tokenOfOwnerByIndex(addr, i).call(function (err2, result2) {
+								if (err2) {
+									console.log(err2);
+								} else {
+									var token_id = result2.toString();
+									var tag = token_name + ' #' + token_id;
+									contract.methods.tokenURI(token_id).call(function (err3, result3) {
+										if (err3) {
+											console.log(err3);
+										} else {
+											var tokenURI = result3;
+											var tokenInfo = parseTokenURI(tokenURI);
+											$scope.allJVCore.push({'tag': tag, 'tokenInfo': tokenInfo});
+											$scope.$apply(); // inform the data updates !
+										}
+									});
+								}
+							});
+						}
+					}
+				});
+			}
+
+			function getAllPOP() {
+				$scope.allPlanet = [];
+				var addr = $scope.addressId;
+				var contract = new web3.eth.Contract(pop_ABI, pop_contract_address);
+				contract.methods.balanceOf(addr).call(function (err1, result1) {
+					if (err1) {
+						console.log(err1);
+					} else {
+						var balance = result1.toString();
+						$scope.countPOP = balance || "0";
+						for (var i = 0; i < balance; i++) {
+							var token_name = "POP";
+							contract.methods.tokenOfOwnerByIndex(addr, i).call(function (err2, result2) {
+								if (err2) {
+									console.log(err2);
+								} else {
+									var token_id = result2.toString();
+									var tag = token_name + ' #' + token_id;
+									contract.methods.tokenURI(token_id).call(function (err3, result3) {
+										if (err3) {
+											console.log(err3);
+										} else {
+											var tokenURI = result3;
+											var tokenInfo = parseTokenURI(tokenURI);
+											console.log(tokenInfo);
+											var month = new Date(tokenInfo.checkInTimestamp * 1000).getMonth() + 1;
+											$scope.allPOP.push({'tag': tag, 'tokenInfo': tokenInfo, 'month': month});
+											$scope.$apply(); // inform the data updates !
+										}
+									});
+								}
 							});
 						}
 					}
@@ -743,6 +821,7 @@ angular.module('ethExplorer')
 
 			}
 
+
 			function getAllBoredApes() {
 				$scope.allBoredApes = [];
 				var addr = $scope.addressId;
@@ -777,6 +856,7 @@ angular.module('ethExplorer')
 					}
 				});
 			}
+
 
 			//////////////// add listeners /////////////////
 			if (window.ethereum) {

@@ -273,3 +273,6 @@ TODO:
 - improve: delete jti v1
 - release 0.10.106
 
+2025.1.24
+- new: add support to show JVCore and POP Badge for on-chain checkin
+
