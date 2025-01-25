@@ -70,9 +70,14 @@
             </tr>
             <tr>
                 <td>输入数据</td>
-				<td><p style="word-break:break-all;">{{input}}</p></td>
+				<td>
+                    <p ng-show="inputFormat == 'raw_data'" style="word-break:break-all;">{{input}}</p> 
+                    <p ng-show="inputFormat == 'decode_data'" style="word-break:break-all;">
+                    <pre ng-show="inputFormat == 'decode_data'">{{inputDecoderJsonString}}</pre>
+                    </p>
+                    <a href="javascript:;" ng-click="toggleDecodeInput()">{{targetInputFormat}}</a>
+                </td>
             </tr>
-
 
             </tbody>
         </table>
