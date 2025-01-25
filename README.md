@@ -276,3 +276,6 @@ TODO:
 2025.1.24
 - new: add support to show JVCore and POP Badge for on-chain checkin
 
+2025.1.25
+- fix: show JVCore #id
+
