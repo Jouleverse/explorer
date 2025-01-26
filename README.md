@@ -278,4 +278,9 @@ TODO:
 
 2025.1.25
 - fix: show JVCore #id
+- release: 0.10.107
+
+2025.1.26
+- new: abi-decode tx input data. contributor: Jeff.
+- release: 0.10.108
 
