@@ -273,3 +273,14 @@ TODO:
 - improve: delete jti v1
 - release 0.10.106
 
+2025.1.24
+- new: add support to show JVCore and POP Badge for on-chain checkin
+
+2025.1.25
+- fix: show JVCore #id
+- release: 0.10.107
+
+2025.1.26
+- new: abi-decode tx input data. contributor: Jeff.
+- release: 0.10.108
+

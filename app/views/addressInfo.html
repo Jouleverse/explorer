@@ -2,10 +2,10 @@
 	<h1>
 		<span data-ng-if="jnsId !== undefined">
 			<img height="32px" src="{{jns_info.image}}" />
-			<span ng-style="{ 'display': countPlanet > 0 ? 'inline-block' : 'none' }">
+			<!--span ng-style="{ 'display': countPlanet > 0 ? 'inline-block' : 'none' }">
 				<small>from</small>
 				<image height="20px" src="{{allPlanet[0].tokenInfo.image}}"></image>
-			</span>
+			</span-->
 			<p>{{jns_info.description}}
 			<small>查看该DID数字身份的资料</small>
 			</p>
@@ -95,6 +95,21 @@
 				<span ng-style="{ 'display': countBoredApes > 0 ? 'inline-block' : 'none' }">, BoredApes: {{countBoredApes}}</span>
 			</td>
         </tr>
+
+		<tr data-ng-repeat="jvcore in allJVCore">
+		  <td>{{jvcore.tag}}</td>
+		  <td><image height="20px" src="{{jvcore.tokenInfo.image}}"></image></td>
+		</tr>
+		<tr data-ng-if="countPOP > 0">
+		    <td>JVCore POP Check-In(s)</td>
+			<td><span data-ng-repeat="pop in allPOP">
+					<div style="float:left; margin-left:10px;">
+						<div><span style="display:inline-block;"><image id="pop{{pop.id}}" alt="{{pop.tokenInfo.name}}" height="20px" src="{{pop.tokenInfo.image}}"></image></a></span></div>
+						<div style="font-size:8px;text-align:center;color:#999">{{pop.month}}</div>
+					</div>
+				</span>
+			</td>
+		</tr>
 
 		<tr data-ng-repeat="i6 in allPlanet">
 		  <td>{{i6.tag}}</td>

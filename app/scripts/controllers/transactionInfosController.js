@@ -39,6 +39,33 @@ angular.module('ethExplorer')
                     $scope.gasPriceGwei = gasPriceGwei < 10 ? parseInt(gasPriceGwei * 10)/10 : parseInt(gasPriceGwei);
                     $scope.hash = result.hash;
                     $scope.input = result.input; // that's a string
+
+                    $scope.inputFormat = 'raw_data';
+                    $scope.targetInputFormat = "decode";
+                    $scope.inputDecoderJsonString = "";
+
+                    $scope.toggleDecodeInput = function() {
+
+                        if ($scope.inputFormat == "raw_data") {
+                            
+                            if ($scope.inputDecoderJsonString == "") {
+                                let inputDecoder = decodeInput($scope.input);
+                                $scope.inputDecoderJsonString = JSON.stringify(inputDecoder, '', 2);
+                            }
+
+                            $scope.inputFormat = 'decode_data';
+                            $scope.targetInputFormat = "raw data";
+
+                        } else {
+                            
+                            $scope.inputFormat = 'raw_data';
+                            $scope.targetInputFormat = "decode";
+
+                        }
+                        
+                    }
+
+
                     $scope.nonce = result.nonce;
                     $scope.to = result.to;
                     $scope.transactionIndex = result.transactionIndex;
@@ -92,6 +119,22 @@ angular.module('ethExplorer')
                 });
                 return deferred.promise;
 
+            }
+
+            function decodeInput(inputString) {
+                abiDecoder.addABI(wj_ABI);
+                abiDecoder.addABI(redpacket_ABI);
+                abiDecoder.addABI(pop_ABI);
+                abiDecoder.addABI(planet_ABI);
+                abiDecoder.addABI(jvcore_ABI);
+                abiDecoder.addABI(jti2_ABI);
+                abiDecoder.addABI(jti_ABI);
+                abiDecoder.addABI(jnsvote_ABI);
+                abiDecoder.addABI(jns_ABI);
+                abiDecoder.addABI(flyingj_ABI);
+                abiDecoder.addABI(airdrop_ABI);
+                return abiDecoder.decodeMethod(inputString);
+                
             }
 
 
