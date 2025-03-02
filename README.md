@@ -284,3 +284,6 @@ TODO:
 - new: abi-decode tx input data. contributor: Jeff.
 - release: 0.10.108
 
+2025.3.2
+- delete: remove tools/contractx JTI, CJDAO tab
+
