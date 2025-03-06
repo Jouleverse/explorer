@@ -287,3 +287,7 @@ TODO:
 2025.3.2
 - delete: remove tools/contractx JTI, CJDAO tab
 
+2025.3.6
+- improve: core POP, 1. show yy.m; 2. sort by token_id
+- release: 0.10.109
+
