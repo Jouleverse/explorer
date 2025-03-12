@@ -485,9 +485,18 @@ angular.module('ethExplorer')
 										} else {
 											var tokenURI = result3;
 											var tokenInfo = parseTokenURI(tokenURI);
-											console.log(tokenInfo);
-											var month = new Date(tokenInfo.checkInTimestamp * 1000).getMonth() + 1;
-											$scope.allPOP.push({'tag': tag, 'tokenInfo': tokenInfo, 'month': month});
+											//console.log(tokenInfo);
+											// 将 month 改成 yy.m 格式
+											var date = new Date(tokenInfo.checkInTimestamp * 1000);
+											var year = date.getFullYear().toString().slice(-2); // 获取年份的后两位
+											var month = date.getMonth() + 1; // 获取月份
+											var yy_m = year + '.' + month;
+
+											// 插入数据到 allPOP
+											$scope.allPOP.push({'tag': tag, 'tokenInfo': tokenInfo, 'month': yy_m, 'token_id': token_id});
+
+											// 根据 token_id 排序
+											$scope.allPOP.sort((a, b) => a.token_id - b.token_id);
 											$scope.$apply(); // inform the data updates !
 										}
 									});
