@@ -63,6 +63,7 @@
 				<span ng-style="{ 'display': chainId == '0xe52' && account.toLowerCase() == addressId.toLowerCase() ? 'inline-block' : 'none' }">
 					<span ng-style="{ 'display': wjBalance > 0 ? 'inline-block':'none'}">
 						<button ng-click="wjUnwrapDialog()"><font style="color:#0023ed">unwrap</font></button>
+						<button ng-click="wjSendDialog()"><font style="color:#0023ed">send</font></button>
 					</span>
 				</span>
 			</td>
@@ -279,5 +280,64 @@
         </div>
     </div>
   <!-- end of dialog for double checking & confirming to unwrap wJoule -->
+
+  <!-- dialog for input to send wJoule -->
+    <div id="dialog-send-wjoule" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <center><div class="modal-header">
+                        <h4 class="modal-title"><span id="">发送 wJ</span></h4>
+                </div></center>
+                <div class="modal-body">
+                    <code>
+                        <div style="word-break:break-all;" id="">
+                            <div>
+                                <div>发送wJ (wrapped Joule)到指定地址。</div>
+                                <div>需输入：</div>
+                                <div>1. 发送数量：<input type="text" id="wj-send-amount"></input> wJ (不超过2000 wJ)</div>
+                            </div>
+                            <div style="margin-top:5px;">
+                                <div>2. 接收地址（支持JNS域名）：</div>
+                                <div><input style="width:100%" type="text" id="wj-send-to"></input></div>
+                            </div>
+                        </div>
+                    </code>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="wjSendToConfirm()">确定</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+  <!-- end of dialog for input to send wJoule -->
+
+  <!-- dialog for double checking & confirming to send wJoule -->
+    <div id="dialog-send-wjoule-confirm" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <center><div class="modal-header">
+                        <h4 class="modal-title"><span id="">发送 wJ, 再次确认</span></h4>
+                </div></center>
+                <div class="modal-body">
+                    <code style="color:#0000ff">
+                        <div style="word-break:break-all;" id="">
+                            将从地址：<span id="confirm-send-wj-from"></span>
+                            发送：<span id="confirm-send-wj-amount"></span> wJ
+                            到地址：<span id="confirm-send-wj-to"></span>
+                        </div>
+                        <div style="float:right;">确定吗？</div>
+                    </code>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="wjSendTo()">确定</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+  <!-- end of dialog for double checking & confirming to send wJoule -->
 
 </div>
