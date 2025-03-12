@@ -174,6 +174,119 @@ angular.module('ethExplorer')
 			}
 		}
 		
+		// send wJoule
+		$scope.wjSendDialog = function () {
+			$('#dialog-send-wjoule').modal({keyboard:false, backdrop:'static'});
+			$('#dialog-send-wjoule').modal('show');
+		}
+
+		$scope.wjSendToConfirm = function () {
+			const amt = $('#wj-send-amount')[0].value;
+			const to = $('#wj-send-to')[0].value;
+			console.log('wjSendTo', amt, to);
+
+			// 检查是否是JNS域名
+			if (to.endsWith('.j')) {
+				const jnsName = to.slice(0, -2); // 移除.j后缀
+				const jns_contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
+				jns_contract.methods._nslookup(jnsName).call(function (err, result) {
+					if (!err && result > 0) {
+						jns_contract.methods._bound(result).call(function (error, boundAddress) {
+							if (!error && boundAddress !== '0x0000000000000000000000000000000000000000') {
+								$('#confirm-send-wj-from').text($scope.addressId);
+								$('#confirm-send-wj-amount').text(amt ? amt : '0');
+								$('#confirm-send-wj-to').text(boundAddress + ' (' + to + ')');
+
+								$('#dialog-send-wjoule-confirm').modal({keyboard:false, backdrop:'static'});
+								$('#dialog-send-wjoule-confirm').modal('show');
+							} else {
+								dialogShowTxt('发送 wJ', '错误：JNS域名未绑定有效地址');
+							}
+						});
+					} else {
+						dialogShowTxt('发送 wJ', '错误：无效的JNS域名');
+					}
+				});
+			} else {
+				$('#confirm-send-wj-from').text($scope.addressId);
+				$('#confirm-send-wj-amount').text(amt ? amt : '0');
+				$('#confirm-send-wj-to').text(to);
+
+				$('#dialog-send-wjoule-confirm').modal({keyboard:false, backdrop:'static'});
+				$('#dialog-send-wjoule-confirm').modal('show');
+			}
+		}
+
+		$scope.wjSendTo = function () {
+			const DIALOG_TITLE = '发送 wJ';
+			const amt = $('#wj-send-amount')[0].value;
+			const to = $('#wj-send-to')[0].value;
+			console.log('wjSendTo', amt, to);
+
+			if (amt && !isNaN(amt)) {
+				if (!(amt > 0)) {
+					dialogShowTxt(DIALOG_TITLE, "错误：wJ数量必须大于0");
+				} else if (!(amt <= 2000)) {
+					dialogShowTxt(DIALOG_TITLE, "错误：wJ数量必须不超过2000");
+				} else if (!(parseFloat(amt) <= parseFloat($scope.wjBalanceInJoule))) {
+					dialogShowTxt(DIALOG_TITLE, "错误：wJ数量 " + amt + " 不能超过持有量 " + $scope.wjBalanceInJoule);
+				} else if (window.ethereum && window.ethereum.isConnected()) {
+					web3.setProvider(window.ethereum);
+					const connectedAccount = window.ethereum.selectedAddress;
+
+					const e = web3.utils.toWei(amt);
+					const wj_contract = new web3.eth.Contract(wj_ABI, wj_contract_address);
+
+					// 检查是否是JNS域名
+					if (to.endsWith('.j')) {
+						const jnsName = to.slice(0, -2); // 移除.j后缀
+						const jns_contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
+						jns_contract.methods._nslookup(jnsName).call(function (err, result) {
+							if (!err && result > 0) {
+								jns_contract.methods._bound(result).call(function (error, boundAddress) {
+									if (!error && boundAddress !== '0x0000000000000000000000000000000000000000') {
+										wj_contract.methods.transfer(boundAddress, e).estimateGas({from: connectedAccount}, (err, gas) => {
+											if (!err) {
+												wj_contract.methods.transfer(boundAddress, e)
+													.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
+													.then(handlerShowRct(DIALOG_TITLE));
+
+												$('#wj-send-amount')[0].value = '';
+												$('#wj-send-to')[0].value = '';
+											} else {
+												dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message);
+											}
+										});
+									} else {
+										dialogShowTxt(DIALOG_TITLE, '错误：JNS域名未绑定有效地址');
+									}
+								});
+							} else {
+								dialogShowTxt(DIALOG_TITLE, '错误：无效的JNS域名');
+							}
+						});
+					} else if (web3.utils.isAddress(to)) {
+						wj_contract.methods.transfer(to, e).estimateGas({from: connectedAccount}, (err, gas) => {
+							if (!err) {
+								wj_contract.methods.transfer(to, e)
+									.send({from: connectedAccount}, handlerShowTx(DIALOG_TITLE))
+									.then(handlerShowRct(DIALOG_TITLE));
+
+								$('#wj-send-amount')[0].value = '';
+								$('#wj-send-to')[0].value = '';
+							} else {
+								dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message);
+							}
+						});
+					} else {
+						dialogShowTxt(DIALOG_TITLE, '错误：目标地址不是正确的链地址格式');
+					}
+				}
+			} else {
+				dialogShowTxt(DIALOG_TITLE, "错误：请输入有效的wJ数量");
+			}
+		};
+
 		$scope.wjUnwrapTo = function () {
 			const DIALOG_TITLE = 'Unwrap wJ';
 			const amt = $('#wj-unwrap-amount')[0].value;
