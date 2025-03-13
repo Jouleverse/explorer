@@ -281,7 +281,7 @@ TODO:
 - release: 0.10.107
 
 2025.1.26
-- new: abi-decode tx input data. contributor: Jeff.
+- new: abi-decode tx input data. contributor: Jeff. review-merged by Evan.
 - release: 0.10.108
 
 2025.3.2
@@ -290,4 +290,11 @@ TODO:
 2025.3.6
 - improve: core POP, 1. show yy.m; 2. sort by token_id
 - release: 0.10.109
+
+2025.3.13
+- fix: contract tool, charset utf-8. contributor: Jeff. review-merged by Evan.
+- new: profile page, WJ send button with support of jns name. contributor: decong. review-merged by Evan.
+- improve: home page, better look-n-feel. contributor: decong. review-merged by Evan.
+- improve: change color of WJ unwrap button to pink red, for being distinguished from WJ send blue button.
+- release: 0.10.110
 
