@@ -65,10 +65,10 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
 	    	const protocol = location.protocol;
 			const hostname = location.hostname;
 			var rpc_service;
-			if (hostname == 'localhost') {
-				rpc_service = 'rpc.jnsdao.com'; // for dev
-			} else {
+			if (hostname == 'jscan.jnsdao.com') {
 				rpc_service = hostname.replace('jscan', 'rpc'); // jscan to use corresponding rpc, e.g. jscan.jnsdao.com -> rpc.jnsdao.com
+			} else {
+				rpc_service = 'rpc.jnsdao.com'; // for dev
 			}
 			//var hostname = 'localhost';
 			//var hostname = 'rpc.liujiaolian.com';
