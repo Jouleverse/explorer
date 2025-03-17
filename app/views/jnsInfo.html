@@ -131,3 +131,61 @@
     </div>
 </div>
 <!-- end of dialog for endorse jns confirm -->
+
+<!-- dialog for give jns -->
+<div id="dialog-give-jns" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <center><div class="modal-header">
+                    <h4 class="modal-title"><span id="">赠予 JNS</span></h4>
+            </div></center>
+            <div class="modal-body">
+                <code>
+                    <div style="word-break:break-all;" id="">
+                        <div>
+                            <div>将 JNS 赠予给其他地址。</div>
+                            <div>需输入：</div>
+                            <div>接收地址（支持JNS域名）：</div>
+                            <div><input style="width:100%" type="text" id="jns-give-to" ng-model="giveToAddress"></input></div>
+                        </div>
+                    </div>
+                </code>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="giveJNSConfirmDialog()">确定</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end of dialog for give jns -->
+
+<!-- dialog for give jns confirm -->
+<div id="dialog-give-jns-confirm" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <center><div class="modal-header">
+                    <h4 class="modal-title"><span id="">赠予确认</span></h4>
+            </div></center>
+            <div class="modal-body">
+                <code style="color:#0000ff">
+                    <div style="word-break:break-all;" id="">
+                        将 JNS：<span id="jns-give-name">{{jnsId}}</span>
+                        赠予给地址：<span id="jns-give-to-address">{{realGiveToAddress}}</span>
+                    </div>
+                    <div style="color:#ff0000;font-weight:bold;margin:5px 0 5px 0">
+                        警告: JNS赠予的过程不可逆。
+                    </div>
+                    <div style="float:right;">确定吗？</div>
+                </code>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="giveJNSTransfer(realGiveToAddress)">确定</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end of dialog for give jns confirm -->
