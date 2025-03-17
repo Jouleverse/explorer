@@ -106,36 +106,79 @@ angular.module('ethExplorer')
 		//refactored-20230330
 		$scope.give = function ()
 		{
-			const DIALOG_TITLE = '赠予';
+			$('#dialog-give-jns').modal({keyboard:false, backdrop:'static'});
+			$('#dialog-give-jns').modal('show');
+		}
 
-			var toAddress = prompt("请输入接收地址：", "0x"); // TODO use h5 dialog box for better compatibility
-			if (toAddress && web3.utils.isAddress(toAddress)) {
-				const nftId = this.nftId; // this. just works! cool.
-				const fromAddress = this.ownerAddress;
-				console.log(`will give jns: #${nftId} from: ${fromAddress} to: ${toAddress}`);
-				if (window.ethereum && window.ethereum.isConnected()) {
-					web3.setProvider(window.ethereum);
-					const connectedAccount = window.ethereum.selectedAddress;
-
-					var jns_contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
-					jns_contract.methods.safeTransferFrom(fromAddress, toAddress, nftId)
-						.estimateGas({ from: connectedAccount }, (err, gas) => {
-							if (!err) {
-								jns_contract.methods.safeTransferFrom(fromAddress, toAddress, nftId)
-									.send({ from: connectedAccount }, handlerShowTx(DIALOG_TITLE))
-									.then(handlerShowRct(DIALOG_TITLE));
-							} else {
-								dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message); //展示合约逻辑报错
-							}
-						});
-
-				} else {
-					dialogShowTxt(DIALOG_TITLE, '错误：没有web3环境，无法完成操作');
-				}
-			} else {
-				dialogShowTxt(DIALOG_TITLE, `出错啦：接收地址 ${toAddress} 不是有效的地址`);
+		$scope.giveJNSConfirmDialog = function() 
+		{
+			const DIALOG_TITLE = '确认赠予';
+			
+			var toAddress = $scope.giveToAddress;
+			
+			if (!toAddress) {
+				dialogShowTxt(DIALOG_TITLE, '错误：请输入接收地址');
+				return;
 			}
 			
+			// 检查是否是JNS域名
+			if (toAddress.endsWith('.j')) {
+				const jnsName = toAddress.slice(0, -2); // 移除.j后缀
+				const jns_contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
+				jns_contract.methods._nslookup(jnsName).call(function (err, result) {
+					if (!err && result > 0) {
+						jns_contract.methods._bound(result).call(function (error, boundAddress) {
+							if (!error && boundAddress !== '0x0000000000000000000000000000000000000000') {
+								$scope.realGiveToAddress = boundAddress;
+								$('#dialog-give-jns-confirm').modal({keyboard:false, backdrop:'static'});
+								$('#dialog-give-jns-confirm').modal('show');
+								$scope.$apply();
+							} else {
+								dialogShowTxt(DIALOG_TITLE, '错误：JNS域名未绑定有效地址');
+							}
+						});
+					} else {
+						dialogShowTxt(DIALOG_TITLE, '错误：无效的JNS域名');
+					}
+				});
+			} else if (web3.utils.isAddress(toAddress)) {
+				$scope.realGiveToAddress = toAddress;
+				$('#dialog-give-jns-confirm').modal({keyboard:false, backdrop:'static'});
+				$('#dialog-give-jns-confirm').modal('show');
+			} else {
+				dialogShowTxt(DIALOG_TITLE, '错误：目标地址不是正确的链地址格式');
+			}
+		}
+
+		$scope.giveJNSTransfer = function(toAddress) 
+		{
+			const DIALOG_TITLE = '赠予JNS';
+			
+			console.log(`[jns] giveJNSTransfer to: ${toAddress}`);
+			
+			if (window.ethereum && window.ethereum.isConnected()) {
+				web3.setProvider(window.ethereum);
+				const connectedAccount = window.ethereum.selectedAddress;
+				const nftId = $scope.nftId;
+				const fromAddress = $scope.ownerAddress;
+				
+				var jns_contract = new web3.eth.Contract(jns_ABI, jns_contract_address);
+				jns_contract.methods.safeTransferFrom(fromAddress, toAddress, nftId)
+					.estimateGas({ from: connectedAccount }, (err, gas) => {
+						if (!err) {
+							jns_contract.methods.safeTransferFrom(fromAddress, toAddress, nftId)
+								.send({ from: connectedAccount }, handlerShowTx(DIALOG_TITLE))
+								.then(handlerShowRct(DIALOG_TITLE));
+							
+							// 清空输入框
+							$scope.giveToAddress = '';
+						} else {
+							dialogShowTxt(DIALOG_TITLE, '错误：无法评估gas：' + err.message);
+						}
+					});
+			} else {
+				dialogShowTxt(DIALOG_TITLE, '错误：没有web3环境，无法完成操作');
+			}
 		}
 
 		$scope.endorseJNSAmountDialog = function() 
