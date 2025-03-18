@@ -298,3 +298,7 @@ TODO:
 - improve: change color of WJ unwrap button to pink red, for being distinguished from WJ send blue button.
 - release: 0.10.110
 
+2025.3.18
+- new: show released joule stats.
+- release: 0.10.111
+
