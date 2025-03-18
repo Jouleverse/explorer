@@ -38,6 +38,16 @@ angular.module('ethExplorer')
 					});
 				}
 			});
+
+			getTimelockInfo().then(function (result) {
+				var released = result.released;
+				$scope.energy = {
+					total: released.total.toLocaleString(),
+					core: released.core.toLocaleString(),
+					eco: released.eco.toLocaleString(),
+				};
+				$scope.$apply(); // force refresh
+			});
 		}
 
 		function getBlockHeight() {
@@ -63,6 +73,29 @@ angular.module('ethExplorer')
 			window.setTimeout(function() {
 				deferred.resolve(blockInfo);
 			}, 0 /*Math.floor(Math.random() * 3000) + 2000*/);
+
+			return deferred.promise;
+		}
+
+		async function getTimelockInfo() {
+			var deferred = $q.defer();
+
+			var timelockInfo = {};
+
+			var timelock_core_contract = new web3.eth.Contract(timelock_ABI, timelock_core_contract_address);
+			var timelock_ecosystem_contract = new web3.eth.Contract(timelock_ABI, timelock_ecosystem_contract_address);
+
+			var released_core = await timelock_core_contract.methods.released().call();
+			var released_eco = await timelock_ecosystem_contract.methods.released().call();
+			released_core = parseInt(web3.utils.fromWei(released_core, 'ether'));
+			released_eco = parseInt(web3.utils.fromWei(released_eco, 'ether'));
+			var released_total = parseInt(released_core) + parseInt(released_eco);
+			timelockInfo['released'] = { total: released_total,
+				core: released_core,
+				eco: released_eco
+			};
+
+			deferred.resolve(timelockInfo);
 
 			return deferred.promise;
 		}
