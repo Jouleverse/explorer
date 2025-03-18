@@ -299,6 +299,7 @@ TODO:
 - release: 0.10.110
 
 2025.3.18
-- new: show released joule stats.
-- release: 0.10.111
+- new: show released joule stats. contributor: Evan.
+- improve: use js dialog to give jns for better compatibility and ux. contributor: decong. review-merged by Evan.
+- release: 0.10.112
 
