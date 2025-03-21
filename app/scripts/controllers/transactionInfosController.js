@@ -31,7 +31,20 @@ angular.module('ethExplorer')
                         $scope.blockNumber ='等待中';
                     }
                     $scope.from = result.from;
-                    $scope.gas = result.gas;
+                    $scope.gas = result.gas; // 这里改为显示 gas limit
+                    $scope.gasLimit = result.gas; // 保存 gas limit
+                    
+                    // 获取实际消耗的 gas
+                    web3.eth.getTransactionReceipt($scope.txId, function(error, receipt) {
+                        if(!error && receipt) {
+                            $scope.gasUsed = receipt.gasUsed;
+                            // 使用实际消耗的 gas 计算交易费用
+                            $scope.txprice = (receipt.gasUsed * result.gasPrice)/1000000000000000000 + " J";
+                            var txfee = receipt.gasUsed * result.gasPrice / 10**9;
+                            $scope.txfeeGwei = txfee < 10 ? parseFloat(txfee.toFixed(1)) : Math.floor(txfee);
+                            $scope.$apply();
+                        }
+                    });
                     //$scope.gasPrice = result.gasPrice.c[0] + " e";
                     $scope.gasPrice = result.gasPrice + " e";
 					//var gasPriceGwei = result.gasPrice.c[0] / 10**9;
