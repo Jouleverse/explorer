@@ -31,7 +31,7 @@ angular.module('ethExplorer')
                         $scope.blockNumber ='等待中';
                     }
                     $scope.from = result.from;
-                    $scope.gas = result.gas; // 这里改为显示 gas limit
+                    $scope.gas = result.gas; 
                     $scope.gasLimit = result.gas; // 保存 gas limit
                     
                     // 获取实际消耗的 gas
@@ -49,7 +49,7 @@ angular.module('ethExplorer')
                     $scope.gasPrice = result.gasPrice + " e";
 					//var gasPriceGwei = result.gasPrice.c[0] / 10**9;
 					var gasPriceGwei = result.gasPrice / 10**9;
-                    $scope.gasPriceGwei = gasPriceGwei < 10 ? parseInt(gasPriceGwei * 10)/10 : parseInt(gasPriceGwei);
+                    $scope.gasPriceGwei = gasPriceGwei < 10 ? parseFloat(gasPriceGwei.toFixed(1)) : Math.floor(gasPriceGwei);
                     $scope.hash = result.hash;
                     $scope.input = result.input; // that's a string
 
@@ -83,10 +83,7 @@ angular.module('ethExplorer')
                     $scope.to = result.to;
                     $scope.transactionIndex = result.transactionIndex;
                     //$scope.ethValue = result.value.c[0] / 10000; 
-                    $scope.ethValue = result.value / 10000; 
-                    $scope.txprice = (result.gas * result.gasPrice)/1000000000000000000 + " J";
-					var txfee = result.gas * result.gasPrice / 10**9;
-					$scope.txfeeGwei = txfee < 10 ? parseInt(txfee * 10)/10 : parseInt(txfee);
+                    $scope.ethValue = result.value / 10000;
 
                     if($scope.blockNumber!==undefined){
 						web3.eth.getBlock($scope.blockNumber, false, function (err, info) {
