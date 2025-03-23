@@ -31,12 +31,25 @@ angular.module('ethExplorer')
                         $scope.blockNumber ='等待中';
                     }
                     $scope.from = result.from;
-                    $scope.gas = result.gas;
+                    $scope.gas = result.gas; 
+                    $scope.gasLimit = result.gas; // 保存 gas limit
+                    
+                    // 获取实际消耗的 gas
+                    web3.eth.getTransactionReceipt($scope.txId, function(error, receipt) {
+                        if(!error && receipt) {
+                            $scope.gasUsed = receipt.gasUsed;
+                            // 使用实际消耗的 gas 计算交易费用
+                            $scope.txprice = (receipt.gasUsed * result.gasPrice)/1000000000000000000 + " J";
+                            var txfee = receipt.gasUsed * result.gasPrice / 10**9;
+                            $scope.txfeeGwei = txfee < 10 ? parseFloat(txfee.toFixed(1)) : Math.floor(txfee);
+                            $scope.$apply();
+                        }
+                    });
                     //$scope.gasPrice = result.gasPrice.c[0] + " e";
                     $scope.gasPrice = result.gasPrice + " e";
 					//var gasPriceGwei = result.gasPrice.c[0] / 10**9;
 					var gasPriceGwei = result.gasPrice / 10**9;
-                    $scope.gasPriceGwei = gasPriceGwei < 10 ? parseInt(gasPriceGwei * 10)/10 : parseInt(gasPriceGwei);
+                    $scope.gasPriceGwei = gasPriceGwei < 10 ? parseFloat(gasPriceGwei.toFixed(1)) : Math.floor(gasPriceGwei);
                     $scope.hash = result.hash;
                     $scope.input = result.input; // that's a string
 
@@ -70,10 +83,7 @@ angular.module('ethExplorer')
                     $scope.to = result.to;
                     $scope.transactionIndex = result.transactionIndex;
                     //$scope.ethValue = result.value.c[0] / 10000; 
-                    $scope.ethValue = result.value / 10000; 
-                    $scope.txprice = (result.gas * result.gasPrice)/1000000000000000000 + " J";
-					var txfee = result.gas * result.gasPrice / 10**9;
-					$scope.txfeeGwei = txfee < 10 ? parseInt(txfee * 10)/10 : parseInt(txfee);
+                    $scope.ethValue = result.value / 10000;
 
                     if($scope.blockNumber!==undefined){
 						web3.eth.getBlock($scope.blockNumber, false, function (err, info) {
