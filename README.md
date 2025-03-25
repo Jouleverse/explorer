@@ -303,3 +303,6 @@ TODO:
 - improve: use js dialog to give jns for better compatibility and ux. contributor: decong. review-merged by Evan.
 - release: 0.10.112
 
+2025.3.26
+- improve: show correct gas fee and other tx infos whenever confirmed or unconfirmed. contributor: deconf. review-fix-merged by Evan.
+- release: 0.10.113
