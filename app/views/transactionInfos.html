@@ -21,7 +21,7 @@
                 <td class="">
                     <a href="./#/address/{{to}}">{{address2tag(to)}}</a>
                     <span class="pull-right">
-                        <span>{{ethValue}} J</span>
+                        <span>{{txValue}} J</span>
                     </span>
                     <br>
                 </td>
@@ -30,7 +30,7 @@
         </table>
         <div style="padding-bottom:30px;width:100%;text-align:right;clear:both">   <!--TODO no style tags...-->
             <button class="btn btn-primary">{{conf}}</button>
-            <button class="btn btn-success cb"><span>{{ethValue}} J</span></button>
+            <button class="btn btn-success cb"><span>{{txValue}} J</span></button>
         </div>
         <table class="table table-striped">
             <tbody><tr>
@@ -39,34 +39,41 @@
             <tr>
                 <td>时间戳</td>
                 <td>
-					{{time}} ({{time_localestring}})
+					{{time}} <span data-ng-if="time > 0">({{time_localestring}})</span>
                 </td>
             </tr>
             <tr>
                 <td>区块高度</td>
                 <td>
-                    <a href="./#/block/{{blockNumber}}">{{blockNumber}}</a>
+                    <span data-ng-if="blockNumber > 0"><a href="./#/block/{{blockNumber}}">{{blockNumber}}</a></span>
                 </td>
             </tr>
             <tr>
                 <td>区块哈希</td>
-                <td><a href="./#/block/{{blockHash}}">{{blockHash}}</a></td>
+                <td>
+					<span data-ng-if="blockHash > 0"><a href="./#/block/{{blockHash}}">{{blockHash}}</a></span>
+				</td>
             </tr>
             <tr>
+                <td nowrap>Gas单价 (每单位gas包含的能量)</td>
+				<td>约 {{gasPriceGwei}} Gwei（ {{gasPrice}} wei）</td>
+            </tr>
+            <tr data-ng-if="gasUsed > 0">
                 <td>Gas消耗量</td>
-                <td>{{gas}} 单位</td>
+                <td>{{gasUsed}} 单位 </td>
             </tr>
-            <tr>
-                <td nowrap>Gas单价 (每单位包含能量值)</td>
-				<td>{{gasPrice}}，即约 {{gasPriceGwei}} Ge</td>
+            <tr data-ng-if="(gasUsed === undefined || gasUsed <= 0) && gasLimit > 0">
+                <td>Gas限制</td>
+                <td>{{gasLimit}} 单位</td>
+            </tr>
+            <tr> 
+                <td data-ng-if="gasUsed > 0">交易手续费</td>
+                <td data-ng-if="(gasUsed === undefined || gasUsed <= 0) && gasLimit > 0">交易手续费(预估)</td>
+				<td>{{txfee}} J（约 {{txfeeGwei}} Gwei）</td>
             </tr>
             <tr>
                 <td nowrap>Nonce (该地址此前交易数)</td>
                 <td>{{nonce}}</td>
-            </tr>
-            <tr>
-                <td>交易手续费</td>
-				<td>{{txprice}}，即约 {{txfeeGwei}} Ge</td>
             </tr>
             <tr>
                 <td>输入数据</td>
@@ -81,7 +88,7 @@
 
             </tbody>
         </table>
-		<small>* 注：<br/>(1) 交易手续费 = Gas消耗量 * Gas单价；<br/>(2) 1 J = 1 Ee = 10^9 Ge = 10^18 e。</small>
+		<small>* 注：<br/>(1) 交易手续费 = Gas消耗量 * Gas单价；<br/>(2) 1 J = 1 Ewei = 10^9 Gwei = 10^18 wei。</small>
     </div>
 
 </div>
