@@ -18,39 +18,45 @@ angular.module('ethExplorer')
 
                     $scope.result = result;
 
-                    if(result.blockHash!==undefined){
+					var confirmed = false;
+                    if(result.blockHash){
+						confirmed = true;
                         $scope.blockHash = result.blockHash;
-                    }
-                    else{
-                        $scope.blockHash ='等待中';
-                    }
-                    if(result.blockNumber!==undefined){
                         $scope.blockNumber = result.blockNumber;
+                    } else {
+						$scope.time = '尚未确认';
+						$scope.conf = '尚未确认'; // 缺省值
                     }
-                    else{
-                        $scope.blockNumber ='等待中';
-                    }
+
                     $scope.from = result.from;
-                    $scope.gas = result.gas; 
+
+                    //$scope.gasPrice = result.gasPrice.c[0] + " e";
+                    $scope.gasPrice = result.gasPrice;
+					//var gasPriceGwei = result.gasPrice.c[0] / 10**9;
+                    $scope.gasPriceGwei = parseInt(web3.utils.fromWei(result.gasPrice, "gwei"));
+
                     $scope.gasLimit = result.gas; // 保存 gas limit
                     
-                    // 获取实际消耗的 gas
-                    web3.eth.getTransactionReceipt($scope.txId, function(error, receipt) {
-                        if(!error && receipt) {
-                            $scope.gasUsed = receipt.gasUsed;
-                            // 使用实际消耗的 gas 计算交易费用
-                            $scope.txprice = (receipt.gasUsed * result.gasPrice)/1000000000000000000 + " J";
-                            var txfee = receipt.gasUsed * result.gasPrice / 10**9;
-                            $scope.txfeeGwei = txfee < 10 ? parseFloat(txfee.toFixed(1)) : Math.floor(txfee);
-                            $scope.$apply();
-                        }
-                    });
-                    //$scope.gasPrice = result.gasPrice.c[0] + " e";
-                    $scope.gasPrice = result.gasPrice + " e";
-					//var gasPriceGwei = result.gasPrice.c[0] / 10**9;
-					var gasPriceGwei = result.gasPrice / 10**9;
-                    $scope.gasPriceGwei = gasPriceGwei < 10 ? parseFloat(gasPriceGwei.toFixed(1)) : Math.floor(gasPriceGwei);
-                    $scope.hash = result.hash;
+					var fee = String(result.gas * result.gasPrice); // 预估值
+					$scope.txfee = web3.utils.fromWei(fee, "ether");
+					$scope.txfeeGwei = parseInt(web3.utils.fromWei(fee, "gwei"));
+
+					if (confirmed) {
+						// 获取实际消耗的 gas
+						web3.eth.getTransactionReceipt($scope.txId, function(error, receipt) {
+							if(!error && receipt) {
+								$scope.gasUsed = receipt.gasUsed;
+								// 使用实际消耗的 gas 计算交易费用
+								var fee = String(receipt.gasUsed * result.gasPrice);
+								console.log(fee);
+								$scope.txfee = web3.utils.fromWei(fee, "ether");
+								$scope.txfeeGwei = parseInt(web3.utils.fromWei(fee, "gwei"));
+								$scope.$apply();
+							}
+						});
+					}
+
+                    //$scope.hash = result.hash;
                     $scope.input = result.input; // that's a string
 
                     $scope.inputFormat = 'raw_data';
@@ -82,10 +88,10 @@ angular.module('ethExplorer')
                     $scope.nonce = result.nonce;
                     $scope.to = result.to;
                     $scope.transactionIndex = result.transactionIndex;
-                    //$scope.ethValue = result.value.c[0] / 10000; 
-                    $scope.ethValue = result.value / 10000;
+                    //$scope.txValue = result.value.c[0] / 10000; 
+                    $scope.txValue = result.value / 10000;
 
-                    if($scope.blockNumber!==undefined){
+                    if(confirmed){
 						web3.eth.getBlock($scope.blockNumber, false, function (err, info) {
 							if(info) {
 								$scope.time = info.timestamp;
@@ -94,12 +100,10 @@ angular.module('ethExplorer')
 							}
 						});
 
-						$scope.conf = '未确认';
 						web3.eth.getBlockNumber(function (err, number) {
-							if (number && number > $scope.blockNumber) {
-								$scope.conf = number - $scope.blockNumber + " 确认数";
+							if (number && number >= $scope.blockNumber) {
+								$scope.conf = 1 + number - $scope.blockNumber + " 确认数";
 								$scope.$apply();
-
 							}
 						});
                     }
