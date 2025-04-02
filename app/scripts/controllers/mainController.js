@@ -40,11 +40,15 @@ angular.module('ethExplorer')
 			});
 
 			getTimelockInfo().then(function (result) {
-				var released = result.released;
+				var released = result.released; //总释放量
+				var locked = result.available; //尚在时间锁中
+				var circulated = result.used; //已进入流通
+
 				$scope.energy = {
-					total: released.total.toLocaleString(),
-					core: released.core.toLocaleString(),
-					eco: released.eco.toLocaleString(),
+					total: (released.total/10**6).toLocaleString() + "M",
+					core_locked: (locked.core/10**6).toLocaleString() + "M",
+					eco_locked: (locked.eco/10**6).toLocaleString() + "M",
+					circulated: (circulated.total/10**6).toLocaleString() + "M",
 				};
 				$scope.$apply(); // force refresh
 			});
@@ -90,9 +94,32 @@ angular.module('ethExplorer')
 			released_core = parseInt(web3.utils.fromWei(released_core, 'ether'));
 			released_eco = parseInt(web3.utils.fromWei(released_eco, 'ether'));
 			var released_total = parseInt(released_core) + parseInt(released_eco);
+
 			timelockInfo['released'] = { total: released_total,
 				core: released_core,
 				eco: released_eco
+			};
+
+			var available_core = await timelock_core_contract.methods.available().call();
+			var available_eco = await timelock_ecosystem_contract.methods.available().call();
+			available_core = parseInt(web3.utils.fromWei(available_core, 'ether'));
+			available_eco = parseInt(web3.utils.fromWei(available_eco, 'ether'));
+			var available_total = parseInt(available_core) + parseInt(available_eco);
+
+			timelockInfo['available'] = { total: available_total,
+				core: available_core,
+				eco: available_eco
+			};
+
+			var used_core = await timelock_core_contract.methods.used().call();
+			var used_eco = await timelock_ecosystem_contract.methods.used().call();
+			used_core = parseInt(web3.utils.fromWei(used_core, 'ether'));
+			used_eco = parseInt(web3.utils.fromWei(used_eco, 'ether'));
+			var used_total = parseInt(used_core) + parseInt(used_eco);
+
+			timelockInfo['used'] = { total: used_total,
+				core: used_core,
+				eco: used_eco
 			};
 
 			deferred.resolve(timelockInfo);
