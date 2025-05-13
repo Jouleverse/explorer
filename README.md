@@ -310,3 +310,8 @@ TODO:
 2025.4.2
 - improve: display better energy stats
 - release: 0.10.114
+
+2025.5.13
+- improve: spin off tools/core from tools/contractx
+- new: add jnsvote to tools/contractx
+- release: 0.10.115
