@@ -10,19 +10,9 @@
     <script src="../public/web3-1.7.3.min.js" referrerpolicy="no-referrer"></script>
 	<!-- import jouleverse contracts -->
 	<script src="/scripts/misc/jvcore.nft.js"></script>
-	<script src="/scripts/misc/planet.sbt.js"></script>
-
-	<script src="/scripts/misc/jti2.nft.js"></script>
-
-	<script src="/scripts/misc/jns.nft.js"></script>
-	<script src="/scripts/misc/jnsvote.sbt.js"></script>
-
 	<script src="/scripts/misc/timelock.js"></script>
-
 	<script src="/scripts/misc/wj.erc20.js"></script>
 	<script src="/scripts/misc/redpacket.js"></script>
-	<script src="/scripts/misc/cryptojunks.nft.js"></script>
-	<script src="/scripts/misc/boredape.nft.js"></script>
 	<!-- end of jouleverse contracts -->
 </head>
 <body class="p-4">
@@ -126,33 +116,19 @@ window.ethExp = null;
 // Please check the function CliController@buildUI
 const abi_multisig = [{"constant":false,"inputs":[{"name":"owner","type":"address"}],"name":"addOwner","outputs":[],"payable":false,"type":"function","stateMutability":"nonpayable"},{"constant":false,"inputs":[{"name":"_required","type":"uint256"}],"name":"changeRequirement","outputs":[],"payable":false,"type":"function","stateMutability":"nonpayable"},{"constant":false,"inputs":[{"name":"transactionId","type":"uint256"}],"name":"confirmTransaction","outputs":[],"payable":false,"type":"function","stateMutability":"nonpayable"},{"constant":false,"inputs":[{"name":"transactionId","type":"uint256"}],"name":"executeTransaction","outputs":[],"payable":false,"type":"function","stateMutability":"nonpayable"},{"constant":false,"inputs":[{"name":"owner","type":"address"}],"name":"removeOwner","outputs":[],"payable":false,"type":"function","stateMutability":"nonpayable"},{"constant":false,"inputs":[{"name":"owner","type":"address"},{"name":"newOwner","type":"address"}],"name":"replaceOwner","outputs":[],"payable":false,"type":"function","stateMutability":"nonpayable"},{"constant":false,"inputs":[{"name":"transactionId","type":"uint256"}],"name":"revokeConfirmation","outputs":[],"payable":false,"type":"function","stateMutability":"nonpayable"},{"constant":false,"inputs":[{"name":"destination","type":"address"},{"name":"value","type":"uint256"},{"name":"data","type":"bytes"}],"name":"submitTransaction","outputs":[{"name":"transactionId","type":"uint256"}],"payable":false,"type":"function","stateMutability":"nonpayable"},{"inputs":[{"name":"_owners","type":"address[]"},{"name":"_required","type":"uint256"}],"payable":false,"type":"constructor","stateMutability":"nonpayable"},{"payable":true,"type":"fallback","stateMutability":"payable"},{"anonymous":false,"inputs":[{"indexed":true,"name":"sender","type":"address"},{"indexed":true,"name":"transactionId","type":"uint256"}],"name":"Confirmation","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"sender","type":"address"},{"indexed":true,"name":"transactionId","type":"uint256"}],"name":"Revocation","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"transactionId","type":"uint256"}],"name":"Submission","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"transactionId","type":"uint256"}],"name":"Execution","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"transactionId","type":"uint256"}],"name":"ExecutionFailure","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"sender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"}],"name":"OwnerAddition","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"}],"name":"OwnerRemoval","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"required","type":"uint256"}],"name":"RequirementChange","type":"event"},{"constant":true,"inputs":[{"name":"","type":"uint256"},{"name":"","type":"address"}],"name":"confirmations","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function","stateMutability":"view"},{"constant":true,"inputs":[{"name":"transactionId","type":"uint256"}],"name":"getConfirmationCount","outputs":[{"name":"count","type":"uint256"}],"payable":false,"type":"function","stateMutability":"view"},{"constant":true,"inputs":[{"name":"transactionId","type":"uint256"}],"name":"getConfirmations","outputs":[{"name":"_confirmations","type":"address[]"}],"payable":false,"type":"function","stateMutability":"view"},{"constant":true,"inputs":[],"name":"getOwners","outputs":[{"name":"","type":"address[]"}],"payable":false,"type":"function","stateMutability":"view"},{"constant":true,"inputs":[{"name":"pending","type":"bool"},{"name":"executed","type":"bool"}],"name":"getTransactionCount","outputs":[{"name":"count","type":"uint256"}],"payable":false,"type":"function","stateMutability":"view"},{"constant":true,"inputs":[{"name":"from","type":"uint256"},{"name":"to","type":"uint256"},{"name":"pending","type":"bool"},{"name":"executed","type":"bool"}],"name":"getTransactionIds","outputs":[{"name":"_transactionIds","type":"uint256[]"}],"payable":false,"type":"function","stateMutability":"view"},{"constant":true,"inputs":[{"name":"transactionId","type":"uint256"}],"name":"isConfirmed","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function","stateMutability":"view"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"isOwner","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function","stateMutability":"view"},{"constant":true,"inputs":[],"name":"MAX_OWNER_COUNT","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function","stateMutability":"view"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"owners","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function","stateMutability":"view"},{"constant":true,"inputs":[],"name":"required","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function","stateMutability":"view"},{"constant":true,"inputs":[],"name":"transactionCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function","stateMutability":"view"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"transactions","outputs":[{"name":"destination","type":"address"},{"name":"value","type":"uint256"},{"name":"data","type":"bytes"},{"name":"executed","type":"bool"}],"payable":false,"type":"function","stateMutability":"view"}];
 
-const abi_jti2config = [{"inputs":[{"internalType":"uint256","name":"planet","type":"uint256"},{"internalType":"address","name":"admin","type":"address"}],"name":"changePlanetAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"planet","type":"uint256"},{"internalType":"string","name":"color","type":"string"}],"name":"changePlanetColor","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"planet","type":"uint256"},{"internalType":"string","name":"name","type":"string"}],"name":"changePlanetName","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"auditor","type":"address"}],"name":"setIdentityAuditor","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"auditor","type":"address"}],"name":"setPlanetAuditor","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"auditor","type":"address"}],"name":"unsetIdentityAuditor","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"auditor","type":"address"}],"name":"unsetPlanetAuditor","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"identityAuditor","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"planetAdmin","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"planetAuditor","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"planetColor","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"planetName","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}];
-
-const abi_jns = jns_ABI;
-
-const abi_jnsvote = jnsvote_ABI;
-
 const abi_WJ10 = wj_ABI;
 
 const abi_redpacket_v0_1 = redpacket_ABI;
 
-const abi_cryptojunks = cryptojunks_ABI;
-
-const abi_boredape = boredape_ABI;
-
 const abi_timelock = timelock_ABI;
-
-const abi_planet = planet_ABI;
-
-const abi_jti2 = jti2_ABI;
 
 const abi_jvcore = jvcore_ABI;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 const contractDetailsJson = [
-    /*{
-        "contractName": "JVCore",
+    {
+        "contractName": "JVCore签到",
         "abi": abi_jvcore,
         "networks": {
             "3666": {
@@ -161,72 +137,8 @@ const contractDetailsJson = [
 				"ownertag": "evan.j"
             }
         }
-    },*/
-    {
-        "contractName": "Planet",
-        "abi": abi_planet,
-        "networks": {
-            "3666": {
-                "address": planet_contract_address,
-				"ownership": "0xB313C0de794F530Ab08e0a71C31Ee022e875Fe76",
-				"ownertag": "jl.j"
-            }
-        }
-    },
-    /*{
-        "contractName": "JTI2",
-        "abi": abi_jti2,
-        "networks": {
-            "3666": {
-                "address": jti2_contract_address,
-				"ownership": "0xB313C0de794F530Ab08e0a71C31Ee022e875Fe76",
-				"ownertag": "jl.j"
-            }
-        }
-    },*/
-    {
-        "contractName": "JTI2Config",
-        "abi": abi_jti2config,
-        "networks": {
-            "3666": {
-                "address": "0x77136ef358f55E20E7d51259fa47D3D68C9324db",
-				"ownership": "0xB313C0de794F530Ab08e0a71C31Ee022e875Fe76",
-				"ownertag": "jl.j"
-            }
-        }
     },
     {
-        "contractName": "JNS",
-        "abi": abi_jns,
-        "networks": {
-            "3666": {
-                "address": jns_contract_address,
-				"ownership": "0x4eF599b6E39D950D6Ddbd830fF5f95e06770C1B3",
-				"ownertag": "JNSDAO多签"
-            }
-        }
-    },
-    {
-        "contractName": "JNSVote",
-        "abi": abi_jnsvote,
-        "networks": {
-            "3666": {
-                "address": jnsvote_contract_address,
-				"ownership": "0xe9366a50d16a064d76996d4713c0fB1F66848Dc6",
-				"ownertag": "jl"
-            }
-        }
-    },
-    {
-        "contractName": "JNSDAO多签",
-        "abi": abi_multisig,
-        "networks": {
-            "3666": {
-                "address": "0x4eF599b6E39D950D6Ddbd830fF5f95e06770C1B3"
-            }
-        }
-    },
-    /*{
         "contractName": "创世金库",
         "abi": abi_multisig,
         "networks": {
@@ -245,8 +157,8 @@ const contractDetailsJson = [
 				"ownertag": "创世金库"
             }
         }
-    },*/
-    {
+    },
+    /*{
         "contractName": "Timelock生态",
         "abi": abi_timelock,
         "networks": {
@@ -257,7 +169,7 @@ const contractDetailsJson = [
             }
         }
     },
-    /*{
+    {
         "contractName": "Timelock0",
         "abi": abi_timelock,
         "networks": {
@@ -267,7 +179,7 @@ const contractDetailsJson = [
             }
         }
     },*/
-    /*{
+    {
         "contractName": "节点PoS",
         "abi": abi_multisig,
         "networks": {
@@ -284,15 +196,6 @@ const contractDetailsJson = [
                 "address": "0xB17b6812f3Ed0eb0Df6e9F1D308C975B5daa8dC3"
             }
         }
-    },*/
-    {
-        "contractName": "ecofund1",
-        "abi": abi_multisig,
-        "networks": {
-            "3666": {
-                "address": "0x50fe8f7cf122CFa689A634510C1b869E790f9760"
-            }
-        }
     },
     {
         "contractName": "WJ",
@@ -303,7 +206,7 @@ const contractDetailsJson = [
             }
         }
     },
-    {
+    /*{
         "contractName": "红包",
         "abi": abi_redpacket_v0_1,
         "networks": {
@@ -311,8 +214,8 @@ const contractDetailsJson = [
                 "address": redpacket_contract_address
             }
         }
-    },
-    {
+    },*/
+    /*{
         "contractName": "CryptoJunks",
 		"contractSource": "source/cryptojunks.sol.txt",
 		"sourceVerified": true,
@@ -323,7 +226,7 @@ const contractDetailsJson = [
             }
         }
     },
-    /*{
+    {
         "contractName": "CJDAO多签",
         "abi": abi_multisig,
         "networks": {
@@ -332,19 +235,6 @@ const contractDetailsJson = [
             }
         }
     },*/
-    {
-        "contractName": "BoredApe",
-		"contractSource": "source/boredape.sol.txt",
-		"sourceVerified": false,
-        "abi": abi_boredape,
-        "networks": {
-            "3666": {
-                "address": boredape_contract_address,
-				"ownership": "0xf2453659235606a2C979E9891412a2Ae711808D3",
-				"ownertag": "BoredApe项目方(联络人:楼兰渔夫)",
-            }
-        }
-    },
 
 ];
 
