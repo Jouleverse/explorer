@@ -315,3 +315,8 @@ TODO:
 - improve: spin off tools/core from tools/contractx
 - new: add jnsvote to tools/contractx
 - release: 0.10.115
+
+2025.5.19
+- fix: change terminology: ciculating energy => free energy; dark energy => reserved energy.
+- release: 0.10.116
+
