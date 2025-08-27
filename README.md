@@ -320,3 +320,9 @@ TODO:
 - fix: change terminology: ciculating energy => free energy; dark energy => reserved energy.
 - release: 0.10.116
 
+2025.8.28
+- improve: use CDN for lib js
+- improve: upgrade angular
+- improve: remove mirror, using bower for all libs now
+- release: 0.11.0
+
