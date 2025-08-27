@@ -3,6 +3,9 @@
 angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
 
 .config(function($routeProvider, $locationProvider) {
+	// 修复哈希前缀问题
+	$locationProvider.hashPrefix('');
+
         $routeProvider.
             when('/', {
                 templateUrl: 'views/main.html',
@@ -62,22 +65,18 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
     .run(function($rootScope) {
         var web3 = new Web3();
 
-	    	const protocol = location.protocol;
 			const hostname = location.hostname;
-			var rpc_service;
-			if (hostname == 'localhost') {
-				rpc_service = 'rpc.jnsdao.com'; // for dev
+			const PORT = 8503;
+			var rpc_service = `https://rpc.jnsdao.com:${PORT}`; //by default
+			if (hostname == 'localhost' || hostname == '127.0.0.1') { //local dev
+				//rpc_service = 'http://127.0.0.1:8501'; //direct access tolocal geth
 			} else {
-				rpc_service = hostname.replace('jscan', 'rpc'); // jscan to use corresponding rpc, e.g. jscan.jnsdao.com -> rpc.jnsdao.com
+				rpc_service = 'https://' + hostname.replace('jscan', 'rpc') + ':' + port; // jscan to use corresponding rpc, e.g. jscan.jnsdao.com -> rpc.jnsdao.com
 			}
-			//var hostname = 'localhost';
-			//var hostname = 'rpc.liujiaolian.com';
-			//var hostname = 'rpc.jnsdao.com'; //location.hostname; // FIXME manual fix
-			var port = protocol == 'http:' ? 8502 : 8503;
-			rpc_service += ':' + port;
 			//var port = (hostname == 'localhost' || hostname == '127.0.0.1')? 8501 : (protocol == 'http:' ? 8502 : 8503); //XXX yuanma rpc, geth:8501, nginx:8502, nginx-https:8503
 	        //var eth_node_url = protocol + '//' + hostname + ':' + port; // adaptive to http & https
-	        var eth_node_url = '//' + rpc_service; // 使用相对协议，在https页面混合http请求？
+	        //var eth_node_url = '//' + rpc_service; // 使用相对协议，在https页面混合http请求？
+	        var eth_node_url = rpc_service;
 
 		web3.setProvider(new web3.providers.HttpProvider(eth_node_url));
         $rootScope.web3 = web3;

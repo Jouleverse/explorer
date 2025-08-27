@@ -11,8 +11,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <base href="/">
   <link rel="stylesheet" href="styles/main.css">
-  <link rel="stylesheet" href="mirror/bootstrap/3.3.5/css/bootstrap.min.css">
+<!--BEGIN Libs -->
+<!-- local dev, using BOWER -->
+<!--
   <script src="bower_components/web3/dist/web3.min.js"></script>
+  <script src="bower_components/angular/angular.min.js"></script>
+  <script src="bower_components/angular-bootstrap/ui-bootstrap.min.js"></script>
+  <script src="bower_components/angular-route/angular-route.min.js"></script>
+  <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+-->
+<!-- deploy, using CDN -->
+<!-- bootcdn -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/web3/1.8.2/web3.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/angular-ui-bootstrap/0.13.4/ui-bootstrap.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/angular-route/1.8.3/angular-route.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+<!-- unpkg 
+  <script src="https://unpkg.com/web3@1.8.2/dist/web3.min.js"></script>
+  <script src="https://unpkg.com/angular@1.8.3/angular.min.js"></script>
+  <script src="https://unpkg.com/angular-ui-bootstrap@0.13.4/ui-bootstrap.min.js"></script>
+  <script src="https://unpkg.com/angular-route@1.8.3/angular-route.min.js"></script>
+  <script src="https://unpkg.com/jquery@1.11.3/dist/jquery.min.js"></script>
+  <script src="https://unpkg.com/bootstrap@3.3.5/dist/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap@3.3.5/dist/css/bootstrap.min.css">
+-->
+<!--END Libs-->
 
 	<script>
 		// global helpers
@@ -376,13 +404,6 @@
 
 <div ng-view></div>
 
-<!--Libs-->
-
-  <script src="mirror/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
-  <script src="bower_components/angular-bootstrap/ui-bootstrap.min.js"></script>
-  <script src="bower_components/angular-route/angular-route.js"></script>
-  <script src="mirror/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="mirror/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
 <!--Misc-->
   <script src="scripts/misc/wj.erc20.js"></script>
@@ -451,7 +472,7 @@
 		<br/>
 		<span>open source. no warranty.</span>
 		<br/>
-		<span>release: 0.10.116</span>
+		<span>release: 0.11.0</span>
         </p>
     </footer>
 </div>
