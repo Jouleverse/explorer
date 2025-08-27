@@ -71,7 +71,7 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
 			if (hostname == 'localhost' || hostname == '127.0.0.1') { //local dev
 				//rpc_service = 'http://127.0.0.1:8501'; //direct access tolocal geth
 			} else {
-				rpc_service = 'https://' + hostname.replace('jscan', 'rpc') + ':' + port; // jscan to use corresponding rpc, e.g. jscan.jnsdao.com -> rpc.jnsdao.com
+				rpc_service = 'https://' + hostname.replace('jscan', 'rpc') + ':' + PORT; // jscan to use corresponding rpc, e.g. jscan.jnsdao.com -> rpc.jnsdao.com
 			}
 			//var port = (hostname == 'localhost' || hostname == '127.0.0.1')? 8501 : (protocol == 'http:' ? 8502 : 8503); //XXX yuanma rpc, geth:8501, nginx:8502, nginx-https:8503
 	        //var eth_node_url = protocol + '//' + hostname + ':' + port; // adaptive to http & https

@@ -325,4 +325,6 @@ TODO:
 - improve: upgrade angular
 - improve: remove mirror, using bower for all libs now
 - release: 0.11.0
+- fix: PORT
+- release: 0.11.1
 
