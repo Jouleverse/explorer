@@ -1,0 +1,131 @@
+/* Styles for blockInfos.html and transactionInfos.html */
+
+/* Define modern color variables */
+:root {
+  --primary-light-color: #bb86fc;
+  --secondary-color: #03dac6; 
+  --background-color: #f5f7fa;
+  --card-background-color: #ffffff;
+  --text-color: #212121;
+  --text-secondary-color: #757575;
+  --border-color: #e0e0e0;
+  --shadow-default: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-hover: 0 4px 8px rgba(0,0,0,0.2);
+  --shadow-card: 0 4px 8px rgba(0,0,0,0.1), 0 6px 20px rgba(0,0,0,0.1);
+}
+
+/* Apply Bootstrap 3 default fonts */
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+/* Hash links */
+.hash-link {
+  font-family: monospace;
+  word-break: break-all;
+  color: var(--primary-light-color);
+  text-decoration: none;
+}
+
+.hash-link:hover {
+  text-decoration: underline;
+}
+
+/* General links */
+a {
+  color: #337ab7; /* Bootstrap default primary color */
+}
+
+a:hover {
+  color: #3700b3;
+  text-decoration: none;
+}
+
+/* Card style customization */
+.card {
+  background: var(--card-background-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 20px;
+  transition: all 0.3s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* Table card specific styles */
+.table-card {
+  background: var(--card-background-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 25px;
+  overflow: hidden;
+}
+
+/* Card header */
+.card-header {
+  background-color: #fafafa;
+  border-bottom: 1px solid var(--border-color);
+  padding: 15px 20px;
+}
+
+/* Card Body Padding */
+.card-body {
+  padding: 20px;
+}
+
+/* Table styles */
+.table {
+  margin-bottom: 0;
+}
+
+.table > thead > tr > th {
+  border-bottom: 2px solid #ddd;
+  font-weight: 500;
+  color: var(--text-secondary-color);
+  background-color: #fafafa;
+}
+
+.table > tbody > tr > td,
+.table > tbody > tr > th,
+.table > tfoot > tr > td,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > thead > tr > th {
+  border-top: 1px solid #ddd;
+  padding: 8px;
+  vertical-align: top;
+}
+
+/* Button styles - Only customizations, not default Bootstrap values */
+.btn-primary {
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 2px 4px rgba(98, 0, 234, 0.3);
+}
+
+.btn-success {
+  border-radius: 8px;
+}
+
+.btn-info {
+  border-radius: 8px;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}

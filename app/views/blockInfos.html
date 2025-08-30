@@ -1,116 +1,115 @@
-<div class="container" style="padding-top: 50px;">
+<link rel="stylesheet" href="../styles/block-tx-optimized.css">
+<div class="container" style="padding-top: 30px;">
 
-    <h1>区块 
-        <small>查看区块信息</small>
-    </h1>
-
-    <div id="block-97785883" class="blockdiv">
-        <table class="table table-striped" cellpadding="0" cellspacing="0" style="padding:0px;float:left;margin:0px;width:100%">
-            <tbody>
-            <tr>
-                <th colspan="3" align="left">区块哈希： <a class="hash-link" href="./#/block/{{blockId}}">{{hash}}</a> <span class="pull-right"></span></th>
-            </tr>
-            </tbody>
-        </table>
-        <div style="padding-bottom:30px;width:100%;text-align:right;clear:both">
-            <button class="btn btn-primary">{{conf}}</button>
-            <button class="btn btn-success cb"><span>{{gasUsed}} Gas单位</span></button>
+    <div class="row">
+        <div class="col-md-12">
+            <h1 style="margin-bottom: 20px;">
+                <span class="glyphicon glyphicon-th-large"></span> 区块 
+                <small>查看区块信息</small>
+            </h1>
         </div>
-        <table class="table table-striped">
-            <tbody>
-			<tr>
-                <th colspan="2" style="text-align:left">概要</th>
-            </tr>
-            <tr>
-                <td>区块高度</td>
-                <td><a href="./#/block/{{blockNumber}}">{{number}}</a></td>
-            </tr>
-            <tr>
-                <td>上一区块</td>
-                <td>
-					<a href="./#/block/{{number-1}}">{{parentHash}}</a>
-                </td>
-            </tr>
-            <tr>
-                <td>时间戳</td>
-                <td>
-					{{timestamp}}，即 {{timestamp_localestring}}
-                </td>
-            </tr>
-            <tr>
-                <td>难度</td>
-                <td>
-                    {{difficulty}}
-                </td>
-            </tr>
-            <!--tr>
-                <td>Nonce</td>
-                <td>{{nonce}}</td>
-            </tr-->
-            <tr>
-                <td>尺寸</td>
-                <td>{{size}} 字节</td>
-            </tr>
-            <!--tr>
-                <td>Miner</td>
-                <td><a href="./#/address/{{miner}}">{{miner}}</a></td>
-            </tr-->
-            <tr>
-                <td>Gas上限</td>
-                <td>{{gasLimit}} 单位</td>
-            </tr>
-            <tr>
-                <td nowrap>附加数据</td>
-				<td><p style="word-break:break-all;">{{extraData}}</p></td>
-            </tr>
-
-            <!--tr>
-                <td nowrap>附加数据(转换后)</td>
-                <td>{{dataFromHex}}</td>
-            </tr-->
-
-            </tbody>
-        </table>
     </div>
 
-    <h2 style="margin-top: 30px;">
-      交易
-      <small>- 包含于当前区块中</small>
-    </h2>
-
-    <div ng-repeat="tx in transactions">
-      <table class="table table-striped">
-          <tbody>
-          <tr>
-              <th colspan="2" style="text-align:left">交易 #{{$index+1}}</th>
-          </tr>
-          <tr>
-              <td>交易哈希</td>
-              <td><a href="./#/tx/{{tx.hash}}">{{tx.hash}}</a></td>
-          </tr>
-          <tr>
-              <td>从</td>
-			  <td><a href="./#/address/{{tx.from}}">{{address2tag(tx.from)}}</a></td>
-          </tr>
-          <tr>
-              <td>至</td>
-              <td><a href="./#/address/{{tx.to}}">{{address2tag(tx.to)}}</a></td>
-          </tr>
-          <tr>
-              <td nowrap>Gas消耗量</td>
-              <td>{{tx.gas}} 单位</td>
-          </tr>
-          <tr>
-              <td>输入数据</td>
-              <td><p style="word-break:break-all;">{{tx.input}}</p></td>
-          </tr>
-          <tr>
-              <td>发送价值</td>
-			  <td>{{tx.valueJ}} J，即 {{tx.value}} e</td>
-          </tr>
-          </tbody>
-      </table>
-      <hr>
+    <!-- Block Summary Card -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card table-card">
+                <div class="card-header">
+                    <h5 style="margin: 0;"><span class="glyphicon glyphicon-info-sign"></span> 区块概要</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <td style="width: 30%;"><strong>区块哈希</strong></td>
+                                <td><a class="hash-link" href="./#/block/{{blockId}}">{{hash}}</a></td>
+                            </tr>
+                            <tr>
+                                <td><strong>区块高度</strong></td>
+                                <td><a href="./#/block/{{blockNumber}}">{{number}}</a></td>
+                            </tr>
+                            <tr>
+                                <td><strong>上一区块</strong></td>
+                                <td>
+                                    <a href="./#/block/{{number-1}}">{{parentHash}}</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>时间戳</strong></td>
+                                <td>
+                                    {{timestamp}}，即 {{timestamp_localestring}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>难度</strong></td>
+                                <td>
+                                    {{difficulty}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>尺寸</strong></td>
+                                <td>{{size}} 字节</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Gas上限</strong></td>
+                                <td>{{gasLimit}} 单位</td>
+                            </tr>
+                            <tr>
+                                <td><strong>确认数</strong></td>
+                                <td><button class="btn btn-success btn-sm">{{conf}}</button></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Gas消耗量</strong></td>
+                                <td><button class="btn btn-info btn-sm">{{gasUsed}} Gas单位</button></td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top;"><strong>附加数据</strong></td>
+                                <td><p style="word-break:break-all; margin-bottom: 0;">{{extraData}}</p></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
+    <!-- End Block Summary Card -->
+
+    <!-- Transactions List Card -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card table-card">
+                <div class="card-header">
+                    <h5 style="margin: 0;"><span class="glyphicon glyphicon-transfer"></span> 区块内包含的交易</h5>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    <div ng-repeat="tx in transactions" style="border-bottom: 1px solid var(--border-color);">
+                        <div style="padding: 15px 20px;">
+                            <div style="margin-bottom: 10px;"><strong>交易 #{{$index+1}}</strong> <a class="hash-link pull-right" href="./#/tx/{{tx.hash}}">{{tx.hash}}</a></div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p style="margin-bottom: 5px;"><span class="glyphicon glyphicon-arrow-right text-success"></span> <strong>从:</strong> <a href="./#/address/{{tx.from}}">{{address2tag(tx.from)}}</a></p>
+                                    <p style="margin-bottom: 0;"><span class="glyphicon glyphicon-arrow-left text-danger"></span> <strong>至:</strong> <a href="./#/address/{{tx.to}}">{{address2tag(tx.to)}}</a></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p style="margin-bottom: 5px;"><strong>Gas消耗量:</strong> {{tx.gas}} 单位</p>
+                                    <p style="margin-bottom: 0;"><strong>发送价值:</strong> {{tx.valueJ}} J ({{tx.value}} e)</p>
+                                </div>
+                            </div>
+                            <div class="row" ng-if="tx.input && tx.input !== '0x'">
+                                <div class="col-md-12">
+                                    <p style="margin-bottom: 0;"><strong>输入数据:</strong></p>
+                                    <p style="word-break:break-all; margin-bottom: 0; font-family: monospace; font-size: 0.9em; background-color: #f8f9fa; padding: 5px; border-radius: 4px;">{{tx.input}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-if="!transactions || transactions.length === 0" style="padding: 15px 20px; text-align: center; color: var(--text-secondary-color);">
+                        该区块内没有交易。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Transactions List Card -->
 
 </div>

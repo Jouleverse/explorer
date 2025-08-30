@@ -1,94 +1,105 @@
-<div class="container" style="padding-top: 50px;">
+<link rel="stylesheet" href="../styles/block-tx-optimized.css">
+<div class="container" style="padding-top: 30px;">
 
-    <h1>交易
-        <small>查看链上交易信息</small>
-    </h1>
-
-    <div id="tx-97785883" class="txdiv">
-        <table class="table table-striped" cellpadding="0" cellspacing="0" style="padding:0px;float:left;margin:0px;width:100%">
-            <tbody>
-            <tr>
-                <th colspan="3" align="left">交易哈希： <a class="hash-link" href="./#/tx/{{txId}}">{{txId}}</a> <span class="pull-right"></span></th>
-            </tr>
-            <tr>
-                <td width="500px" class="">
-                    <a href="./#/address/{{from}}">{{address2tag(from)}}</a>
-                    <br>
-                </td>
-                <td width="48px" class="" style="padding:4px;text-align:center;vertical-align:middle;">
-                    &#x2B95;
-                </td>
-                <td class="">
-                    <a href="./#/address/{{to}}">{{address2tag(to)}}</a>
-                    <span class="pull-right">
-                        <span>{{txValue}} J</span>
-                    </span>
-                    <br>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <div style="padding-bottom:30px;width:100%;text-align:right;clear:both">   <!--TODO no style tags...-->
-            <button class="btn btn-primary">{{conf}}</button>
-            <button class="btn btn-success cb"><span>{{txValue}} J</span></button>
+    <div class="row">
+        <div class="col-md-12">
+            <h1 style="margin-bottom: 20px;">
+                <span class="glyphicon glyphicon-transfer"></span> 交易
+                <small>查看链上交易信息</small>
+            </h1>
         </div>
-        <table class="table table-striped">
-            <tbody><tr>
-                <th colspan="2" style="text-align:left">概要</th>
-            </tr>
-            <tr>
-                <td>时间戳</td>
-                <td>
-					{{time}} <span data-ng-if="time > 0">({{time_localestring}})</span>
-                </td>
-            </tr>
-            <tr>
-                <td>区块高度</td>
-                <td>
-                    <span data-ng-if="blockNumber > 0"><a href="./#/block/{{blockNumber}}">{{blockNumber}}</a></span>
-                </td>
-            </tr>
-            <tr>
-                <td>区块哈希</td>
-                <td>
-					<span data-ng-if="blockHash > 0"><a href="./#/block/{{blockHash}}">{{blockHash}}</a></span>
-				</td>
-            </tr>
-            <tr>
-                <td nowrap>Gas单价 (每单位gas包含的能量)</td>
-				<td>约 {{gasPriceGwei}} Gwei（ {{gasPrice}} wei）</td>
-            </tr>
-            <tr data-ng-if="gasUsed > 0">
-                <td>Gas消耗量</td>
-                <td>{{gasUsed}} 单位 </td>
-            </tr>
-            <tr data-ng-if="(gasUsed === undefined || gasUsed <= 0) && gasLimit > 0">
-                <td>Gas限制</td>
-                <td>{{gasLimit}} 单位</td>
-            </tr>
-            <tr> 
-                <td data-ng-if="gasUsed > 0">交易手续费</td>
-                <td data-ng-if="(gasUsed === undefined || gasUsed <= 0) && gasLimit > 0">交易手续费(预估)</td>
-				<td>{{txfee}} J（约 {{txfeeGwei}} Gwei）</td>
-            </tr>
-            <tr>
-                <td nowrap>Nonce (该地址此前交易数)</td>
-                <td>{{nonce}}</td>
-            </tr>
-            <tr>
-                <td>输入数据</td>
-				<td>
-                    <p ng-show="inputFormat == 'raw_data'" style="word-break:break-all;">{{input}}</p> 
-                    <p ng-show="inputFormat == 'decode_data'" style="word-break:break-all;">
-                    <pre ng-show="inputFormat == 'decode_data'">{{inputDecoderJsonString}}</pre>
-                    </p>
-                    <a href="javascript:;" ng-click="toggleDecodeInput()">{{targetInputFormat}}</a>
-                </td>
-            </tr>
-
-            </tbody>
-        </table>
-		<small>* 注：<br/>(1) 交易手续费 = Gas消耗量 * Gas单价；<br/>(2) 1 J = 1 Ewei = 10^9 Gwei = 10^18 wei。</small>
     </div>
+
+    <!-- Transaction Summary Card -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card table-card">
+                <div class="card-header">
+                    <h5 style="margin: 0;"><span class="glyphicon glyphicon-info-sign"></span> 交易概要</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <td style="width: 30%;"><strong>交易哈希</strong></td>
+                                <td><a class="hash-link" href="./#/tx/{{txId}}">{{txId}}</a></td>
+                            </tr>
+                            <tr>
+                                <td><strong>时间戳</strong></td>
+                                <td>
+                                    {{time}} <span data-ng-if="time > 0">({{time_localestring}})</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>区块高度</strong></td>
+                                <td>
+                                    <span data-ng-if="blockNumber > 0"><a href="./#/block/{{blockNumber}}">{{blockNumber}}</a></span>
+                                    <span data-ng-if="!blockNumber || blockNumber <= 0">待打包...</span>
+                                </td>
+                            </tr>
+                             <tr>
+                                <td><strong>区块哈希</strong></td>
+                                <td>
+                                    <span data-ng-if="blockHash"><a href="./#/block/{{blockHash}}">{{blockHash}}</a></span>
+                                    <span data-ng-if="!blockHash">待打包...</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>从</strong></td>
+                                <td><a href="./#/address/{{from}}">{{address2tag(from)}}</a></td>
+                            </tr>
+                            <tr>
+                                <td><strong>至</strong></td>
+                                <td><a href="./#/address/{{to}}">{{address2tag(to)}}</a></td>
+                            </tr>
+                            <tr>
+                                <td><strong>发送价值</strong></td>
+                                <td>{{txValue}} J</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Gas单价</strong></td>
+                                <td>约 {{gasPriceGwei}} Gwei（ {{gasPrice}} wei）</td>
+                            </tr>
+                            <tr data-ng-if="gasUsed > 0">
+                                <td><strong>Gas消耗量</strong></td>
+                                <td>{{gasUsed}} 单位 </td>
+                            </tr>
+                            <tr data-ng-if="(!gasUsed || gasUsed <= 0) && gasLimit > 0">
+                                <td><strong>Gas限制</strong></td>
+                                <td>{{gasLimit}} 单位</td>
+                            </tr>
+                            <tr> 
+                                <td><span data-ng-if="gasUsed > 0">交易手续费</span><span data-ng-if="(!gasUsed || gasUsed <= 0) && gasLimit > 0">交易手续费(预估)</span></td>
+                                <td>{{txfee}} J（约 {{txfeeGwei}} Gwei）</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Nonce (该地址此前交易数)</strong></td>
+                                <td>{{nonce}}</td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top;"><strong>输入数据</strong></td>
+                                <td>
+                                    <div ng-show="inputFormat == 'raw_data'">
+                                        <p style="word-break:break-all; margin-bottom: 10px; font-family: monospace; font-size: 0.9em; background-color: #f8f9fa; padding: 5px; border-radius: 4px;">{{input}}</p>
+                                        <a href="javascript:;" ng-click="toggleDecodeInput()">尝试ABI解码</a>
+                                    </div> 
+                                    <div ng-show="inputFormat == 'decode_data'">
+                                        <pre style="margin-bottom: 10px;">{{inputDecoderJsonString}}</pre>
+                                        <a href="javascript:;" ng-click="toggleDecodeInput()">查看原始数据</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>确认数</strong></td>
+                                <td><button class="btn btn-success btn-sm">{{conf}}</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <small style="display: block; margin-top: 15px;">* 注：<br/>(1) 交易手续费 = Gas消耗量 * Gas单价；<br/>(2) 1 J = 1 Ewei = 10^9 Gwei = 10^18 wei。</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Transaction Summary Card -->
 
 </div>
