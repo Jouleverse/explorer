@@ -51,16 +51,16 @@
                                 <td>{{size}} 字节</td>
                             </tr>
                             <tr>
-                                <td><strong>Gas上限</strong></td>
-                                <td>{{gasLimit}} 单位</td>
+                                <td><strong>燃料上限</strong></td>
+                                <td>{{gasLimit}} 桶</td>
                             </tr>
                             <tr>
                                 <td><strong>确认数</strong></td>
-                                <td><button class="btn btn-success btn-sm">{{conf}}</button></td>
+                                <td><button class="btn btn-success btn-sm">{{conf}} 个区块</button></td>
                             </tr>
                             <tr>
-                                <td><strong>Gas消耗量</strong></td>
-                                <td><button class="btn btn-info btn-sm">{{gasUsed}} Gas单位</button></td>
+                                <td><strong>燃料消耗量</strong></td>
+                                <td><button class="btn btn-info btn-sm">{{gasUsed}} 桶</button></td>
                             </tr>
                             <tr>
                                 <td style="vertical-align: top;"><strong>附加数据</strong></td>
@@ -91,8 +91,8 @@
                                     <p style="margin-bottom: 0;"><span class="glyphicon glyphicon-arrow-left text-danger"></span> <strong>至:</strong> <a href="./#/address/{{tx.to}}">{{address2tag(tx.to)}}</a></p>
                                 </div>
                                 <div class="col-md-6">
-                                    <p style="margin-bottom: 5px;"><strong>Gas消耗量:</strong> {{tx.gas}} 单位</p>
-                                    <p style="margin-bottom: 0;"><strong>发送价值:</strong> {{tx.valueJ}} J ({{tx.value}} e)</p>
+                                    <p style="margin-bottom: 5px;"><strong>燃料消耗量:</strong> {{tx.gas}} 桶</p>
+                                    <p style="margin-bottom: 0;"><strong>传输能量:</strong> {{tx.valueJ}} J</p>
                                 </div>
                             </div>
                             <div class="row" ng-if="tx.input && tx.input !== '0x'">

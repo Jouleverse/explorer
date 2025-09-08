@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
+angular.module('jouleExplorer', ['ngRoute','ui.bootstrap'])
 
 .config(function($routeProvider, $locationProvider) {
 	// 修复哈希前缀问题

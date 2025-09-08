@@ -53,24 +53,24 @@
                                 <td><a href="./#/address/{{to}}">{{address2tag(to)}}</a></td>
                             </tr>
                             <tr>
-                                <td><strong>发送价值</strong></td>
+                                <td><strong>传输能量</strong></td>
                                 <td>{{txValue}} J</td>
                             </tr>
                             <tr>
-                                <td><strong>Gas单价</strong></td>
-                                <td>约 {{gasPriceGwei}} Gwei（ {{gasPrice}} wei）</td>
+                                <td><strong>每桶燃料能量值(燃料单价)</strong></td>
+                                <td>{{gasPrice}} J (约 {{gasPriceGwei}} Gwei)</td>
                             </tr>
                             <tr data-ng-if="gasUsed > 0">
-                                <td><strong>Gas消耗量</strong></td>
-                                <td>{{gasUsed}} 单位 </td>
+                                <td><strong>燃料消耗量</strong></td>
+                                <td>{{gasUsed}} 桶</td>
                             </tr>
                             <tr data-ng-if="(!gasUsed || gasUsed <= 0) && gasLimit > 0">
-                                <td><strong>Gas限制</strong></td>
-                                <td>{{gasLimit}} 单位</td>
+                                <td><strong>燃料消耗限制</strong></td>
+                                <td>{{gasLimit}} 桶</td>
                             </tr>
                             <tr> 
-                                <td><span data-ng-if="gasUsed > 0">交易手续费</span><span data-ng-if="(!gasUsed || gasUsed <= 0) && gasLimit > 0">交易手续费(预估)</span></td>
-                                <td>{{txfee}} J（约 {{txfeeGwei}} Gwei）</td>
+                                <td><strong><span data-ng-if="gasUsed > 0">交易手续费(消耗能量)</span><span data-ng-if="(!gasUsed || gasUsed <= 0) && gasLimit > 0">交易手续费(预估)</span></strong></td>
+                                <td>{{txfee}} J (约 {{txfeeGwei}} Gwei)</td>
                             </tr>
                             <tr>
                                 <td><strong>Nonce (该地址此前交易数)</strong></td>
@@ -91,11 +91,11 @@
                             </tr>
                             <tr>
                                 <td><strong>确认数</strong></td>
-                                <td><button class="btn btn-success btn-sm">{{conf}}</button></td>
+                                <td><button class="btn btn-success btn-sm">{{conf}} 个区块</button></td>
                             </tr>
                         </tbody>
                     </table>
-                    <small style="display: block; margin-top: 15px;">* 注：<br/>(1) 交易手续费 = Gas消耗量 * Gas单价；<br/>(2) 1 J = 1 Ewei = 10^9 Gwei = 10^18 wei。</small>
+                    <small style="display: block; margin-top: 15px;">* 注：<br/>(1) 交易手续费(消耗能量) = 燃料消耗量(桶)* 每桶燃料能量值(J)；<br/>(2) 1 J = 1 Ewei = 10^9 Gwei = 10^18 wei。</small>
                 </div>
             </div>
         </div>

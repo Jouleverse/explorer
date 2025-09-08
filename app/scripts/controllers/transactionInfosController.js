@@ -1,4 +1,4 @@
-angular.module('ethExplorer')
+angular.module('jouleExplorer')
     .controller('transactionInfosCtrl', function ($rootScope, $scope, $location, $routeParams,$q) {
 
        var web3 = $rootScope.web3;
@@ -31,9 +31,10 @@ angular.module('ethExplorer')
                     $scope.from = result.from;
 
                     //$scope.gasPrice = result.gasPrice.c[0] + " e";
-                    $scope.gasPrice = result.gasPrice;
 					//var gasPriceGwei = result.gasPrice.c[0] / 10**9;
-                    $scope.gasPriceGwei = parseInt(web3.utils.fromWei(result.gasPrice, "gwei"));
+					var gasPrice = result.gasPrice;
+					$scope.gasPrice = web3.utils.fromWei(gasPrice, "ether");
+                    $scope.gasPriceGwei = parseInt(web3.utils.fromWei(gasPrice, "gwei"));
 
                     $scope.gasLimit = result.gas; // 保存 gas limit
                     
@@ -102,7 +103,7 @@ angular.module('ethExplorer')
 
 						web3.eth.getBlockNumber(function (err, number) {
 							if (number && number >= $scope.blockNumber) {
-								$scope.conf = 1 + number - $scope.blockNumber + " 确认数";
+								$scope.conf = 1 + number - $scope.blockNumber;
 								$scope.$apply();
 							}
 						});

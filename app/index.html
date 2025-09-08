@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html lang="en" ng-app="ethExplorer" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html lang="en" ng-app="ethExplorer" class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html lang="en" ng-app="ethExplorer" class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html lang="en" ng-app="ethExplorer" class="no-js"> <!--<![endif]-->
+<!--[if lt IE 7]>      <html lang="en" ng-app="jouleExplorer" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="jouleExplorer" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="jouleExplorer" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="jouleExplorer" class="no-js"> <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -23,7 +23,7 @@
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
 -->
 <!-- deploy, using CDN -->
-<!-- bootcdn -->
+<!-- bootcdn
   <script src="https://cdn.bootcdn.net/ajax/libs/web3/1.8.2/web3.min.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/angular-ui-bootstrap/0.13.4/ui-bootstrap.min.js"></script>
@@ -31,6 +31,7 @@
   <script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+  -->
 <!-- unpkg 
   <script src="https://unpkg.com/web3@1.8.2/dist/web3.min.js"></script>
   <script src="https://unpkg.com/angular@1.8.3/angular.min.js"></script>
@@ -41,6 +42,63 @@
   <link rel="stylesheet" href="https://unpkg.com/bootstrap@3.3.5/dist/css/bootstrap.min.css">
 -->
 <!--END Libs-->
+<script>
+	// 判断是否开发环境（假设通过 URL 或全局变量）
+	const isDev = window.location.hostname === 'localhost' ||
+		window.location.hostname === '127.0.0.1';
+
+	// 开发环境：本地路径（Bower）
+	const devLibs = [
+		'bower_components/web3/dist/web3.min.js',
+		'bower_components/angular/angular.min.js',
+		'bower_components/angular-bootstrap/ui-bootstrap.min.js',
+		'bower_components/angular-route/angular-route.min.js',
+		'bower_components/jquery/dist/jquery.min.js',
+		'bower_components/bootstrap/dist/js/bootstrap.min.js',
+		'bower_components/bootstrap/dist/css/bootstrap.min.css',  // CSS 文件
+	];
+
+	// 生产环境：CDN 路径
+	const prodLibs = [
+		'https://cdn.bootcdn.net/ajax/libs/web3/1.8.2/web3.min.js',
+		'https://cdn.bootcdn.net/ajax/libs/angular.js/1.8.3/angular.min.js',
+		'https://cdn.bootcdn.net/ajax/libs/angular-ui-bootstrap/0.13.4/ui-bootstrap.min.js',
+		'https://cdn.bootcdn.net/ajax/libs/angular-route/1.8.3/angular-route.min.js',
+		'https://cdn.bootcdn.net/ajax/libs/jquery/1.11.3/jquery.min.js',
+		'https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js',
+		'https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css',  // CSS 文件
+	];
+
+	const appMods = [
+		'app.js',
+		'scripts/controllers/mainController.js',
+		'scripts/controllers/addressInfoController.js',
+		'scripts/controllers/blockInfosController.js',
+		'scripts/controllers/transactionInfosController.js',
+		'scripts/controllers/junksInfoController.js',
+		'scripts/controllers/jnsInfoController.js',
+		'scripts/controllers/redpacketInfoController.js',
+		'scripts/controllers/jnsVoteInfoController.js',
+	];
+
+	// 根据环境选择资源列表
+	const libsToLoad = isDev ? devLibs.concat(appMods) : prodLibs.concat(appMods);
+
+	// 动态加载资源
+	libsToLoad.forEach(path => {
+		if (path.endsWith('.js')) {
+			const script = document.createElement('script');
+			script.src = path;
+			script.async = false; // 保持顺序执行（如有依赖关系）
+			document.head.appendChild(script);
+		} else if (path.endsWith('.css')) {
+			const link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.href = path;
+			document.head.appendChild(link);
+		}
+	});
+</script>
 
 	<script>
 		// global helpers
@@ -429,9 +487,12 @@
   <script src="scripts/crypto/abi-decoder.js"></script>
 
 <!--Core-->
+<!--
   <script src="app.js"></script>
+  -->
 
 <!--Controllers-->
+<!--
   <script src="scripts/controllers/mainController.js"></script>
   <script src="scripts/controllers/addressInfoController.js"></script>
   <script src="scripts/controllers/blockInfosController.js"></script>
@@ -440,6 +501,7 @@
   <script src="scripts/controllers/jnsInfoController.js"></script>
   <script src="scripts/controllers/redpacketInfoController.js"></script>
   <script src="scripts/controllers/jnsVoteInfoController.js"></script>
+  -->
 
   <!--Services-->
   <!-- dialog just for information -->
@@ -471,7 +533,7 @@
 		<br/>
 		<span>open source. no warranty.</span>
 		<br/>
-		<span>release: 0.11.1</span>
+		<span>release: 0.11.2</span>
         </p>
     </footer>
 </div>
