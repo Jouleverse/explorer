@@ -335,3 +335,6 @@ TODO:
 - improve: gas unit expression improved for better understanding.
 - release: 0.11.2
 
+2025.9.8
+- improve: use app/.RPC for choosing rpc service (json format, "rpc" or ["rpc1", "rpc2"]). no .RPC will default to rpc.jnsdao.com
+- release: 0.11.3
