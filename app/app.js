@@ -7,7 +7,7 @@ angular.module('jouleExplorer', ['ngRoute','ui.bootstrap'])
     // 同步加载.RPC文件
     var rpcConfig = null;
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '.RPC', false); // 同步请求
+    xhr.open('GET', '.rpc.txt', false); // 同步请求
     xhr.send();
 
     if (xhr.status === 200) {
