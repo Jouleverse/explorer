@@ -31,8 +31,6 @@ angular.module('jouleExplorer', ['ngRoute','ui.bootstrap'])
         } else if (typeof rpcConfig === 'string') {
             finalRpc = rpcConfig;
         }
-    } else if (!(hostname === 'localhost' || hostname === '127.0.0.1')) {
-        finalRpc = 'https://' + hostname.replace('jscan', 'rpc') + ':' + PORT;
     }
 
     // 设置provider
