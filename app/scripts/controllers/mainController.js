@@ -1,4 +1,4 @@
-angular.module('ethExplorer')
+angular.module('jouleExplorer')
 	.controller('mainCtrl', function ($rootScope, $scope, $location, $routeParams, $q) {
 
 		var web3 = $rootScope.web3;
