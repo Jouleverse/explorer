@@ -2,94 +2,152 @@
 
 /* Define modern color variables */
 :root {
-  --primary-light-color: #bb86fc;
-  --secondary-color: #03dac6; 
-  --background-color: #f5f7fa;
+  --primary-color: #3b82f6;
+  --primary-light-color: #60a5fa;
+  --primary-dark-color: #2563eb;
+  --secondary-color: #0ea5e9;
+  --accent-color: #818cf8;
+  --background-color: #f1f5f9;
   --card-background-color: #ffffff;
-  --text-color: #212121;
-  --text-secondary-color: #757575;
-  --border-color: #e0e0e0;
-  --shadow-default: 0 2px 4px rgba(0,0,0,0.1);
-  --shadow-hover: 0 4px 8px rgba(0,0,0,0.2);
-  --shadow-card: 0 4px 8px rgba(0,0,0,0.1), 0 6px 20px rgba(0,0,0,0.1);
+  --text-color: #1e293b;
+  --text-secondary-color: #64748b;
+  --border-color: #e2e8f0;
+  --shadow-default: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.12);
+  --shadow-hover: 0 4px 12px rgba(59, 130, 246, 0.12), 0 2px 8px rgba(59, 130, 246, 0.08);
+  --shadow-card: 0 2px 6px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+  --info-color: #0ea5e9;
 }
 
-/* Apply Bootstrap 3 default fonts */
+/* Apply modern font stack */
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  line-height: 1.42857143;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
   color: var(--text-color);
   background-color: var(--background-color);
+  font-feature-settings: "liga" 1, "kern" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Hash links */
 .hash-link {
-  font-family: monospace;
+  font-family: "Fira Code", "Roboto Mono", monospace;
   word-break: break-all;
-  color: var(--primary-light-color);
+  color: var(--primary-color);
   text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  position: relative;
 }
 
 .hash-link:hover {
-  text-decoration: underline;
+  color: var(--primary-dark-color);
+}
+
+.hash-link::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+.hash-link:hover::after {
+  width: 100%;
 }
 
 /* General links */
 a {
-  color: #337ab7; /* Bootstrap default primary color */
+  color: var(--primary-color);
+  font-weight: 500;
+  transition: color 0.2s ease;
+  position: relative;
+  text-decoration: none;
 }
 
 a:hover {
-  color: #3700b3;
+  color: var(--primary-dark-color);
   text-decoration: none;
+}
+
+a::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+a:hover::after {
+  width: 100%;
 }
 
 /* Card style customization */
 .card {
   background: var(--card-background-color);
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: var(--shadow-card);
-  margin-bottom: 20px;
-  transition: all 0.3s ease, transform 0.2s ease;
+  margin-bottom: 24px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.2s ease;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
 }
 
 .card:hover {
   box-shadow: var(--shadow-hover);
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  border-color: rgba(0,0,0,0.08);
 }
 
 /* Table card specific styles */
 .table-card {
   background: var(--card-background-color);
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: var(--shadow-card);
-  margin-bottom: 25px;
+  margin-bottom: 28px;
   overflow: hidden;
+  border: 1px solid var(--border-color);
 }
 
 /* Card header */
 .card-header {
-  background-color: #fafafa;
+  background-color: transparent;
   border-bottom: 1px solid var(--border-color);
-  padding: 15px 20px;
+  padding: 20px 24px;
+  font-weight: 600;
+  font-size: 17px;
 }
 
 /* Card Body Padding */
 .card-body {
-  padding: 20px;
+  padding: 24px;
 }
 
 /* Table styles */
 .table {
   margin-bottom: 0;
+  width: 100%;
 }
 
 .table > thead > tr > th {
-  border-bottom: 2px solid #ddd;
-  font-weight: 500;
+  border-bottom: 2px solid var(--border-color);
+  font-weight: 600;
   color: var(--text-secondary-color);
-  background-color: #fafafa;
+  background-color: rgba(250, 250, 250, 0.8);
+  padding: 14px 16px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .table > tbody > tr > td,
@@ -98,34 +156,83 @@ a:hover {
 .table > tfoot > tr > th,
 .table > thead > tr > td,
 .table > thead > tr > th {
-  border-top: 1px solid #ddd;
-  padding: 8px;
-  vertical-align: top;
+  border-top: 1px solid var(--border-color);
+  padding: 14px 16px;
+  vertical-align: middle;
 }
 
-/* Button styles - Only customizations, not default Bootstrap values */
-.btn-primary {
-  border-radius: 8px;
-  padding: 8px 16px;
+.table > tbody > tr:hover {
+  background-color: rgba(126, 87, 194, 0.03);
+  transition: background-color 0.2s ease;
+}
+
+/* Button styles - Modernized */
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
   font-weight: 500;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(126, 87, 194, 0.25);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 10px 20px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.25);
+  border: none;
+  border-radius: 12px;
 }
 
 .btn-primary:hover {
-  box-shadow: 0 2px 4px rgba(98, 0, 234, 0.3);
+  background-color: var(--primary-dark-color);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+  transform: translateY(-2px);
+}
+
+.btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
 .btn-success {
-  border-radius: 8px;
+  background-color: var(--success-color);
+  color: white;
+  border-radius: 12px;
+}
+
+.btn-success:hover {
+  background-color: #3d8b40;
+  transform: translateY(-2px);
 }
 
 .btn-info {
-  border-radius: 8px;
+  background-color: var(--info-color);
+  color: white;
+  border-radius: 12px;
+}
+
+.btn-info:hover {
+  background-color: #0d8aee;
+  transform: translateY(-2px);
 }
 
 .btn-sm {
-  padding: 5px 10px;
-  font-size: 12px;
+  padding: 6px 12px;
+  font-size: 13px;
   line-height: 1.5;
-  border-radius: 3px;
+  border-radius: 8px;
 }
