@@ -340,3 +340,10 @@ TODO:
 - release: 0.11.3
 - fix: for not routing to /#/, use .rpc.txt instead of .RPC
 - release: 0.11.4
+
+2025.9.13
+- improve: optimize css. contributor: decong (PR#28). review-merged by Ean.
+- improve: use iocdn for 3pp libs.
+- improve: try to async check .rpc.txt (don't forget to touch an empty app/.rpc.txt for better loading?)
+- release: 0.11.5
+
