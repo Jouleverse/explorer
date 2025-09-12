@@ -344,6 +344,6 @@ TODO:
 2025.9.13
 - improve: optimize css. contributor: decong (PR#28). review-merged by Ean.
 - improve: use iocdn for 3pp libs.
-- improve: try to async check .rpc.txt (don't forget to touch an empty app/.rpc.txt for better loading?)
+- [cancelled@0.11.6]improve: try to async check .rpc.txt (don't forget to touch an empty app/.rpc.txt for better loading? no need. 404 is fast.)
 - release: 0.11.5
 
