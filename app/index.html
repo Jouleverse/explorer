@@ -11,37 +11,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <base href="/">
   <link rel="stylesheet" href="styles/main.css">
-<!--BEGIN Libs -->
-<!-- local dev, using BOWER -->
-<!--
-  <script src="bower_components/web3/dist/web3.min.js"></script>
-  <script src="bower_components/angular/angular.min.js"></script>
-  <script src="bower_components/angular-bootstrap/ui-bootstrap.min.js"></script>
-  <script src="bower_components/angular-route/angular-route.min.js"></script>
-  <script src="bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
--->
-<!-- deploy, using CDN -->
-<!-- bootcdn
-  <script src="https://cdn.bootcdn.net/ajax/libs/web3/1.8.2/web3.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/angular-ui-bootstrap/0.13.4/ui-bootstrap.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/angular-route/1.8.3/angular-route.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
-  -->
-<!-- unpkg 
-  <script src="https://unpkg.com/web3@1.8.2/dist/web3.min.js"></script>
-  <script src="https://unpkg.com/angular@1.8.3/angular.min.js"></script>
-  <script src="https://unpkg.com/angular-ui-bootstrap@0.13.4/ui-bootstrap.min.js"></script>
-  <script src="https://unpkg.com/angular-route@1.8.3/angular-route.min.js"></script>
-  <script src="https://unpkg.com/jquery@1.11.3/dist/jquery.min.js"></script>
-  <script src="https://unpkg.com/bootstrap@3.3.5/dist/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/bootstrap@3.3.5/dist/css/bootstrap.min.css">
--->
-<!--END Libs-->
 <script>
 	// 判断是否开发环境（假设通过 URL 或全局变量）
 	const isDev = window.location.hostname === 'localhost' ||
@@ -60,13 +29,30 @@
 
 	// 生产环境：CDN 路径
 	const prodLibs = [
-		'https://cdn.bootcdn.net/ajax/libs/web3/1.8.2/web3.min.js',
+		// --- unpkg --- blocked, don't use
+		/*'https://unpkg.com/web3@1.8.2/dist/web3.min.js',
+		'https://unpkg.com/angular@1.8.3/angular.min.js',
+		'https://unpkg.com/angular-ui-bootstrap@0.13.4/ui-bootstrap.min.js',
+		'https://unpkg.com/angular-route@1.8.3/angular-route.min.js',
+		'https://unpkg.com/jquery@1.11.3/dist/jquery.min.js',
+		'https://unpkg.com/bootstrap@3.3.5/dist/js/bootstrap.min.js',
+		'https://unpkg.com/bootstrap@3.3.5/dist/css/bootstrap.min.css', */
+		// --- bootcdn ---
+		/*'https://cdn.bootcdn.net/ajax/libs/web3/1.8.2/web3.min.js',
 		'https://cdn.bootcdn.net/ajax/libs/angular.js/1.8.3/angular.min.js',
 		'https://cdn.bootcdn.net/ajax/libs/angular-ui-bootstrap/0.13.4/ui-bootstrap.min.js',
 		'https://cdn.bootcdn.net/ajax/libs/angular-route/1.8.3/angular-route.min.js',
 		'https://cdn.bootcdn.net/ajax/libs/jquery/1.11.3/jquery.min.js',
 		'https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js',
-		'https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css',  // CSS 文件
+		'https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css',  // CSS 文件 */
+		// --- iocdn ---
+		'https://cdn.iocdn.cc/npm/web3@1.8.2/dist/web3.min.js',
+		'https://cdn.iocdn.cc/npm/angular@1.8.3/angular.min.js',
+		'https://cdn.iocdn.cc/npm/angular-ui-bootstrap@0.13.4/ui-bootstrap.min.js',
+		'https://cdn.iocdn.cc/npm/angular-route@1.8.3/angular-route.min.js',
+		'https://cdn.iocdn.cc/npm/jquery@1.11.3/dist/jquery.min.js',
+		'https://cdn.iocdn.cc/npm/bootstrap@3.3.5/dist/js/bootstrap.min.js',
+		'https://cdn.iocdn.cc/npm/bootstrap@3.3.5/dist/css/bootstrap.min.css',
 	];
 
 	const appMods = [
@@ -83,6 +69,7 @@
 
 	// 根据环境选择资源列表
 	const libsToLoad = isDev ? devLibs.concat(appMods) : prodLibs.concat(appMods);
+	//const libsToLoad = prodLibs.concat(appMods); // for debugging
 
 	// 动态加载资源
 	libsToLoad.forEach(path => {
