@@ -397,7 +397,7 @@ angular.module('jouleExplorer')
 
 				// fetch & update
 				getAllJVCore();
-				getAllPOP();
+				//getAllPOP();
 
 				//getAllJTI();
 				getAllJTI2();
@@ -565,6 +565,8 @@ angular.module('jouleExplorer')
 											$scope.$apply(); // inform the data updates !
 										}
 									});
+									// get his/her POPBadges (all badges with owner check)
+									getAllPOP(token_id);
 								}
 							});
 						}
@@ -572,7 +574,8 @@ angular.module('jouleExplorer')
 				});
 			}
 
-			function getAllPOP() {
+			// called from within getAllJVCore
+			function getAllPOP(core_id) {
 				$scope.allPlanet = [];
 				var addr = $scope.addressId;
 				var contract = new web3.eth.Contract(pop_ABI, pop_contract_address);
@@ -596,7 +599,8 @@ angular.module('jouleExplorer')
 										} else {
 											var tokenURI = result3;
 											var tokenInfo = parseTokenURI(tokenURI);
-											//console.log(tokenInfo);
+											// 检查代打卡
+											var is_valid = tokenInfo.coreId == core_id;
 											// 将 month 改成 yy.m 格式
 											var date = new Date(tokenInfo.checkInTimestamp * 1000);
 											var year = date.getFullYear().toString().slice(-2); // 获取年份的后两位
@@ -604,7 +608,7 @@ angular.module('jouleExplorer')
 											var yy_m = year + '.' + month;
 
 											// 插入数据到 allPOP
-											$scope.allPOP.push({'tag': tag, 'tokenInfo': tokenInfo, 'month': yy_m, 'token_id': token_id});
+											$scope.allPOP.push({'tag': tag, 'tokenInfo': tokenInfo, 'month': yy_m, 'token_id': token_id, 'is_valid': is_valid});
 
 											// 根据 token_id 排序
 											$scope.allPOP.sort((a, b) => a.token_id - b.token_id);

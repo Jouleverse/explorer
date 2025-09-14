@@ -347,3 +347,7 @@ TODO:
 - [cancelled@0.11.6]improve: try to async check .rpc.txt (don't forget to touch an empty app/.rpc.txt for better loading? no need. 404 is fast.)
 - release: 0.11.5
 
+2025.9.14
+- new: POPBadge validity check. set gray bg for invalid on-chain JVCore check-in.
+- release: 0.11.7
+
