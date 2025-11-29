@@ -10,7 +10,6 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <base href="/">
-  <link rel="stylesheet" href="styles/main.css">
 <script>
 	// 判断是否开发环境（假设通过 URL 或全局变量）
 	const isDev = window.location.hostname === 'localhost' ||
@@ -85,6 +84,12 @@
 			document.head.appendChild(link);
 		}
 	});
+
+	// 最后加载自定义样式，确保优先级最高
+	const mainCssLink = document.createElement('link');
+	mainCssLink.rel = 'stylesheet';
+	mainCssLink.href = 'styles/main.css';
+	document.head.appendChild(mainCssLink);
 </script>
 
 	<script>
@@ -417,7 +422,7 @@
 </head>
 <body onload="onBodyLoaded()">
   
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<nav class="navbar navbar-default navbar-modern">
     <div class="container">
         <div class="navbar-header">
 			<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -425,25 +430,34 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-            <a href="/#/" class="navbar-brand">Jouleverse区块链浏览器</a>
+            <a href="/#/" class="navbar-brand">
+    <img src="jv.svg" alt="Jouleverse Logo" style="height: 20px; display: inline-block; margin-right: 5px; margin-top: -2px;">
+    Jouleverse
+</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-            <form  name="search_form" onsubmit="processRequest()"  class="navbar-form navbar-right">
-            <div class="form-group">
-            <input type="text" placeholder="JNS域名/链地址/交易哈希/区块高度" name="requestType" required  id="query"  class="form-control"><br>
-            </div>
-            <button type="submit" class="btn btn-success">搜索</button></form>
-            </ul>
 			<ul class="nav navbar-nav navbar-right">
 				<li id="connect" style="display:inline-block">
-					<a id="connLink" style="cursor:pointer" onclick="connect()">
-						<span id="connAddr"></span>
-						[<span id="connNet">?</span>]
-					</a>
-				</li>
-			</ul>
+									<a id="connLink" class="btn btn-primary btn-connect-link" style="cursor:pointer" onclick="connect()">
+															<span id="connAddr">连接账户</span>
+															[<span id="connNet">?</span>]
+														</a>								</li>			</ul>
 	    </div>
+        <!-- START: Search and Title Section -->
+        <div class="header-main-search-section">
+            <h1 class="explore-title">探索Jouleverse区块链</h1>
+            <form name="search_form" onsubmit="processRequest()" class="search-form">
+                <div class="input-group">
+                    <input type="text" placeholder="Search by Address, Tx, Block, or JNS Name" name="requestType" required id="query" class="form-control search-input">
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-primary search-button">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div>
+        <!-- END: Search and Title Section -->
     </div>
 </nav>
 

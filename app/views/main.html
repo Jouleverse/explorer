@@ -1,45 +1,66 @@
-<link rel="stylesheet" href="../styles/explorer-optimized.css">
 <div class="container" style="padding-top: 50px;">
 
 	<!--h1 style="text-align:center;">Welcome to the Etherparty Block Explorer!</h1-->
 
-	<div class="card status-card">
-		<h4>
-			<p>区块链状态：{{status || "检测中..."}}</p>
-			<p><a href="/#/block/{{blockNum}}">最新区块高度: {{blockNum || "读取中..."}}</a></p>
-		</h4>
+	<div class="row">
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="card stat-card text-center">
+				<p class="card-title">区块链状态</p>
+				<h3 class="card-value">{{status || "检测中..."}}</h3>
+				<p class="card-subtitle">最新区块: <a href="/#/block/{{blockNum}}">{{blockNum || "读取中..."}}</a></p>
+			</div>
+		</div>
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="card stat-card text-center">
+				<p class="card-title">Free Energy</p>
+				<h3 class="card-value">{{energy.circulated}}J</h3>
+				<p class="card-subtitle">&nbsp;</p> <!-- To keep alignment -->
+			</div>
+		</div>
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="card stat-card text-center">
+				<p class="card-title">Reserved Energy</p>
+				<h3 class="card-value">{{energy.core_locked}}J (core)</h3>
+				<p class="card-subtitle">{{energy.eco_locked}}J (ecosystem)</p>
+			</div>
+		</div>
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="card stat-card text-center">
+				<p class="card-title">Total Energy</p>
+				<h3 class="card-value">{{energy.total}}J</h3>
+				 <p class="card-subtitle">&nbsp;</p> <!-- To keep alignment -->
+			</div>
+		</div>
 	</div>
 
 	<div class="card table-card">
-		<table class="table table-striped">
-			<tbody>
-			<tr>
-				<th>区块 #</th>
-				<th>交易 #</th>
-				<th>尺寸(字节数)</th>
-				<th>时间戳</th>
-			</tr>
-			<tr data-ng-repeat="i in blocks">
-				<td><a href="/#/block/{{i.number}}">{{i.number}}</a></td>
-				<td>{{i.transactions.length}}</td>
-				<td>{{i.size}}</td>
-				<td>{{i.timestamp}} ({{i.time_localestring}})</td>
-			</tr>
-
-			</tbody>
-		</table>
+		<div class="card-header">
+			<h5>最新区块</h5>
+		</div>
+		<div class="table-responsive">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Block</th>
+						<th>Txn</th>
+						<th>Size (bytes)</th>
+						<th>Timestamp</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr data-ng-repeat="i in blocks">
+						<td><a href="/#/block/{{i.number}}">{{i.number}}</a></td>
+						<td>{{i.transactions.length}}</td>
+						<td>{{i.size}}</td>
+						<td>{{i.time_localestring}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
 
 	<div class="card network-card">
 		<div><h5>👇👇👇没有找到区块链网络？👇👇👇</h5></div>
 		<div><input type="button" class="btn btn-primary" onclick="switchNetwork()" value="点此一键添加Jouleverse区块链主网"></input></div>
-	</div>
-	
-	<div align="center">
-		<div><img src="jv.svg"></img></div>
-		<div>-- Jouleverse energy statstics --</div>
-		<div style="font-weight:bold">free energy：{{energy.circulated}} J</div>
-		<div style="font-style:italic">reserved: {{energy.core_locked}} J (core) + {{energy.eco_locked}} J (ecosystem)</div>
-		<div>total: {{energy.total}} J</div>
 	</div>
 </div>
