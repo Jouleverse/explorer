@@ -51,7 +51,7 @@ angular.module('jouleExplorer')
 					reserved_core: (locked.core/10**6).toLocaleString() + "M",
 					reserved_eco: (locked.eco/10**6).toLocaleString() + "M",
 				};
-				$scope.$apply(); // force refresh
+				if (!$scope.$$phase) $scope.$apply(); // force refresh
 			});
 
 			// 新增：获取创世区块时间戳并计算运行时间
@@ -80,10 +80,10 @@ angular.module('jouleExplorer')
 					}
 
 					$scope.updays = uptimeText;
-					$scope.$apply(); // 确保AngularJS更新视图
+					if (!$scope.$$phase) $scope.$apply(); // 确保AngularJS更新视图
 				} else {
 					$scope.updays = "未知";
-					$scope.$apply();
+					if (!$scope.$$phase) $scope.$apply();
 				}
 			});
 
