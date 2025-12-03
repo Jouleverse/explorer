@@ -1,7 +1,7 @@
 /* app css stylesheet */
 
 /* Define modern color variables */
-:root {
+/*:root {
   --primary-color: #7B3FE4;
   --primary-dark-color: #5a2aad;
   --background-color: #F9F9FD;
@@ -14,6 +14,63 @@
   --warning-color: #f59e0b;
   --danger-color: #ef4444;
   --info-color: #0ea5e9;
+}*/
+:root {
+	--primary-color: #D32F2F;               /* 降低饱和度：HSL(0°, 64%, 50%) */
+	--primary-light-color: #FFEBEE;         /* 柔和的浅红 */
+	--primary-dark-color: #B71C1C;          /* 深红 */
+	--primary-hover-color: #F44336;         /* 悬停色 */
+
+	/* 重点强调色（保留原色，只在小面积使用） */
+	--accent-color: #EB1727;                /* 原色，用于最重要的行动点 */
+
+	/* 中性色系 - 适配红色主题的灰阶 */
+	--background-color: #F9F9FD; /* 页面背景，略微冷色调平衡红色 */
+	--card-background-color: #FFFFFF; /* 卡片背景 */
+	--surface-color: #F8F9FA; /* 表面元素背景 */
+
+	/* 文字色系 - 确保与红色主题的和谐度 */
+	--text-color: #222222; /* 主要文字，比 #333 更深提高对比度 */
+	--text-secondary-color: #555555; /* 次级文字 */
+	--text-tertiary-color: #888888; /* 辅助文字/图标 */
+	--text-on-primary: #FFFFFF; /* 主色上的文字 */
+
+	/* 边框与分割线 */
+	--border-color: #E0E0E0; /* 通用边框，比原 #E5E7EB 稍暖 */
+	--border-light-color: #F0F0F0; /* 浅边框/分割线 */
+	--border-dark-color: #CCCCCC; /* 深边框 */
+
+	/* 阴影系统 */
+	--shadow-card: 0 2px 8px rgba(235, 23, 39, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06); /* 带红色微调的卡片阴影 */
+	--shadow-hover: 0 4px 12px rgba(235, 23, 39, 0.12), 0 6px 20px rgba(0, 0, 0, 0.08); /* 悬停阴影 */
+	--shadow-small: 0 1px 3px rgba(235, 23, 39, 0.1); /* 小型阴影 */
+
+	/* 功能色 - 重新平衡以配合红色主题 */
+	--success-color: #10B981; /* 绿色，与红色形成良好对比 */
+	--success-light-color: #D1FAE5; /* 成功浅色背景 */
+
+	--warning-color: #F59E0B; /* 琥珀色，温暖感与红色协调 */
+	--warning-light-color: #FEF3C7; /* 警告浅色背景 */
+
+	--danger-color: #EF4444; /* 红色，但比主色更亮作为功能区分 */
+	--danger-light-color: #FEE2E2; /* 危险浅色背景 */
+
+	--info-color: #0EA5E9; /* 蓝色，提供冷静的信息感 */
+	--info-light-color: #E0F2FE; /* 信息浅色背景 */
+
+	/* 交互状态 */
+	--focus-ring-color: rgba(235, 23, 39, 0.3); /* 焦点轮廓色 */
+	--disabled-color: #A0A0A0; /* 禁用状态色 */
+	--disabled-bg-color: #F5F5F5; /* 禁用背景色 */
+
+	/* 透明叠加层 */
+	--overlay-light: rgba(255, 255, 255, 0.9); /* 浅色叠加 */
+	--overlay-dark: rgba(0, 0, 0, 0.5); /* 深色叠加 */
+	--overlay-primary: rgba(235, 23, 39, 0.1); /* 主色透明叠加 */
+
+	/* 渐变 */
+	--gradient-primary: linear-gradient(135deg, var(--primary-color), var(--primary-dark-color));
+	--gradient-subtle: linear-gradient(135deg, #FFFFFF, var(--primary-light-color));
 }
 
 /* Apply modern font stack & background */
@@ -237,7 +294,7 @@ a:hover {
 }
 
 .btn-primary {
-  background-color: var(--primary-color);
+  background-color: var(--primary-dark-color);
   color: white;
   padding: 10px 20px;
   font-weight: 500;
@@ -281,13 +338,14 @@ a:hover {
 }
 
 .btn-secondary {
-  background-color: #6c757d;
-  color: white;
+  background-color: var(--primary-light-color);
+  color: var(--text-secondary-color);
   border-radius: 12px;
 }
 
 .btn-secondary:hover {
-  background-color: #5a6268;
+  background-color: var(--warning-color);
+  color: var(--text-secondary-color) !important; 
   transform: translateY(-2px);
 }
 
@@ -312,11 +370,11 @@ a:hover {
 }
 
 .navbar-default .navbar-toggle {
-    border-color: #ddd;
+    border-color: var(--border-color);
 }
 
 .navbar-default .navbar-toggle .icon-bar {
-    background-color: #888;
+    background-color: var(--background-color);
 }
 
 /* Header Main Search Section - Layout within Navbar */
@@ -416,8 +474,8 @@ a:hover {
   padding: 15px 20px;
 }
 .navbar-nav > li > a.btn-connect-link {
-    background-color: var(--primary-color);
-    color: white !important; 
+    background-color: var(--primary-light-color);
+    color: var(--text-secondary-color) !important; 
     border-radius: 20px;
     padding: 8px 20px;
     margin-top: 8px; 
@@ -425,6 +483,7 @@ a:hover {
 }
 .navbar-nav > li > a.btn-connect-link:hover,
 .navbar-nav > li > a.btn-connect-link:focus {
-    background-color: var(--primary-dark-color);
+    background-color: var(--primary-hover-color);
+    color: var(--text-on-primary) !important; 
     text-decoration: none;
 }
