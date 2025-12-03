@@ -5,30 +5,34 @@
 	<div class="row">
 		<div class="col-md-3 col-sm-6 col-xs-12">
 			<div class="card stat-card text-center">
-				<p class="card-title">区块链状态</p>
+				<p class="card-title">区块链实时状态</p>
 				<h3 class="card-value">{{status || "检测中..."}}</h3>
-				<p class="card-subtitle">最新区块: <a href="/#/block/{{blockNum}}">{{blockNum || "读取中..."}}</a></p>
+			 	<p class="card-subtitle">最新区块: <a href="/#/block/{{blockNum}}">{{blockNum || "读取中..."}}</a></p>
+				<p class="card-subtitle">&nbsp;</p> <!-- To keep alignment -->
+			</div>
+		</div>
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="card stat-card text-center">
+				<p class="card-title">稳定运行时间</p>
+				<h3 class="card-value">{{updays || "计算中..."}}</h3>
+				<p class="card-subtitle">since <a href="/#/block/0">block 0</a></p> <!-- To keep alignment -->
+				<p class="card-subtitle">&nbsp;</p> <!-- To keep alignment -->
 			</div>
 		</div>
 		<div class="col-md-3 col-sm-6 col-xs-12">
 			<div class="card stat-card text-center">
 				<p class="card-title">Free Energy</p>
-				<h3 class="card-value">{{energy.circulated}}J</h3>
+				<h3 class="card-value">{{energy.free || "读取中..."}} J</h3>
+				<p class="card-subtitle">total energy: {{energy.total || "读取中..."}} J</p>
 				<p class="card-subtitle">&nbsp;</p> <!-- To keep alignment -->
 			</div>
 		</div>
 		<div class="col-md-3 col-sm-6 col-xs-12">
 			<div class="card stat-card text-center">
 				<p class="card-title">Reserved Energy</p>
-				<h3 class="card-value">{{energy.core_locked}}J (core)</h3>
-				<p class="card-subtitle">{{energy.eco_locked}}J (ecosystem)</p>
-			</div>
-		</div>
-		<div class="col-md-3 col-sm-6 col-xs-12">
-			<div class="card stat-card text-center">
-				<p class="card-title">Total Energy</p>
-				<h3 class="card-value">{{energy.total}}J</h3>
-				 <p class="card-subtitle">&nbsp;</p> <!-- To keep alignment -->
+				<h3 class="card-value">{{energy.reserved || "读取中..."}} J</h3>
+				<p class="card-subtitle">{{energy.reserved_core || "读取中..."}} J (core)</p>
+				<p class="card-subtitle">{{energy.reserved_eco || "读取中..."}} J (ecosystem)</p>
 			</div>
 		</div>
 	</div>
