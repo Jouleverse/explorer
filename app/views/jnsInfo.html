@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="../styles/explorer-optimized.css">
 <div class="container" style="padding-top: 50px;">
 
     <div class="row">
@@ -29,7 +28,7 @@
 			<span style="color:#999"><p style="word-break:break-all;">{{hexdata}}</p></span>
 			<input type="button" value="绑定" class="btn btn-success" ng-click="bind()"></input>
 			<button class="btn btn-secondary" ng-click="unbind()">解绑定</button>
-			<span ng-style="{ 'display': (chainId == '0xe52' && account.toLowerCase() == ownerAddress.toLowerCase()) ? 'inline-block' : 'none' }"><button class="btn btn-primary cb" ng-click="give()">📤</button></span>
+			<span ng-style="{ 'display': (chainId == '0xe52' && account.toLowerCase() == ownerAddress.toLowerCase()) ? 'inline-block' : 'none' }"><button class="btn btn-primary cb" ng-click="give()">赠予</button></span>
         </div>
         <table class="table table-striped">
             <tbody><tr>

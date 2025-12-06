@@ -1,32 +1,89 @@
 /* app css stylesheet */
 
-.menu {
-  list-style: none;
-  border-bottom: 0.1em solid black;
-  margin-bottom: 2em;
-  padding: 0 0 0.5em;
+/* Define modern color variables */
+/*:root {
+  --primary-color: #7B3FE4;
+  --primary-dark-color: #5a2aad;
+  --background-color: #F9F9FD;
+  --card-background-color: #FFFFFF;
+  --text-color: #333333;
+  --text-secondary-color: #6c757d;
+  --border-color: #E5E7EB;
+  --shadow-card: 0 2px 6px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+  --info-color: #0ea5e9;
+}*/
+:root {
+	--primary-color: #D32F2F;               /* 降低饱和度：HSL(0°, 64%, 50%) */
+	--primary-light-color: #FFEBEE;         /* 柔和的浅红 */
+	--primary-dark-color: #B71C1C;          /* 深红 */
+	--primary-hover-color: #F44336;         /* 悬停色 */
+
+	/* 重点强调色（保留原色，只在小面积使用） */
+	--accent-color: #EB1727;                /* 原色，用于最重要的行动点 */
+
+	/* 中性色系 - 适配红色主题的灰阶 */
+	--background-color: #F9F9FD; /* 页面背景，略微冷色调平衡红色 */
+	--card-background-color: #FFFFFF; /* 卡片背景 */
+	--surface-color: #F8F9FA; /* 表面元素背景 */
+
+	/* 文字色系 - 确保与红色主题的和谐度 */
+	--text-color: #222222; /* 主要文字，比 #333 更深提高对比度 */
+	--text-secondary-color: #555555; /* 次级文字 */
+	--text-tertiary-color: #888888; /* 辅助文字/图标 */
+	--text-on-primary: #FFFFFF; /* 主色上的文字 */
+
+	/* 边框与分割线 */
+	--border-color: #E0E0E0; /* 通用边框，比原 #E5E7EB 稍暖 */
+	--border-light-color: #F0F0F0; /* 浅边框/分割线 */
+	--border-dark-color: #CCCCCC; /* 深边框 */
+
+	/* 阴影系统 */
+	--shadow-card: 0 2px 8px rgba(235, 23, 39, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06); /* 带红色微调的卡片阴影 */
+	--shadow-hover: 0 4px 12px rgba(235, 23, 39, 0.12), 0 6px 20px rgba(0, 0, 0, 0.08); /* 悬停阴影 */
+	--shadow-small: 0 1px 3px rgba(235, 23, 39, 0.1); /* 小型阴影 */
+
+	/* 功能色 - 重新平衡以配合红色主题 */
+	--success-color: #10B981; /* 绿色，与红色形成良好对比 */
+	--success-light-color: #D1FAE5; /* 成功浅色背景 */
+
+	--warning-color: #F59E0B; /* 琥珀色，温暖感与红色协调 */
+	--warning-light-color: #FEF3C7; /* 警告浅色背景 */
+
+	--danger-color: #EF4444; /* 红色，但比主色更亮作为功能区分 */
+	--danger-light-color: #FEE2E2; /* 危险浅色背景 */
+
+	--info-color: #0EA5E9; /* 蓝色，提供冷静的信息感 */
+	--info-light-color: #E0F2FE; /* 信息浅色背景 */
+
+	/* 交互状态 */
+	--focus-ring-color: rgba(235, 23, 39, 0.3); /* 焦点轮廓色 */
+	--disabled-color: #A0A0A0; /* 禁用状态色 */
+	--disabled-bg-color: #F5F5F5; /* 禁用背景色 */
+
+	/* 透明叠加层 */
+	--overlay-light: rgba(255, 255, 255, 0.9); /* 浅色叠加 */
+	--overlay-dark: rgba(0, 0, 0, 0.5); /* 深色叠加 */
+	--overlay-primary: rgba(235, 23, 39, 0.1); /* 主色透明叠加 */
+
+	/* 渐变 */
+	--gradient-primary: linear-gradient(135deg, var(--primary-color), var(--primary-dark-color));
+	--gradient-subtle: linear-gradient(135deg, #FFFFFF, var(--primary-light-color));
 }
 
-.menu:before {
-  content: "[";
-}
-
-.menu:after {
-  content: "]";
-}
-
-.menu > li {
-  display: inline;
-}
-
-.menu > li:before {
-  content: "|";
-  padding-right: 0.3em;
-}
-
-.menu > li:nth-child(1):before {
-  content: "";
-  padding: 0;
+/* Apply modern font stack & background */
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  background-image: radial-gradient(circle at top, #EAE6F8, var(--background-color) 30%);
+  font-feature-settings: "liga" 1, "kern" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* zoomable clickable emoji e.g. the gift airdrop in the address page */
@@ -43,57 +100,390 @@
 	transform: scale(1.5);
 }
 
-.stats {
-	border: 1px solid;
-	margin: 3px auto 3px auto;
+
+.hash-link {
+  font-family: "Fira Code", "Roboto Mono", monospace;
+  word-break: break-all;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
-.stats tr {
-	border: 1px solid;
+.hash-link:hover {
+  color: var(--primary-dark-color);
+  text-decoration: underline;
 }
 
-.stats td {
-	border: 1px solid;
-	padding: 0 3px 0 3px;
+a {
+  color: var(--primary-color);
+  font-weight: 500;
+  transition: color 0.2s ease;
+  text-decoration: none;
 }
 
-/* Card style customization */
+a:hover {
+  color: var(--primary-dark-color);
+  text-decoration: underline; 
+}
+
 .card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
-  transition: all 0.3s ease;
+  background: var(--card-background-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.2s ease;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
 }
 
 .card:hover {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-4px);
+  border-color: rgba(0,0,0,0.08);
 }
 
 .status-card {
   text-align: center;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
+  padding: 36px 24px;
+  background: var(--card-background-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 28px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.status-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.status-card h4 {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 18px;
+}
+
+.status-card h4 a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  position: relative;
+}
+
+.status-card h4 a:hover {
+  color: var(--primary-dark-color);
+}
+
+.status-card h4 a::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+.status-card h4 a:hover::after {
+  width: 100%;
 }
 
 .table-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
+  background: var(--card-background-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 28px;
   overflow: hidden;
-  margin-bottom: 0;
+  border: 1px solid var(--border-color);
 }
 
 .network-card {
   text-align: center;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-top: 30px;
+  padding: 36px 24px;
+  background: var(--card-background-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  margin-top: 36px;
+  margin-bottom: 36px;
+  border: 1px solid var(--border-color);
 }
 
+.network-card h5 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: var(--text-secondary-color);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.card-header {
+  background-color: transparent;
+  border-bottom: 1px solid var(--border-color);
+  padding: 20px 24px;
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.card-body {
+  padding: 24px;
+}
+
+/* Table styles */
+.table {
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.table > thead > tr > th {
+  border-bottom: 2px solid var(--border-color);
+  font-weight: 600;
+  color: var(--text-secondary-color);
+  background-color: rgba(250, 250, 250, 0.8);
+  padding: 14px 16px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table > tbody > tr > td,
+.table > tbody > tr > th,
+.table > tfoot > tr > td,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > thead > tr > th {
+  border-top: 1px solid var(--border-color);
+  padding: 14px 16px;
+  vertical-align: middle;
+}
+
+.table > tbody > tr:hover {
+  background-color: rgba(126, 87, 194, 0.03);
+  transition: background-color 0.2s ease;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd):hover {
+  background-color: rgba(126, 87, 194, 0.05);
+}
+
+/* Button styles - Modernized */
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(126, 87, 194, 0.25);
+}
+
+.btn-primary {
+  background-color: var(--primary-dark-color);
+  color: white;
+  padding: 10px 20px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.25);
+  border: none;
+  border-radius: 12px;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark-color);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+  transform: translateY(-2px);
+}
+
+.btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.btn-success {
+  background-color: var(--success-color);
+  color: white;
+  border-radius: 12px;
+}
+
+.btn-success:hover {
+  background-color: #3d8b40;
+  transform: translateY(-2px);
+}
+
+.btn-info {
+  background-color: var(--info-color);
+  color: white;
+  border-radius: 12px;
+}
+
+.btn-info:hover {
+  background-color: #0d8aee;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: var(--primary-light-color);
+  color: var(--text-secondary-color);
+  border-radius: 12px;
+}
+
+.btn-secondary:hover {
+  background-color: var(--warning-color);
+  color: var(--text-secondary-color) !important; 
+  transform: translateY(-2px);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: 8px;
+}
+
+/* Navbar styles */
+.navbar-modern {
+  background-color: var(--card-background-color);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  padding: 10px 0;
+}
+
+.navbar-modern .navbar-brand {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.navbar-default .navbar-toggle {
+    border-color: var(--border-color);
+}
+
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: var(--background-color);
+}
+
+/* Header Main Search Section - Layout within Navbar */
+.header-main-search-section {
+  text-align: center;
+  padding: 30px 0 20px 0; 
+  clear: both; 
+}
+
+/* Specific styles for the search section content */
+.explore-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: var(--text-color);
+}
+
+.search-form {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.search-input {
+  height: 50px;
+  border-radius: 25px 0 0 25px !important; /* Bootstrap override */
+  border: 1px solid var(--border-color);
+  box-shadow: none !important; /* Bootstrap override */
+}
+
+.search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-color-rgb), 0.25) !important;
+}
+
+.search-button {
+  height: 50px;
+  width: 60px;
+  border-radius: 0 25px 25px 0 !important; /* Bootstrap override */
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-button:hover, .search-button:focus {
+  background-color: var(--primary-dark-color);
+  border-color: var(--primary-dark-color);
+  color: white;
+}
+
+.navbar-modern {
+  padding-bottom: 0; 
+}
+
+.card-stats-section {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-card .card-title {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary-color);
+  font-weight: 500;
+}
+
+.stat-card .card-value {
+  margin: 10px 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.stat-card .card-value a {
+  color: var(--text-color);
+}
+
+.stat-card .card-value a:hover {
+  color: var(--primary-color);
+}
+
+.stat-card .card-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary-color);
+  font-weight: 500;
+}
+.card-footer {
+  background-color: #fcfcfd;
+  border-top: 1px solid var(--border-color);
+  padding: 15px 20px;
+}
+.navbar-nav > li > a.btn-connect-link {
+    background-color: var(--primary-light-color);
+    color: var(--text-secondary-color) !important; 
+    border-radius: 20px;
+    padding: 8px 20px;
+    margin-top: 8px; 
+    margin-bottom: 8px; 
+}
+.navbar-nav > li > a.btn-connect-link:hover,
+.navbar-nav > li > a.btn-connect-link:focus {
+    background-color: var(--primary-hover-color);
+    color: var(--text-on-primary) !important; 
+    text-decoration: none;
+}
