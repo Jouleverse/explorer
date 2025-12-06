@@ -1,10 +1,48 @@
 'use strict';
 
-angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
+angular.module('jouleExplorer', ['ngRoute','ui.bootstrap'])
 
+// 1. 使用factory在config阶段之前注册服务
+.factory('web3Initializer', function() {
+    // 同步加载.RPC文件
+    var rpcConfig = null;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '.rpc.txt', false); // 同步请求
+    xhr.send();
+
+    if (xhr.status === 200) {
+        try {
+            rpcConfig = JSON.parse(xhr.responseText);
+        } catch (e) {
+            console.warn('Failed to parse .RPC file', e);
+        }
+    }
+
+    var web3 = new Web3();
+    var hostname = location.hostname;
+    var PORT = 8503;
+    var rpc_service = `https://rpc.jnsdao.com:${PORT}`;
+
+    // 决定最终使用的RPC
+    var finalRpc = rpc_service;
+    if (rpcConfig) {
+        if (Array.isArray(rpcConfig) && rpcConfig.length > 0) {
+            finalRpc = rpcConfig[Math.floor(Math.random() * rpcConfig.length)];
+        } else if (typeof rpcConfig === 'string') {
+            finalRpc = rpcConfig;
+        }
+    }
+
+    // 设置provider
+    web3.setProvider(new web3.providers.HttpProvider(finalRpc));
+    console.log('Selected RPC: ', finalRpc);
+    return web3;
+})
+
+// 2. 配置路由
 .config(function($routeProvider, $locationProvider) {
-	// 修复哈希前缀问题
-	$locationProvider.hashPrefix('');
+    // 修复哈希前缀问题
+    $locationProvider.hashPrefix('');
 
         $routeProvider.
             when('/', {
@@ -59,35 +97,21 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap'])
                 redirectTo: '/'
             });
 
-		// use the HTML5 History API. needs base href and server-side rewrite.
-		$locationProvider.html5Mode(false); // FIXME use # for pure static deployment
+        // use the HTML5 History API. needs base href and server-side rewrite.
+        $locationProvider.html5Mode(false); // FIXME use # for pure static deployment
     })
-    .run(function($rootScope) {
-        var web3 = new Web3();
 
-			const hostname = location.hostname;
-			const PORT = 8503;
-			var rpc_service = `https://rpc.jnsdao.com:${PORT}`; //by default
-			if (hostname == 'localhost' || hostname == '127.0.0.1') { //local dev
-				//rpc_service = 'http://127.0.0.1:8501'; //direct access tolocal geth
-			} else {
-				rpc_service = 'https://' + hostname.replace('jscan', 'rpc') + ':' + PORT; // jscan to use corresponding rpc, e.g. jscan.jnsdao.com -> rpc.jnsdao.com
-			}
-			//var port = (hostname == 'localhost' || hostname == '127.0.0.1')? 8501 : (protocol == 'http:' ? 8502 : 8503); //XXX yuanma rpc, geth:8501, nginx:8502, nginx-https:8503
-	        //var eth_node_url = protocol + '//' + hostname + ':' + port; // adaptive to http & https
-	        //var eth_node_url = '//' + rpc_service; // 使用相对协议，在https页面混合http请求？
-	        var eth_node_url = rpc_service;
+// 3. 运行阶段
+.run(function($rootScope, web3Initializer) {
+    $rootScope.web3 = web3Initializer;
+    window.web3 = web3Initializer; //XXX inject it to console for debugging
 
-		web3.setProvider(new web3.providers.HttpProvider(eth_node_url));
-        $rootScope.web3 = web3;
-		window.web3 = web3; //XXX inject it to console for debugging
-        function sleepFor( sleepDuration ){
-            var now = new Date().getTime();
-            while(new Date().getTime() < now + sleepDuration){ /* do nothing */ } 
-        }
-        var connected = false;
-        //if(!web3.isConnected()) {
-		if (!web3.eth.net.isListening()) { // fix: make it compatible with web3 1.8.2
-			dialogModalShowTxt('无法连接到区块链网络', '无法连接到RPC服务，请检查你的网络连接是否畅通');
-        }
-    });
+    // 检查连接状态
+    web3Initializer.eth.net.isListening()
+        .then(function(isConnected) {
+            if (!isConnected) {
+                dialogModalShowTxt('无法连接到区块链网络', '无法连接到RPC服务，请检查你的网络连接是否畅通');
+            }
+        });
+
+});

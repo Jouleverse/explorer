@@ -1,46 +1,97 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html lang="en" ng-app="ethExplorer" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html lang="en" ng-app="ethExplorer" class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html lang="en" ng-app="ethExplorer" class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html lang="en" ng-app="ethExplorer" class="no-js"> <!--<![endif]-->
+<!--[if lt IE 7]>      <html lang="en" ng-app="jouleExplorer" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="jouleExplorer" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="jouleExplorer" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="jouleExplorer" class="no-js"> <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
   <title>Jouleverse区块链浏览器</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <base href="/">
-  <link rel="stylesheet" href="styles/main.css">
-<!--BEGIN Libs -->
-<!-- local dev, using BOWER -->
-<!--
-  <script src="bower_components/web3/dist/web3.min.js"></script>
-  <script src="bower_components/angular/angular.min.js"></script>
-  <script src="bower_components/angular-bootstrap/ui-bootstrap.min.js"></script>
-  <script src="bower_components/angular-route/angular-route.min.js"></script>
-  <script src="bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
--->
-<!-- deploy, using CDN -->
-<!-- bootcdn -->
-  <script src="https://cdn.bootcdn.net/ajax/libs/web3/1.8.2/web3.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/angular-ui-bootstrap/0.13.4/ui-bootstrap.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/angular-route/1.8.3/angular-route.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
-<!-- unpkg 
-  <script src="https://unpkg.com/web3@1.8.2/dist/web3.min.js"></script>
-  <script src="https://unpkg.com/angular@1.8.3/angular.min.js"></script>
-  <script src="https://unpkg.com/angular-ui-bootstrap@0.13.4/ui-bootstrap.min.js"></script>
-  <script src="https://unpkg.com/angular-route@1.8.3/angular-route.min.js"></script>
-  <script src="https://unpkg.com/jquery@1.11.3/dist/jquery.min.js"></script>
-  <script src="https://unpkg.com/bootstrap@3.3.5/dist/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/bootstrap@3.3.5/dist/css/bootstrap.min.css">
--->
-<!--END Libs-->
+<script>
+	// 判断是否开发环境（假设通过 URL 或全局变量）
+	const isDev = window.location.hostname === 'localhost' ||
+		window.location.hostname === '127.0.0.1';
+
+	// 开发环境：本地路径（Bower）
+	const devLibs = [
+		'bower_components/web3/dist/web3.min.js',
+		'bower_components/angular/angular.min.js',
+		'bower_components/angular-bootstrap/ui-bootstrap.min.js',
+		'bower_components/angular-route/angular-route.min.js',
+		'bower_components/jquery/dist/jquery.min.js',
+		'bower_components/bootstrap/dist/js/bootstrap.min.js',
+		'bower_components/bootstrap/dist/css/bootstrap.min.css',  // CSS 文件
+	];
+
+	// 生产环境：CDN 路径
+	const prodLibs = [
+		// --- unpkg --- blocked, don't use
+		/*'https://unpkg.com/web3@1.8.2/dist/web3.min.js',
+		'https://unpkg.com/angular@1.8.3/angular.min.js',
+		'https://unpkg.com/angular-ui-bootstrap@0.13.4/ui-bootstrap.min.js',
+		'https://unpkg.com/angular-route@1.8.3/angular-route.min.js',
+		'https://unpkg.com/jquery@1.11.3/dist/jquery.min.js',
+		'https://unpkg.com/bootstrap@3.3.5/dist/js/bootstrap.min.js',
+		'https://unpkg.com/bootstrap@3.3.5/dist/css/bootstrap.min.css', */
+		// --- bootcdn ---
+		/*'https://cdn.bootcdn.net/ajax/libs/web3/1.8.2/web3.min.js',
+		'https://cdn.bootcdn.net/ajax/libs/angular.js/1.8.3/angular.min.js',
+		'https://cdn.bootcdn.net/ajax/libs/angular-ui-bootstrap/0.13.4/ui-bootstrap.min.js',
+		'https://cdn.bootcdn.net/ajax/libs/angular-route/1.8.3/angular-route.min.js',
+		'https://cdn.bootcdn.net/ajax/libs/jquery/1.11.3/jquery.min.js',
+		'https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js',
+		'https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css',  // CSS 文件 */
+		// --- iocdn ---
+		'https://cdn.iocdn.cc/npm/web3@1.8.2/dist/web3.min.js',
+		'https://cdn.iocdn.cc/npm/angular@1.8.3/angular.min.js',
+		'https://cdn.iocdn.cc/npm/angular-ui-bootstrap@0.13.4/ui-bootstrap.min.js',
+		'https://cdn.iocdn.cc/npm/angular-route@1.8.3/angular-route.min.js',
+		'https://cdn.iocdn.cc/npm/jquery@1.11.3/dist/jquery.min.js',
+		'https://cdn.iocdn.cc/npm/bootstrap@3.3.5/dist/js/bootstrap.min.js',
+		'https://cdn.iocdn.cc/npm/bootstrap@3.3.5/dist/css/bootstrap.min.css',
+	];
+
+	const appMods = [
+		'app.js',
+		'scripts/controllers/mainController.js',
+		'scripts/controllers/addressInfoController.js',
+		'scripts/controllers/blockInfosController.js',
+		'scripts/controllers/transactionInfosController.js',
+		'scripts/controllers/junksInfoController.js',
+		'scripts/controllers/jnsInfoController.js',
+		'scripts/controllers/redpacketInfoController.js',
+		'scripts/controllers/jnsVoteInfoController.js',
+	];
+
+	// 根据环境选择资源列表
+	const libsToLoad = isDev ? devLibs.concat(appMods) : prodLibs.concat(appMods);
+	//const libsToLoad = prodLibs.concat(appMods); // for debugging
+
+	// 动态加载资源
+	libsToLoad.forEach(path => {
+		if (path.endsWith('.js')) {
+			const script = document.createElement('script');
+			script.src = path;
+			script.async = false; // 保持顺序执行（如有依赖关系）
+			document.head.appendChild(script);
+		} else if (path.endsWith('.css')) {
+			const link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.href = path;
+			document.head.appendChild(link);
+		}
+	});
+
+	// 最后加载自定义样式，确保优先级最高
+	const mainCssLink = document.createElement('link');
+	mainCssLink.rel = 'stylesheet';
+	mainCssLink.href = 'styles/main.css';
+	document.head.appendChild(mainCssLink);
+</script>
 
 	<script>
 		// global helpers
@@ -372,7 +423,7 @@
 </head>
 <body onload="onBodyLoaded()">
   
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<nav class="navbar navbar-default navbar-modern">
     <div class="container">
         <div class="navbar-header">
 			<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -380,25 +431,34 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-            <a href="/#/" class="navbar-brand">Jouleverse区块链浏览器</a>
+            <a href="/#/" class="navbar-brand">
+    <img src="jv.svg" alt="Jouleverse Logo" style="height: 20px; display: inline-block; margin-right: 5px; margin-top: -2px;">
+    Jouleverse
+</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-            <form  name="search_form" onsubmit="processRequest()"  class="navbar-form navbar-right">
-            <div class="form-group">
-            <input type="text" placeholder="JNS域名/链地址/交易哈希/区块高度" name="requestType" required  id="query"  class="form-control"><br>
-            </div>
-            <button type="submit" class="btn btn-success">搜索</button></form>
-            </ul>
 			<ul class="nav navbar-nav navbar-right">
 				<li id="connect" style="display:inline-block">
-					<a id="connLink" style="cursor:pointer" onclick="connect()">
-						<span id="connAddr"></span>
-						[<span id="connNet">?</span>]
-					</a>
-				</li>
-			</ul>
+									<a id="connLink" class="btn btn-secondary btn-connect-link" style="cursor:pointer" onclick="connect()">
+															<span id="connAddr">连接账户</span>
+															[<span id="connNet">?</span>]
+														</a>								</li>			</ul>
 	    </div>
+        <!-- START: Search and Title Section -->
+        <div class="header-main-search-section">
+            <h1 class="explore-title">探索Jouleverse区块链</h1>
+            <form name="search_form" onsubmit="processRequest()" class="search-form">
+                <div class="input-group">
+                    <input type="text" placeholder="Search by Address, Tx, Block, or JNS Name" name="requestType" required id="query" class="form-control search-input">
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-primary search-button">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div>
+        <!-- END: Search and Title Section -->
     </div>
 </nav>
 
@@ -430,9 +490,12 @@
   <script src="scripts/crypto/abi-decoder.js"></script>
 
 <!--Core-->
+<!--
   <script src="app.js"></script>
+  -->
 
 <!--Controllers-->
+<!--
   <script src="scripts/controllers/mainController.js"></script>
   <script src="scripts/controllers/addressInfoController.js"></script>
   <script src="scripts/controllers/blockInfosController.js"></script>
@@ -441,6 +504,7 @@
   <script src="scripts/controllers/jnsInfoController.js"></script>
   <script src="scripts/controllers/redpacketInfoController.js"></script>
   <script src="scripts/controllers/jnsVoteInfoController.js"></script>
+  -->
 
   <!--Services-->
   <!-- dialog just for information -->
@@ -472,7 +536,7 @@
 		<br/>
 		<span>open source. no warranty.</span>
 		<br/>
-		<span>release: 0.11.1</span>
+		<span>release: 0.12.0</span>
         </p>
     </footer>
 </div>

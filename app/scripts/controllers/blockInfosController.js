@@ -1,4 +1,4 @@
-angular.module('ethExplorer')
+angular.module('jouleExplorer')
     .controller('blockInfosCtrl', function ($rootScope, $scope, $location, $routeParams,$q) {
 
 	var web3 = $rootScope.web3;
@@ -46,10 +46,10 @@ angular.module('ethExplorer')
                     $scope.dataFromHex = hex2a(result.extraData);
                     $scope.size = result.size;
                     if($scope.blockNumber!==undefined){
-						$scope.conf = '未确认';
+						$scope.conf = 0;
 						web3.eth.getBlockNumber(function (err, number) {
 							if (!err && number > $scope.blockNumber) {
-								$scope.conf = number - $scope.blockNumber + " 确认数";
+								$scope.conf = number - $scope.blockNumber;
 								$scope.$apply();
 							}
 						});

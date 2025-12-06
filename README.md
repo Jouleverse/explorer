@@ -328,3 +328,31 @@ TODO:
 - fix: PORT
 - release: 0.11.1
 
+2025.9.8
+- improve: ui enhancement. contributor: decong (PR#27). review-merged by Evan.
+- improve: dynamically load 3pp libs.
+- fix: module name ethExplorer changed to jouleExplorer.
+- improve: gas unit expression improved for better understanding.
+- release: 0.11.2
+
+2025.9.8
+- improve: use app/.RPC for choosing rpc service (json format, "rpc" or ["rpc1", "rpc2"]). no .RPC will default to rpc.jnsdao.com
+- release: 0.11.3
+- fix: for not routing to /#/, use .rpc.txt instead of .RPC
+- release: 0.11.4
+
+2025.9.13
+- improve: optimize css. contributor: decong (PR#28). review-merged by Ean.
+- improve: use iocdn for 3pp libs.
+- [cancelled@0.11.6]improve: try to async check .rpc.txt (don't forget to touch an empty app/.rpc.txt for better loading? no need. 404 is fast.)
+- release: 0.11.5
+
+2025.9.14
+- new: POPBadge validity check. set gray bg for invalid on-chain JVCore check-in.
+- release: 0.11.7
+
+2025.12.6
+- improve: overall optimize UI and color pallete. contributor: decong (PR#30). review&merged by Evna.
+- new: uptime (since block 0) display.
+- change: favicon to new logo.
+- release: 0.12.0

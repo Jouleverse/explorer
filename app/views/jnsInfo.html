@@ -1,8 +1,13 @@
 <div class="container" style="padding-top: 50px;">
 
-    <h1>JNS
-        <small>查看JNS名字信息</small>
-    </h1>
+    <div class="row">
+        <div class="col-md-12">
+            <h1 style="margin-bottom: 20px;">
+                JNS
+                <small>查看JNS名字信息</small>
+            </h1>
+        </div>
+    </div>
 
     <div id="jns-97785883" class="jnsdiv">
         <table class="table table-striped" cellpadding="0" cellspacing="0" style="padding:0px;float:left;margin:0px;width:100%">
@@ -23,7 +28,7 @@
 			<span style="color:#999"><p style="word-break:break-all;">{{hexdata}}</p></span>
 			<input type="button" value="绑定" class="btn btn-success" ng-click="bind()"></input>
 			<button class="btn btn-secondary" ng-click="unbind()">解绑定</button>
-			<span ng-style="{ 'display': (chainId == '0xe52' && account.toLowerCase() == ownerAddress.toLowerCase()) ? 'inline-block' : 'none' }"><button class="btn btn-primary cb" ng-click="give()">📤</button></span>
+			<span ng-style="{ 'display': (chainId == '0xe52' && account.toLowerCase() == ownerAddress.toLowerCase()) ? 'inline-block' : 'none' }"><button class="btn btn-primary cb" ng-click="give()">赠予</button></span>
         </div>
         <table class="table table-striped">
             <tbody><tr>

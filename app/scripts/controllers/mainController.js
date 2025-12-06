@@ -1,4 +1,4 @@
-angular.module('ethExplorer')
+angular.module('jouleExplorer')
 	.controller('mainCtrl', function ($rootScope, $scope, $location, $routeParams, $q) {
 
 		var web3 = $rootScope.web3;
@@ -40,18 +40,53 @@ angular.module('ethExplorer')
 			});
 
 			getTimelockInfo().then(function (result) {
-				var released = result.released; //总释放量
-				var locked = result.available; //尚在时间锁中
-				var circulated = result.used; //已进入流通
+				var released = result.released; //总释放量 == total energy
+				var locked = result.available; //尚在时间锁中 == reserved energy
+				var circulated = result.used; //已进入流通 == free energy
 
 				$scope.energy = {
-					total: (released.total/10**6).toLocaleString() + "M",
-					core_locked: (locked.core/10**6).toLocaleString() + "M",
-					eco_locked: (locked.eco/10**6).toLocaleString() + "M",
-					circulated: (circulated.total/10**6).toLocaleString() + "M",
+					total: (released.all/10**6).toLocaleString() + "M",
+					free: (circulated.all/10**6).toLocaleString() + "M",
+					reserved: (locked.all/10**6).toLocaleString() + "M",
+					reserved_core: (locked.core/10**6).toLocaleString() + "M",
+					reserved_eco: (locked.eco/10**6).toLocaleString() + "M",
 				};
-				$scope.$apply(); // force refresh
+				if (!$scope.$$phase) $scope.$apply(); // force refresh
 			});
+
+			// 新增：获取创世区块时间戳并计算运行时间
+			getBlockInfo(0).then(function(genesisBlock) {
+				if (genesisBlock && genesisBlock.timestamp) {
+					var genesisTimestamp = genesisBlock.timestamp;
+					var currentTimestamp = Math.floor(Date.now() / 1000);
+					var uptimeSeconds = currentTimestamp - genesisTimestamp;
+
+					// 计算年、天
+					var years = Math.floor(uptimeSeconds / (365 * 24 * 60 * 60));
+					var remainingSeconds = uptimeSeconds % (365 * 24 * 60 * 60);
+					var days = Math.floor(remainingSeconds / (24 * 60 * 60));
+
+					var uptimeText = "";
+					if (years > 0) {
+						uptimeText += years + "年";
+					}
+					if (days > 0) {
+						uptimeText += days + "天";
+					}
+
+					// 如果时间很短，显示天数
+					if (years === 0 && days === 0) {
+						uptimeText = "不足1天";
+					}
+
+					$scope.updays = uptimeText;
+					if (!$scope.$$phase) $scope.$apply(); // 确保AngularJS更新视图
+				} else {
+					$scope.updays = "未知";
+					if (!$scope.$$phase) $scope.$apply();
+				}
+			});
+
 		}
 
 		function getBlockHeight() {
@@ -95,7 +130,7 @@ angular.module('ethExplorer')
 			released_eco = parseInt(web3.utils.fromWei(released_eco, 'ether'));
 			var released_total = parseInt(released_core) + parseInt(released_eco);
 
-			timelockInfo['released'] = { total: released_total,
+			timelockInfo['released'] = { all: released_total,
 				core: released_core,
 				eco: released_eco
 			};
@@ -106,7 +141,7 @@ angular.module('ethExplorer')
 			available_eco = parseInt(web3.utils.fromWei(available_eco, 'ether'));
 			var available_total = parseInt(available_core) + parseInt(available_eco);
 
-			timelockInfo['available'] = { total: available_total,
+			timelockInfo['available'] = { all: available_total,
 				core: available_core,
 				eco: available_eco
 			};
@@ -117,7 +152,7 @@ angular.module('ethExplorer')
 			used_eco = parseInt(web3.utils.fromWei(used_eco, 'ether'));
 			var used_total = parseInt(used_core) + parseInt(used_eco);
 
-			timelockInfo['used'] = { total: used_total,
+			timelockInfo['used'] = { all: used_total,
 				core: used_core,
 				eco: used_eco
 			};
