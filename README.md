@@ -351,3 +351,8 @@ TODO:
 - new: POPBadge validity check. set gray bg for invalid on-chain JVCore check-in.
 - release: 0.11.7
 
+2025.12.6
+- improve: overall optimize UI and color pallete. contributor: decong (PR#30). review&merged by Evna.
+- new: uptime (since block 0) display.
+- change: favicon to new logo.
+- release: 0.12.0
