@@ -342,7 +342,7 @@ TODO:
 - release: 0.11.4
 
 2025.9.13
-- improve: optimize css. contributor: decong (PR#28). review-merged by Ean.
+- improve: optimize css. contributor: decong (PR#28). review-merged by Evan.
 - improve: use iocdn for 3pp libs.
 - [cancelled@0.11.6]improve: try to async check .rpc.txt (don't forget to touch an empty app/.rpc.txt for better loading? no need. 404 is fast.)
 - release: 0.11.5
@@ -352,7 +352,7 @@ TODO:
 - release: 0.11.7
 
 2025.12.6
-- improve: overall optimize UI and color pallete. contributor: decong (PR#30). review&merged by Evna.
+- improve: overall optimize UI and color pallete. contributor: decong (PR#30). review&merged by Evan.
 - new: uptime (since block 0) display.
 - change: favicon to new logo.
 - release: 0.12.0
