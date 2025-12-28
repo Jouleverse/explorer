@@ -487,3 +487,18 @@ a:hover {
     color: var(--text-on-primary) !important; 
     text-decoration: none;
 }
+
+/* cryptojunks statistics table styles */
+.junk-stats {
+	border: 1px solid;
+	margin: 3px auto 3px auto;
+}
+
+.junk-stats tr {
+	border: 1px solid;
+}
+
+.junk-stats td {
+	border: 1px solid;
+	padding: 0 3px 0 3px;
+}
