@@ -356,3 +356,8 @@ TODO:
 - new: uptime (since block 0) display.
 - change: favicon to new logo.
 - release: 0.12.0
+
+2026.1.17
+- new: core checkin view /#/core/checkin. 支持已注销的core id历史签到信息查看
+- release: 0.12.1
+

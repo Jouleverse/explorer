@@ -1,0 +1,262 @@
+<div class="container" style="padding-top: 50px;">
+
+	<div class="row">
+		<div class="col-md-12">
+			<h1 style="margin-bottom: 20px;">
+				<span class="glyphicon glyphicon-check"></span> POP徽章签到记录
+				<small>按月查看Core ID链上签到统计</small>
+			</h1>
+		</div>
+	</div>
+
+	<!-- 控制面板 -->
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card table-card">
+				<div class="card-header">
+					<h5 style="margin: 0;">
+						<span class="glyphicon glyphicon-calendar"></span> 月份控制
+					</h5>
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-4">
+							<div class="form-group">
+								<label>当前显示月份</label>
+								<div>
+									<h4 style="margin: 0;">
+										<span class="glyphicon glyphicon-calendar"></span> 
+										{{currentMonth || '正在加载...'}}
+									</h4>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label>月份导航</label>
+								<div>
+									<div class="btn-group" role="group" style="margin-bottom: 5px;">
+										<button class="btn btn-outline-primary" ng-click="goBack()" ng-disabled="!canGoBack">
+											<span class="glyphicon glyphicon-chevron-left"></span> 上一月
+										</button>
+										<button class="btn btn-primary" ng-click="loadNextMonth()" 
+																		ng-disabled="isLoading || !hasMoreData">
+											<span ng-if="!isLoading" class="glyphicon glyphicon-arrow-down"></span>
+											<span ng-if="isLoading" class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+											{{isLoading ? '加载中...' : '加载上一个月'}}
+										</button>
+										<button class="btn btn-outline-primary" ng-click="goForward()" ng-disabled="!canGoForward">
+											下一月 <span class="glyphicon glyphicon-chevron-right"></span>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label>统计信息</label>
+								<div class="loading-status">
+									<span ng-if="loadedCount > 0">
+										已加载 {{loadedCount}} 条记录 / 共 {{totalRecords}} 条记录
+									</span>
+									<span ng-if="!hasMoreData && loadedCount > 0" class="text-success">
+										<span class="glyphicon glyphicon-ok"></span> 已加载所有月份
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 历史月份快速导航 -->
+	<div class="row" ng-if="monthHistory && monthHistory.length > 1">
+		<div class="col-md-12">
+			<div class="card table-card">
+				<div class="card-header">
+					<h5 style="margin: 0;">
+						<span class="glyphicon glyphicon-time"></span> 历史月份快速导航
+					</h5>
+				</div>
+				<div class="card-body">
+					<div class="btn-group" role="group">
+						<button type="button" class="btn btn-outline-secondary" 
+											  ng-repeat="month in monthHistory track by $index"
+											  ng-class="{'btn-primary': $index === historyPosition}"
+											  ng-click="goToHistoryMonth(month.monthKey)">
+							{{month.monthYear}}
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 筛选控制面板 -->
+	<div class="row" ng-if="currentMonthStats">
+		<div class="col-md-12">
+			<div class="card table-card">
+				<div class="card-header">
+					<h5 style="margin: 0;"><span class="glyphicon glyphicon-filter"></span> 筛选选项</h5>
+				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="coreFilter">筛选Core ID</label>
+								<select class="form-control" id="coreFilter" ng-model="selectedCoreId" 
+																			 ng-change="filterByCore()">
+									<option value="">全部Core ID</option>
+									<option ng-repeat="coreId in availableCoreIds" value="{{coreId}}">🆔J{{coreId}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>月份统计</label>
+								<div>
+									<span class="badge" style="background-color: #007bff; margin-right: 5px;">
+										{{currentMonthStats.totalCheckIns}} 次签到
+									</span>
+									<span class="badge" style="background-color: #6c757d;">
+										{{currentMonthStats.uniqueCores}} 个Core ID
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 当前月份数据表格 -->
+	<div class="row" ng-if="currentMonthStats">
+		<div class="col-md-12">
+			<div class="card table-card">
+				<div class="card-header">
+					<h4 style="margin: 0;">
+						<span class="glyphicon glyphicon-list"></span> {{currentMonthStats.monthYear}} 链上签到统计
+					</h4>
+				</div>
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table table-striped table-hover">
+							<thead>
+								<tr>
+									<th>Core ID</th>
+									<th>签到次数</th>
+									<th>首次签到时间 (UTC+8)</th>
+									<th>首次签到区块高度</th>
+									<th>最后签到时间 (UTC+8)</th>
+									<th>最后签到区块高度</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="coreStat in currentMonthStats.coreStats">
+									<td>
+										<strong>🆔J{{coreStat.coreId}}</strong>
+									</td>
+									<td>
+										<span class="badge" style="background-color: #28a745;">{{coreStat.count}} 次</span>
+									</td>
+									<td>
+										{{coreStat.firstCheckInTime}}
+									</td>
+									<td>
+										<a href="./#/block/{{coreStat.firstBlockNumber}}" 
+										   ng-if="coreStat.firstBlockNumber !== '-'">
+											{{coreStat.firstBlockNumber}}
+										</a>
+										<span ng-if="coreStat.firstBlockNumber === '-'">-</span>
+									</td>
+									<td>
+										{{coreStat.lastCheckInTime}}
+									</td>
+									<td>
+										<a href="./#/block/{{coreStat.lastBlockNumber}}" 
+										   ng-if="coreStat.lastBlockNumber !== '-'">
+											{{coreStat.lastBlockNumber}}
+										</a>
+										<span ng-if="coreStat.lastBlockNumber === '-'">-</span>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<!-- 无数据提示 -->
+					<div ng-if="currentMonthStats.coreStats.length === 0" class="alert alert-info">
+						<span class="glyphicon glyphicon-info-sign"></span>
+						当前月份没有匹配的签到记录。
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 加载状态提示 -->
+	<div class="row" ng-if="isLoading">
+		<div class="col-md-12">
+			<div class="alert alert-info text-center">
+				<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+				正在加载月份数据，请稍候...
+			</div>
+		</div>
+	</div>
+
+	<!-- 无数据提示 -->
+	<div class="row" ng-if="!isLoading && !currentMonthStats">
+		<div class="col-md-12">
+			<div class="alert alert-info">
+				<span class="glyphicon glyphicon-info-sign"></span>
+				暂无签到记录。
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<style>
+.table-card {
+	margin-bottom: 20px;
+}
+	.badge {
+		margin-left: 5px;
+	}
+	.loading-status {
+		padding: 8px;
+		background-color: #f8f9fa;
+		border-radius: 4px;
+		text-align: center;
+	}
+	.glyphicon-spin {
+		-webkit-animation: spin 1s infinite linear;
+		animation: spin 1s infinite linear;
+	}
+	@-webkit-keyframes spin {
+		0% { -webkit-transform: rotate(0deg); }
+		100% { -webkit-transform: rotate(360deg); }
+	}
+	@keyframes spin {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
+	}
+	.text-muted {
+		font-size: 0.85em;
+	}
+	.btn-group {
+		flex-wrap: wrap;
+	}
+	.btn-group .btn {
+		margin: 2px;
+	}
+	th, td {
+		vertical-align: middle !important;
+	}
+	.btn-group .btn-primary {
+		font-weight: bold;
+	}
+</style>
