@@ -45,14 +45,22 @@
 		'https://cdn.bootcdn.net/ajax/libs/jquery/1.11.3/jquery.min.js',
 		'https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js',
 		'https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css',  // CSS 文件 */
-		// --- iocdn ---
-		'https://cdn.iocdn.cc/npm/web3@1.8.2/dist/web3.min.js',
+		// --- iocdn --- out of service?
+		/*'https://cdn.iocdn.cc/npm/web3@1.8.2/dist/web3.min.js',
 		'https://cdn.iocdn.cc/npm/angular@1.8.3/angular.min.js',
 		'https://cdn.iocdn.cc/npm/angular-ui-bootstrap@0.13.4/ui-bootstrap.min.js',
 		'https://cdn.iocdn.cc/npm/angular-route@1.8.3/angular-route.min.js',
 		'https://cdn.iocdn.cc/npm/jquery@1.11.3/dist/jquery.min.js',
 		'https://cdn.iocdn.cc/npm/bootstrap@3.3.5/dist/js/bootstrap.min.js',
-		'https://cdn.iocdn.cc/npm/bootstrap@3.3.5/dist/css/bootstrap.min.css',
+		'https://cdn.iocdn.cc/npm/bootstrap@3.3.5/dist/css/bootstrap.min.css',*/
+		// --- mirror unpkg ---
+		'https://npm.onmicrosoft.cn/web3@1.8.2/dist/web3.min.js',
+		'https://npm.onmicrosoft.cn/angular@1.8.3/angular.min.js',
+		'https://npm.onmicrosoft.cn/angular-ui-bootstrap@0.13.4/ui-bootstrap.min.js',
+		'https://npm.onmicrosoft.cn/angular-route@1.8.3/angular-route.min.js',
+		'https://npm.onmicrosoft.cn/jquery@1.11.3/dist/jquery.min.js',
+		'https://npm.onmicrosoft.cn/bootstrap@3.3.5/dist/js/bootstrap.min.js',
+		'https://npm.onmicrosoft.cn/bootstrap@3.3.5/dist/css/bootstrap.min.css',
 	];
 
 	const appMods = [
@@ -65,6 +73,7 @@
 		'scripts/controllers/jnsInfoController.js',
 		'scripts/controllers/redpacketInfoController.js',
 		'scripts/controllers/jnsVoteInfoController.js',
+		'scripts/controllers/coreCheckInInfoController.js',
 	];
 
 	// 根据环境选择资源列表
@@ -536,7 +545,7 @@
 		<br/>
 		<span>open source. no warranty.</span>
 		<br/>
-		<span>release: 0.12.0</span>
+		<span>release: 0.12.1</span>
         </p>
     </footer>
 </div>

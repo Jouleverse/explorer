@@ -93,6 +93,10 @@ angular.module('jouleExplorer', ['ngRoute','ui.bootstrap'])
                 templateUrl: 'views/jnsVoteInfo.html',
                 controller: 'jnsVoteInfoCtrl'
             }).
+            when('/core/checkin/', {
+                templateUrl: 'views/coreCheckInInfo.html',
+                controller: 'coreCheckInInfoCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });
