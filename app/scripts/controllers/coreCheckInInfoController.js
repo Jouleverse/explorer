@@ -3,34 +3,28 @@ angular.module('jouleExplorer')
 
 		var web3 = $rootScope.web3;
 		var popBadgeContract;
-		var currentBatchStart = 0; // 当前批次开始的索引（从最新开始）
-		var totalSupply = 0; // 总token数量
-		var isLoading = false;
-		var monthHistory = []; // 月份历史记录，用于前进后退
-		var historyPosition = -1; // 当前在历史记录中的位置
-		var monthsDataCache = {}; // 月份数据缓存
 
-		// 初始化变量
-		$scope.currentMonth = null; // 当前显示的月份
-		$scope.currentMonthStats = null; // 当前月份统计
+		// 核心数据结构
+		var tokenCache = []; // 按token ID索引的缓存数组
+		var totalSupply = 0; // 总token数量
+		var monthsMap = {}; // 月份字典：monthKey -> {monthYear, minId, maxId, tokenIds[], isComplete}
+		var monthKeys = []; // 月份键列表（从新到旧排序）
+		var currentMonthKey = null; // 当前显示的月份键
+		var nextLoadStartId = -1; // 下一次加载的起始ID（从最新开始，递减）
+		var isLoading = false;
+		var BATCH_SIZE = 20; // 每批次加载20个
+		var isFindingFirstCompleteMonth = true; // 是否正在寻找第一个完整月份
+
+		// 显示相关的变量
+		$scope.currentMonth = null;
+		$scope.currentMonthStats = null;
+		$scope.currentMonthIntegrity = null;
 		$scope.hasMoreData = true;
 		$scope.isLoading = false;
 		$scope.loadedCount = 0;
 		$scope.totalRecords = 0;
-		$scope.canGoBack = false;
-		$scope.canGoForward = false;
-
-		// 安全地应用AngularJS作用域更新
-		function safeApply(fn) {
-			var phase = $scope.$root.$$phase;
-			if (phase === '$apply' || phase === '$digest') {
-				if (fn && (typeof fn === 'function')) {
-					fn();
-				}
-			} else {
-				$scope.$apply(fn);
-			}
-		}
+		$scope.canGoPreviousMonth = false;
+		$scope.canGoNextMonth = false;
 
 		// 初始化合约
 		function initContract() {
@@ -38,19 +32,16 @@ angular.module('jouleExplorer')
 				console.error("pop_ABI 未定义");
 				return;
 			}
-
 			if (typeof pop_contract_address === 'undefined') {
 				console.error("pop_contract_address 未定义");
 				return;
 			}
-
 			popBadgeContract = new web3.eth.Contract(pop_ABI, pop_contract_address);
 		}
 
 		// 获取总token数量
 		function getTotalSupply() {
 			var deferred = $q.defer();
-
 			if (!popBadgeContract) {
 				initContract();
 				if (!popBadgeContract) {
@@ -64,18 +55,20 @@ angular.module('jouleExplorer')
 					totalSupply = parseInt(supply);
 					$scope.totalRecords = totalSupply;
 					console.log(`[pop] 总token数量: ${totalSupply}`);
+					tokenCache = new Array(totalSupply).fill(null);
+					// 初始化从最新的token开始加载
+					nextLoadStartId = totalSupply - 1;
 					deferred.resolve(supply);
 				})
 				.catch(function(error) {
 					console.error("[pop] 获取总供应量失败:", error);
 					deferred.reject(error);
 				});
-
 			return deferred.promise;
 		}
 
-		// 按索引获取token ID（从最新开始）
-		function getTokenIdByIndex(indexFromLatest) {
+		// 批量加载token数据（从指定的起始位置开始，向前加载）
+		function loadTokenBatch(startId, count) {
 			if (!popBadgeContract) {
 				initContract();
 				if (!popBadgeContract) {
@@ -83,522 +76,592 @@ angular.module('jouleExplorer')
 				}
 			}
 
-			// 计算实际索引：从最新开始，0表示最新（totalSupply-1）
-			var actualIndex = totalSupply - 1 - indexFromLatest;
-			console.log(`[pop] 获取token ID: 最新索引 ${indexFromLatest} -> 实际索引 ${actualIndex}`);
-			return popBadgeContract.methods.tokenByIndex(actualIndex).call();
-		}
+			// 确保不越界
+			var actualStartId = Math.max(0, startId - count + 1);
+			var actualEndId = startId;
+			var batchCount = Math.min(count, actualEndId - actualStartId + 1);
 
-		// 批量获取token信息
-		function getTokenInfoBatch(tokenIds) {
-			if (!popBadgeContract) {
-				initContract();
-				if (!popBadgeContract) {
-					return $q.reject("合约未初始化");
-				}
-			}
+			console.log(`[pop] 加载token批次: ${actualStartId} 到 ${actualEndId}, 共${batchCount}个`);
 
-			var promises = tokenIds.map(function(tokenId) {
-				return popBadgeContract.methods.getPOPInfo(tokenId).call()
-					.then(function(popInfo) {
-						return {
-							tokenId: tokenId,
-							coreId: popInfo.jvCoreTokenId,
-							checkInBlockNumber: popInfo.checkInBlockNumber,
-							checkInTimestamp: popInfo.checkInTimestamp
-						};
+			var promises = [];
+			for (var i = actualStartId; i <= actualEndId; i++) {
+				promises.push(
+					popBadgeContract.methods.tokenByIndex(i).call()
+					.then(function(tokenId) {
+						return parseInt(tokenId);
+					})
+					.then(function(tokenId) {
+						return popBadgeContract.methods.getPOPInfo(tokenId).call()
+							.then(function(popInfo) {
+								// 转换为UTC+8时间
+								var timestamp = parseInt(popInfo.checkInTimestamp);
+								var utc8Timestamp = timestamp + (8 * 60 * 60);
+								var date = new Date(utc8Timestamp * 1000);
+								var year = date.getUTCFullYear();
+								var month = date.getUTCMonth() + 1;
+								var monthKey = year + "-" + month.toString().padStart(2, '0');
+
+								var tokenData = {
+									tokenId: tokenId,
+									coreId: parseInt(popInfo.jvCoreTokenId),
+									checkInBlockNumber: parseInt(popInfo.checkInBlockNumber),
+									checkInTimestamp: timestamp,
+									month: monthKey,
+									monthYear: year + "年" + month + "月",
+									utc8Timestamp: utc8Timestamp,
+									date: date
+								};
+
+								tokenCache[tokenId] = tokenData;
+								return tokenData;
+							});
 					})
 					.catch(function(error) {
-						console.error(`[pop] 查询token ${tokenId} 失败:`, error);
+						console.error(`[pop] 加载token ${i} 失败:`, error);
 						return null;
-					});
-			});
+					})
+				);
+			}
 
 			return $q.all(promises).then(function(results) {
-				// 过滤掉失败的查询结果
-				return results.filter(function(item) {
+				var validResults = results.filter(function(item) {
 					return item !== null;
 				});
+				console.log(`[pop] 批次加载完成: ${validResults.length} 个有效token`);
+				$scope.loadedCount = tokenCache.filter(function(item) {
+					return item !== null;
+				}).length;
+				return validResults;
 			});
 		}
 
-		// 加载下一个完整月份的数据
-		$scope.loadNextMonth = function() {
-			if (isLoading || !$scope.hasMoreData) return;
+		// 处理新加载的token，更新月份信息
+		function processNewTokens(tokens) {
+			console.log(`[pop] 处理 ${tokens.length} 个新token`);
 
-			isLoading = true;
-			$scope.isLoading = true;
+			if (tokens.length === 0) return;
 
-			console.log(`[pop] 开始加载下一个月份数据，当前批次开始索引: ${currentBatchStart}`);
+			// 按月份分组
+			var monthGroups = {};
+			tokens.forEach(function(token) {
+				if (!token) return;
 
-			// 查找下一个完整的月份
-			loadCompleteMonth()
-				.then(function(result) {
-					if (result.completedMonth && result.monthCheckIns && result.monthCheckIns.length > 0) {
-						console.log(`[pop] 完成加载月份: ${result.completedMonth}`);
-
-						// 处理这个月份的数据
-						var monthData = processMonthData(result.monthCheckIns, result.monthKey);
-
-						if (monthData) {
-							// 缓存月份数据
-							monthsDataCache[monthData.monthKey] = monthData;
-
-							// 添加到历史记录
-							addToHistory(monthData);
-
-							// 显示这个月份
-							displayMonth(monthData);
-
-							// 检查是否还有更多数据
-							if (currentBatchStart >= totalSupply) {
-								$scope.hasMoreData = false;
-								console.log(`[pop] 已加载所有可用数据，currentBatchStart: ${currentBatchStart}, totalSupply: ${totalSupply}`);
-							}
-						}
-					} else {
-						console.log(`[pop] 没有找到完整的月份数据或数据为空`);
-						$scope.hasMoreData = false;
-					}
-
-					isLoading = false;
-					$scope.isLoading = false;
-
-					// 使用安全的方式更新作用域
-					safeApply(function() {});
-				})
-				.catch(function(error) {
-					console.error("[pop] 加载失败:", error);
-					isLoading = false;
-					$scope.isLoading = false;
-
-					// 使用安全的方式更新作用域
-					safeApply(function() {});
-				});
-		};
-
-		// 加载一个完整的月份（按需动态加载）
-		function loadCompleteMonth() {
-			var deferred = $q.defer();
-			var currentMonth = null;
-			var monthCheckIns = [];
-			var monthKey = null;
-			var batchSize = 20; // 每批加载的数量
-			var isLastBatch = false;
-			var startIndex = currentBatchStart; // 记录开始时的索引
-
-			console.log(`[pop] 开始查找完整月份，从最新索引 ${startIndex} 开始，总记录: ${totalSupply}`);
-
-			// 递归加载直到找到一个完整的月份
-			function loadBatch() {
-				// 检查是否还有更多数据
-				if (currentBatchStart >= totalSupply) {
-					console.log(`[pop] 已到达数据末尾，处理最后一个月份数据`);
-
-					// 如果有收集到的数据，返回这些数据作为最后一个月份
-					if (monthCheckIns.length > 0) {
-						deferred.resolve({ 
-							completedMonth: formatMonthLabel(currentMonth),
-							monthKey: monthKey,
-							monthCheckIns: monthCheckIns
-						});
-					} else {
-						deferred.resolve({ 
-							completedMonth: null,
-							monthKey: monthKey,
-							monthCheckIns: []
-						});
-					}
-					return;
+				var monthKey = token.month;
+				if (!monthGroups[monthKey]) {
+					monthGroups[monthKey] = {
+						tokens: [],
+						minId: token.tokenId,
+						maxId: token.tokenId,
+						monthYear: token.monthYear
+					};
 				}
+				monthGroups[monthKey].tokens.push(token);
+				monthGroups[monthKey].minId = Math.min(monthGroups[monthKey].minId, token.tokenId);
+				monthGroups[monthKey].maxId = Math.max(monthGroups[monthKey].maxId, token.tokenId);
+			});
 
-				// 计算本批次要加载的数量
-				var tokensToLoad = Math.min(batchSize, totalSupply - currentBatchStart);
-				var tokenIndices = [];
+			// 更新月份字典
+			Object.keys(monthGroups).forEach(function(monthKey) {
+				var group = monthGroups[monthKey];
 
-				// 从最新开始：currentBatchStart 表示从最新开始的偏移量
-				for (var i = 0; i < tokensToLoad; i++) {
-					tokenIndices.push(currentBatchStart + i);
-				}
-
-				console.log(`[pop] 加载批次，最新索引范围: ${currentBatchStart}-${currentBatchStart + tokensToLoad - 1}`);
-
-				// 检查是否是最后一批数据
-				if (currentBatchStart + tokensToLoad >= totalSupply) {
-					isLastBatch = true;
-				}
-
-				// 第一步：获取token IDs
-				var tokenIdPromises = tokenIndices.map(function(indexFromLatest) {
-					return getTokenIdByIndex(indexFromLatest);
-				});
-
-				$q.all(tokenIdPromises)
-					.then(function(tokenIds) {
-						// 第二步：获取token信息
-						return getTokenInfoBatch(tokenIds);
-					})
-					.then(function(newCheckIns) {
-						// 更新当前索引
-						currentBatchStart += tokensToLoad;
-
-						if (newCheckIns.length === 0) {
-							// 如果没有有效数据，继续加载下一批
-							loadBatch();
-							return;
+				if (!monthsMap[monthKey]) {
+					// 新月份
+					monthsMap[monthKey] = {
+						monthKey: monthKey,
+						monthYear: group.monthYear,
+						tokenIds: group.tokens.map(t => t.tokenId).sort((a, b) => b - a),
+						minId: group.minId,
+						maxId: group.maxId,
+						count: group.tokens.length,
+						isComplete: false // 初始化为不完整
+					};
+					// 插入到月份列表的适当位置（保持从新到旧排序）
+					insertMonthKey(monthKey);
+					console.log(`[pop] 发现新月份: ${monthKey}, token范围: ${group.minId}-${group.maxId}`);
+				} else {
+					// 更新现有月份
+					var monthData = monthsMap[monthKey];
+					// 合并token IDs
+					group.tokens.forEach(function(token) {
+						if (!monthData.tokenIds.includes(token.tokenId)) {
+							monthData.tokenIds.push(token.tokenId);
 						}
-
-						// 检查是否确定了当前月份
-						if (!currentMonth) {
-							// 第一个数据，确定当前月份
-							var firstCheckIn = newCheckIns[0];
-							var firstDate = new Date(firstCheckIn.checkInTimestamp * 1000);
-							currentMonth = firstDate.getFullYear() + "-" + (firstDate.getMonth() + 1).toString().padStart(2, '0');
-							monthKey = currentMonth;
-							console.log(`[pop] 当前处理月份: ${currentMonth}`);
-						}
-
-						// 添加到月份数据
-						newCheckIns.forEach(function(checkIn) {
-							var date = new Date(checkIn.checkInTimestamp * 1000);
-							var checkInMonth = date.getFullYear() + "-" + (date.getMonth() + 1).toString().padStart(2, '0');
-
-							if (checkInMonth === currentMonth) {
-								// 属于当前月份
-								monthCheckIns.push(checkIn);
-							}
-						});
-
-						// 检查批次中是否有下个月份的数据
-						var lastCheckIn = newCheckIns[newCheckIns.length - 1];
-						var lastDate = new Date(lastCheckIn.checkInTimestamp * 1000);
-						var lastMonth = lastDate.getFullYear() + "-" + (lastDate.getMonth() + 1).toString().padStart(2, '0');
-
-						if (lastMonth === currentMonth) {
-							// 还在同一个月份
-							if (isLastBatch) {
-								// 这是最后一批数据，当前月份已完成
-								console.log(`[pop] 最后一批数据，月份 ${currentMonth} 已完成`);
-								deferred.resolve({ 
-									completedMonth: formatMonthLabel(currentMonth),
-									monthKey: monthKey,
-									monthCheckIns: monthCheckIns
-								});
-							} else {
-								// 继续加载下一批
-								console.log(`[pop] 仍在月份 ${currentMonth} 内，继续加载`);
-								loadBatch();
-							}
-						} else {
-							// 找到了月份边界，当前月份已完成
-							console.log(`[pop] 月份 ${currentMonth} 已完成，找到边界: ${currentMonth} -> ${lastMonth}`);
-
-							deferred.resolve({ 
-								completedMonth: formatMonthLabel(currentMonth),
-								monthKey: monthKey,
-								monthCheckIns: monthCheckIns
-							});
-						}
-					})
-					.catch(function(error) {
-						deferred.reject(error);
 					});
-			}
+					// 重新排序
+					monthData.tokenIds.sort((a, b) => b - a);
+					// 更新边界
+					monthData.minId = Math.min(monthData.minId, group.minId);
+					monthData.maxId = Math.max(monthData.maxId, group.maxId);
+					monthData.count = monthData.tokenIds.length;
+					console.log(`[pop] 更新月份: ${monthKey}, 新范围: ${monthData.minId}-${monthData.maxId}, 总数: ${monthData.count}`);
+				}
+			});
 
-			loadBatch();
-			return deferred.promise;
+			console.log(`[pop] 当前月份数量: ${monthKeys.length}`);
+
+			// 如果当前有显示的月份，检查是否需要刷新
+			if (currentMonthKey) {
+				var monthData = monthsMap[currentMonthKey];
+				if (monthData) {
+					// 检查是否有新的token属于当前月份
+					var hasNewTokensForCurrentMonth = false;
+					tokens.forEach(function(token) {
+						if (token && token.month === currentMonthKey) {
+							hasNewTokensForCurrentMonth = true;
+						}
+					});
+
+					// 如果有新的token属于当前月份，刷新显示
+					if (hasNewTokensForCurrentMonth) {
+						console.log(`[pop] 检测到当前月份 ${currentMonthKey} 有新数据，刷新显示`);
+						$timeout(function() {
+							displayMonth(currentMonthKey);
+						}, 100);
+					}
+				}
+			}
 		}
 
-		// 处理月份数据
-		function processMonthData(checkIns, monthKey) {
-			if (!checkIns || checkIns.length === 0) {
-				console.error(`[pop] 月份 ${monthKey} 没有有效数据`);
-				return null;
+		// 将月份键插入到正确位置（从新到旧排序）
+		function insertMonthKey(monthKey) {
+			// 解析年月用于比较
+			var parts = monthKey.split('-');
+			var year = parseInt(parts[0]);
+			var month = parseInt(parts[1]);
+
+			var inserted = false;
+			for (var i = 0; i < monthKeys.length; i++) {
+				var existingParts = monthKeys[i].split('-');
+				var existingYear = parseInt(existingParts[0]);
+				var existingMonth = parseInt(existingParts[1]);
+
+				// 比较：新月份应该排在前面（时间上更新）
+				if (year > existingYear || (year === existingYear && month > existingMonth)) {
+					monthKeys.splice(i, 0, monthKey);
+					inserted = true;
+					break;
+				}
 			}
 
-			// 按Core ID分组统计
+			if (!inserted) {
+				monthKeys.push(monthKey);
+			}
+		}
+
+		// 检查月份完整性
+		function checkMonthIntegrity(monthKey) {
+			var monthData = monthsMap[monthKey];
+			if (!monthData) return { status: 'error', message: '月份不存在' };
+
+			var minId = monthData.minId;
+			var maxId = monthData.maxId;
+			var actualCount = monthData.count;
+			var expectedCount = maxId - minId + 1;
+
+			console.log(`[pop] 检查月份 ${monthKey}: min=${minId}, max=${maxId}, 实际=${actualCount}, 理论=${expectedCount}`);
+
+			// 检查边界token
+			var hasLeftBoundary = true;
+			var hasRightBoundary = true;
+
+			if (minId > 0) {
+				var leftToken = tokenCache[minId - 1];
+				hasLeftBoundary = leftToken !== null && leftToken !== undefined && leftToken.month !== monthKey;
+				if (!hasLeftBoundary && leftToken) {
+					console.log(`[pop] 左边界token ${minId - 1} 属于同一月份: ${leftToken.month}`);
+				}
+			}
+
+			if (maxId < totalSupply - 1) {
+				var rightToken = tokenCache[maxId + 1];
+				hasRightBoundary = rightToken !== null && rightToken !== undefined && rightToken.month !== monthKey;
+				if (!hasRightBoundary && rightToken) {
+					console.log(`[pop] 右边界token ${maxId + 1} 属于同一月份: ${rightToken.month}`);
+				}
+			}
+
+			// 判断完整性
+			if (actualCount === expectedCount && hasLeftBoundary && hasRightBoundary) {
+				monthData.isComplete = true;
+				return { 
+					status: 'valid', 
+					message: `数据完整 (${actualCount}/${expectedCount})`,
+					isComplete: true
+				};
+			}
+
+			// 如果不完整，说明需要继续加载
+			var message = '正在加载数据...';
+			if (actualCount !== expectedCount) {
+				message = `数据不完整: ${actualCount}/${expectedCount}`;
+			} else if (!hasLeftBoundary) {
+				message = '左边界不完整';
+			} else if (!hasRightBoundary) {
+				message = '右边界不完整';
+			}
+
+			return { 
+				status: 'loading', 
+				message: message,
+				isComplete: false
+			};
+		}
+
+		// 检查是否找到第一个完整月份
+		function hasFoundFirstCompleteMonth() {
+			if (monthKeys.length === 0) return false;
+
+			// 获取最新月份
+			var latestMonthKey = monthKeys[0];
+			var latestMonth = monthsMap[latestMonthKey];
+
+			if (!latestMonth) return false;
+
+			// 检查完整性
+			var integrity = checkMonthIntegrity(latestMonthKey);
+
+			// 如果最新月份完整，说明找到了第一个完整月份
+			if (integrity.isComplete) {
+				console.log(`[pop] 找到第一个完整月份: ${latestMonthKey}`);
+				return true;
+			}
+
+			return false;
+		}
+
+		// 更新导航按钮状态
+		function updateNavigationButtons() {
+			if (!currentMonthKey || monthKeys.length === 0) {
+				$scope.canGoPreviousMonth = false;
+				$scope.canGoNextMonth = false;
+				return;
+			}
+
+			var currentIndex = monthKeys.indexOf(currentMonthKey);
+			$scope.canGoPreviousMonth = currentIndex < monthKeys.length - 1;
+			$scope.canGoNextMonth = currentIndex > 0;
+
+			console.log(`[pop] 导航按钮状态: currentIndex=${currentIndex}, totalMonths=${monthKeys.length}, canGoPreviousMonth=${$scope.canGoPreviousMonth}, canGoNextMonth=${$scope.canGoNextMonth}`);
+		}
+
+		// 更新UI
+		function updateUI() {
+			if (!$scope.$$phase) {
+				$scope.$digest();
+			}
+		}
+
+		// 重新加载当前月份
+		$scope.reloadCurrentMonth = function() {
+			if (currentMonthKey) {
+				console.log(`[pop] 重新加载当前月份: ${currentMonthKey}`);
+				displayMonth(currentMonthKey);
+			}
+		};
+
+		// 添加一个新变量来跟踪是否正在为当前月份加载
+		var isAutoLoadingForCurrentMonth = false;
+
+		// 为当前显示的月份触发自动加载
+		function autoLoadForCurrentMonth() {
+			if (!currentMonthKey) return;
+
+			var monthData = monthsMap[currentMonthKey];
+			if (!monthData) return;
+
+			// 检查月份是否完整
+			var integrity = checkMonthIntegrity(currentMonthKey);
+
+			// 如果月份不完整，开始自动加载
+			if (!integrity.isComplete && !isAutoLoadingForCurrentMonth && $scope.hasMoreData && !isLoading) {
+				console.log(`[pop] 当前月份 ${currentMonthKey} 不完整，开始自动加载`);
+				isAutoLoadingForCurrentMonth = true;
+				isFindingFirstCompleteMonth = true; // 启用自动加载模式
+
+				// 开始加载
+				$timeout(function() {
+					$scope.loadMore();
+				}, 300);
+			}
+		}
+
+		// 修改导航函数，触发自动加载
+		$scope.goPreviousMonth = function() {
+			if (!currentMonthKey) return;
+
+			var currentIndex = monthKeys.indexOf(currentMonthKey);
+			if (currentIndex < monthKeys.length - 1) {
+				var nextMonthKey = monthKeys[currentIndex + 1];
+				console.log(`[pop] 导航到上一月: ${currentMonthKey} -> ${nextMonthKey}`);
+				displayMonth(nextMonthKey);
+
+				// 导航后检查是否需要自动加载
+				$timeout(function() {
+					autoLoadForCurrentMonth();
+				}, 500);
+			} else {
+				console.log(`[pop] 无法导航到上一月: 已经在最早的月份`);
+			}
+		};
+
+		$scope.goNextMonth = function() {
+			if (!currentMonthKey) return;
+
+			var currentIndex = monthKeys.indexOf(currentMonthKey);
+			if (currentIndex > 0) {
+				var prevMonthKey = monthKeys[currentIndex - 1];
+				console.log(`[pop] 导航到下一月: ${currentMonthKey} -> ${prevMonthKey}`);
+				displayMonth(prevMonthKey);
+
+				// 导航后检查是否需要自动加载
+				$timeout(function() {
+					autoLoadForCurrentMonth();
+				}, 500);
+			} else {
+				console.log(`[pop] 无法导航到下一月: 已经在最新的月份`);
+			}
+		};
+
+		// 修改 displayMonth 函数，添加自动加载检查
+		function displayMonth(monthKey) {
+			var monthData = monthsMap[monthKey];
+			if (!monthData) {
+				console.error(`[pop] 月份不存在: ${monthKey}`);
+				return;
+			}
+
+			currentMonthKey = monthKey;
+			var monthIndex = monthKeys.indexOf(monthKey);
+
+			console.log(`[pop] 显示月份: ${monthData.monthYear}, 索引: ${monthIndex}, tokens: ${monthData.count}, 完整: ${monthData.isComplete}`);
+
+			// 更新导航按钮状态
+			updateNavigationButtons();
+
+			// 更新当前月份显示
+			$scope.currentMonth = monthData.monthYear;
+
+			// 统计Core ID数据
 			var coreStats = {};
-			checkIns.forEach(function(checkIn) {
-				var coreId = checkIn.coreId.toString();
+			monthData.tokenIds.forEach(function(tokenId) {
+				var token = tokenCache[tokenId];
+				if (!token) return;
+
+				var coreId = token.coreId.toString();
 				if (!coreStats[coreId]) {
 					coreStats[coreId] = {
 						coreId: coreId,
 						count: 0,
-						checkIns: []
+						tokens: []
 					};
 				}
 
 				coreStats[coreId].count++;
-				coreStats[coreId].checkIns.push(checkIn);
+				coreStats[coreId].tokens.push(token);
 			});
 
-			// 为每个Core ID计算统计信息
-			Object.keys(coreStats).forEach(function(coreId) {
-				var stat = coreStats[coreId];
-				if (stat.checkIns.length > 0) {
-					// 按时间排序（最新的在前）
-					stat.checkIns.sort(function(a, b) {
-						return b.checkInTimestamp - a.checkInTimestamp;
+			// 为每个Core ID计算首次和最后签到时间
+			Object.values(coreStats).forEach(function(stat) {
+				if (stat.tokens.length > 0) {
+					// 按token ID排序（最大的最先）
+					stat.tokens.sort(function(a, b) {
+						return b.tokenId - a.tokenId;
 					});
 
-					// 最后签到（最早的，因为是倒序）
-					stat.lastCheckIn = stat.checkIns[0];
-					// 首次签到（最晚的）
-					stat.firstCheckIn = stat.checkIns[stat.checkIns.length - 1];
+					stat.firstToken = stat.tokens[stat.tokens.length - 1];
+					stat.lastToken = stat.tokens[0];
 				}
 			});
 
-			return {
-				monthKey: monthKey,
-				monthYear: formatMonthLabel(monthKey),
-				checkIns: checkIns,
-				coreStats: coreStats,
-				totalCheckIns: checkIns.length,
-				uniqueCores: Object.keys(coreStats).length
-			};
-		}
-
-		// 添加到历史记录
-		function addToHistory(monthData) {
-			// 如果当前位置不是历史记录的末尾，则截断后面的历史
-			if (historyPosition < monthHistory.length - 1) {
-				monthHistory = monthHistory.slice(0, historyPosition + 1);
-			}
-
-			// 添加到历史记录
-			monthHistory.push({
-				monthKey: monthData.monthKey,
-				monthYear: monthData.monthYear
+			// 转换为数组并按Core ID排序
+			var coreStatsArray = Object.values(coreStats).sort(function(a, b) {
+				return parseInt(a.coreId) - parseInt(b.coreId);
 			});
-
-			historyPosition = monthHistory.length - 1;
-
-			// 更新导航按钮状态
-			updateNavigationButtons();
-		}
-
-		// 显示月份数据
-		function displayMonth(monthData) {
-			if (!monthData || !monthData.coreStats) {
-				console.error("[pop] 月份数据为空");
-				$scope.currentMonthStats = null;
-				return;
-			}
-
-			$scope.currentMonth = monthData.monthYear;
-
-			// 转换为数组并按Core ID从小到大排序
-			var coreStatsArray = [];
-			try {
-				coreStatsArray = Object.values(monthData.coreStats).sort(function(a, b) {
-					// 按Core ID从小到大排序
-					return parseInt(a.coreId) - parseInt(b.coreId);
-				});
-			} catch (error) {
-				console.error("[pop] 转换coreStats为数组失败:", error);
-				coreStatsArray = [];
-			}
 
 			// 更新显示数据
 			$scope.currentMonthStats = {
 				monthYear: monthData.monthYear,
-				totalCheckIns: monthData.totalCheckIns || 0,
-				uniqueCores: monthData.uniqueCores || 0,
+				totalCheckIns: monthData.count,
+				uniqueCores: coreStatsArray.length,
 				coreStats: coreStatsArray.map(function(stat) {
 					return {
 						coreId: stat.coreId,
 						count: stat.count,
-						firstCheckInTime: stat.firstCheckIn ? new Date(stat.firstCheckIn.checkInTimestamp * 1000).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) : '-',
-						firstBlockNumber: stat.firstCheckIn ? stat.firstCheckIn.checkInBlockNumber : '-',
-						lastCheckInTime: stat.lastCheckIn ? new Date(stat.lastCheckIn.checkInTimestamp * 1000).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) : '-',
-						lastBlockNumber: stat.lastCheckIn ? stat.lastCheckIn.checkInBlockNumber : '-'
+						firstCheckInTime: stat.firstToken ?
+						new Date(stat.firstToken.utc8Timestamp * 1000)
+						.toLocaleString('zh-CN', { timeZone: 'UTC' }) : '-',
+						firstBlockNumber: stat.firstToken ? stat.firstToken.checkInBlockNumber : '-',
+						lastCheckInTime: stat.lastToken ?
+						new Date(stat.lastToken.utc8Timestamp * 1000)
+						.toLocaleString('zh-CN', { timeZone: 'UTC' }) : '-',
+						lastBlockNumber: stat.lastToken ? stat.lastToken.checkInBlockNumber : '-'
 					};
 				})
 			};
 
-			// 更新Core ID筛选选项
-			updateCoreFilterOptions(monthData);
+			// 检查完整性
+			$scope.currentMonthIntegrity = checkMonthIntegrity(monthKey);
 
-			// 更新已加载计数
-			updateLoadedCount();
+			updateUI();
 		}
 
-		// 更新Core ID筛选选项
-		function updateCoreFilterOptions(monthData) {
-			var coreIds = new Set();
-
-			// 添加当前月份的所有Core ID
-			if (monthData && monthData.coreStats) {
-				Object.keys(monthData.coreStats).forEach(function(coreId) {
-					coreIds.add(coreId);
-				});
+		// 判断是否应该继续加载
+		function shouldContinueLoading() {
+			// 如果没有数据，需要加载
+			if (monthKeys.length === 0) {
+				console.log(`[pop] 没有月份数据，继续加载`);
+				return true;
 			}
 
-			$scope.availableCoreIds = Array.from(coreIds).sort(function(a, b) {
-				return parseInt(a) - parseInt(b);
-			});
-		}
-
-		// 更新已加载计数
-		function updateLoadedCount() {
-			$scope.loadedCount = Object.keys(monthsDataCache).reduce(function(total, monthKey) {
-				var monthData = monthsDataCache[monthKey];
-				return total + (monthData.checkIns ? monthData.checkIns.length : 0);
-			}, 0);
-		}
-
-		// 按Core ID筛选当前月份
-		$scope.filterByCore = function() {
-			if (!$scope.selectedCoreId || !monthsDataCache[getCurrentMonthKey()]) {
-				// 显示所有Core ID
-				var monthKey = getCurrentMonthKey();
-				if (monthKey && monthsDataCache[monthKey]) {
-					displayMonth(monthsDataCache[monthKey]);
-				}
-			} else {
-				var monthKey = getCurrentMonthKey();
-				var monthData = monthsDataCache[monthKey];
-				if (!monthData || !monthData.coreStats) return;
-
-				// 筛选当前月份中指定Core ID的数据
-				var coreStat = monthData.coreStats[$scope.selectedCoreId];
-
-				if (coreStat) {
-					$scope.currentMonthStats = {
-						monthYear: monthData.monthYear,
-						totalCheckIns: coreStat.count,
-						uniqueCores: 1,
-						coreStats: [{
-							coreId: coreStat.coreId,
-							count: coreStat.count,
-							firstCheckInTime: coreStat.firstCheckIn ? new Date(coreStat.firstCheckIn.checkInTimestamp * 1000).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) : '-',
-							firstBlockNumber: coreStat.firstCheckIn ? coreStat.firstCheckIn.checkInBlockNumber : '-',
-							lastCheckInTime: coreStat.lastCheckIn ? new Date(coreStat.lastCheckIn.checkInTimestamp * 1000).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) : '-',
-							lastBlockNumber: coreStat.lastCheckIn ? coreStat.lastCheckIn.checkInBlockNumber : '-'
-						}]
-					};
-				} else {
-					// 当前月份没有这个Core ID
-					$scope.currentMonthStats = {
-						monthYear: monthData.monthYear,
-						totalCheckIns: 0,
-						uniqueCores: 0,
-						coreStats: []
-					};
-				}
-			}
-
-			safeApply(function() {});
-		};
-
-		// 获取当前月份key
-		function getCurrentMonthKey() {
-			if (historyPosition >= 0 && historyPosition < monthHistory.length) {
-				return monthHistory[historyPosition].monthKey;
-			}
-			return null;
-		}
-
-		// 导航到上一个月份
-		$scope.goBack = function() {
-			if (historyPosition > 0) {
-				historyPosition--;
-				var monthKey = monthHistory[historyPosition].monthKey;
-				var monthData = monthsDataCache[monthKey];
+			// 如果是为当前月份自动加载，只检查当前月份
+			if (isAutoLoadingForCurrentMonth && currentMonthKey) {
+				var monthData = monthsMap[currentMonthKey];
 				if (monthData) {
-					displayMonth(monthData);
-					updateNavigationButtons();
+					var integrity = checkMonthIntegrity(currentMonthKey);
+					console.log(`[pop] 为当前月份自动加载: ${currentMonthKey}, 完整: ${integrity.isComplete}`);
+
+					// 如果当前月份已完整，停止加载
+					if (integrity.isComplete) {
+						isAutoLoadingForCurrentMonth = false;
+						isFindingFirstCompleteMonth = false;
+						console.log(`[pop] 当前月份 ${currentMonthKey} 已完整，停止自动加载`);
+						return false;
+					}
+
+					// 当前月份不完整，继续加载
+					console.log(`[pop] 当前月份 ${currentMonthKey} 不完整，继续加载`);
+					return true;
 				}
 			}
-		};
 
-		// 导航到下一个月份
-		$scope.goForward = function() {
-			if (historyPosition < monthHistory.length - 1) {
-				historyPosition++;
-				var monthKey = monthHistory[historyPosition].monthKey;
-				var monthData = monthsDataCache[monthKey];
-				if (monthData) {
-					displayMonth(monthData);
-					updateNavigationButtons();
+			// 如果正在寻找第一个完整月份（初始加载）
+			if (isFindingFirstCompleteMonth) {
+				var hasFound = hasFoundFirstCompleteMonth();
+				if (hasFound) {
+					isFindingFirstCompleteMonth = false; // 停止寻找
+					console.log(`[pop] 已找到第一个完整月份，停止自动加载`);
+					return false;
 				}
+				console.log(`[pop] 尚未找到第一个完整月份，继续加载`);
+				return true;
 			}
-		};
 
-		// 更新导航按钮状态
-		function updateNavigationButtons() {
-			$scope.canGoBack = historyPosition > 0;
-			$scope.canGoForward = historyPosition < monthHistory.length - 1;
+			// 其他情况不自动加载
+			console.log(`[pop] 停止自动加载`);
+			return false;
 		}
 
-		// 跳转到历史月份
-		$scope.goToHistoryMonth = function(monthKey) {
-			var monthData = monthsDataCache[monthKey];
-			if (monthData) {
-				// 查找这个月份在历史记录中的位置
-				var index = monthHistory.findIndex(function(item) {
-					return item.monthKey === monthKey;
+		// 修改 loadMore 函数，简化对 isAutoLoadingForCurrentMonth 的处理
+		$scope.loadMore = function() {
+			if (isLoading || !$scope.hasMoreData) return;
+
+			isLoading = true;
+			$scope.isLoading = true;
+			console.log(`[pop] 开始加载更多数据, nextLoadStartId=${nextLoadStartId}, isAutoLoadingForCurrentMonth=${isAutoLoadingForCurrentMonth}, currentMonthKey=${currentMonthKey}`);
+
+			// 计算批次大小
+			var batchSize = Math.min(BATCH_SIZE, nextLoadStartId + 1);
+			if (batchSize <= 0) {
+				$scope.hasMoreData = false;
+				isLoading = false;
+				$scope.isLoading = false;
+				isAutoLoadingForCurrentMonth = false; // 重置状态
+				updateUI();
+				return;
+			}
+
+			loadTokenBatch(nextLoadStartId, batchSize)
+				.then(function(tokens) {
+					// 更新下一次加载的起始位置
+					nextLoadStartId = nextLoadStartId - batchSize;
+
+					// 处理新加载的token
+					processNewTokens(tokens);
+
+					// 更新当前显示月份的完整性状态
+					if (currentMonthKey) {
+						$scope.currentMonthIntegrity = checkMonthIntegrity(currentMonthKey);
+					}
+
+					// 如果没有当前显示的月份，显示最新月份
+					if (!currentMonthKey && monthKeys.length > 0) {
+						currentMonthKey = monthKeys[0];
+						displayMonth(currentMonthKey);
+					}
+
+					// 更新加载状态
+					$scope.hasMoreData = (nextLoadStartId >= 0);
+
+					isLoading = false;
+					$scope.isLoading = false;
+
+					// 检查是否应该继续加载
+					var needContinue = shouldContinueLoading();
+
+					// 如果需要继续加载，延迟后自动加载下一批
+					if (needContinue && $scope.hasMoreData) {
+						console.log(`[pop] 自动继续加载下一批`);
+						$timeout($scope.loadMore, 200);
+					} else {
+						// 确保更新导航按钮状态
+						updateNavigationButtons();
+						console.log(`[pop] 停止自动加载`);
+						isAutoLoadingForCurrentMonth = false; // 重置状态
+					}
+
+					updateUI();
+				})
+				.catch(function(error) {
+					console.error(`[pop] 加载失败:`, error);
+					isLoading = false;
+					$scope.isLoading = false;
+					isAutoLoadingForCurrentMonth = false; // 重置状态
+					updateUI();
 				});
-
-				if (index !== -1) {
-					historyPosition = index;
-					displayMonth(monthData);
-					updateNavigationButtons();
-				}
-			}
 		};
-
-		// 格式化月份标签
-		function formatMonthLabel(monthKey) {
-			if (!monthKey) return "未知月份";
-
-			var parts = monthKey.split("-");
-			if (parts.length === 2) {
-				return parts[0] + "年" + parseInt(parts[1]) + "月";
-			}
-			return monthKey;
-		}
 
 		// 初始化数据
 		$scope.initData = function() {
 			console.log("[pop] 初始化数据加载");
 
 			// 重置状态
-			monthHistory = [];
-			monthsDataCache = {};
-			historyPosition = -1;
-			currentBatchStart = 0;
-			totalSupply = 0;
+			tokenCache = [];
+			monthsMap = {};
+			monthKeys = [];
+			currentMonthKey = null;
+			nextLoadStartId = -1;
+			isLoading = false;
+			isFindingFirstCompleteMonth = true;
+
 			$scope.currentMonth = null;
 			$scope.currentMonthStats = null;
+			$scope.currentMonthIntegrity = null;
 			$scope.hasMoreData = true;
 			$scope.isLoading = true;
 			$scope.loadedCount = 0;
 			$scope.totalRecords = 0;
-			$scope.selectedCoreId = "";
-			$scope.canGoBack = false;
-			$scope.canGoForward = false;
+			$scope.canGoPreviousMonth = false;
+			$scope.canGoNextMonth = false;
 
 			// 使用$timeout确保不在digest循环中
 			$timeout(function() {
-				// 先获取总数量
 				getTotalSupply()
-					.then(function(supply) {
-						if (supply == 0) {
+					.then(function() {
+						if (totalSupply == 0) {
 							$scope.hasMoreData = false;
 							$scope.isLoading = false;
-							safeApply(function() {});
+							updateUI();
 							return;
 						}
 
-						console.log(`[pop] 开始加载第一个月份...`);
-						// 加载第一个完整月份
-						$scope.loadNextMonth();
+						console.log(`[pop] 开始加载初始数据...`);
+						// 开始加载
+						$scope.loadMore();
 					})
 					.catch(function(error) {
 						console.error("[pop] 数据初始化失败:", error);
 						$scope.isLoading = false;
-						safeApply(function() {});
+						updateUI();
 					});
 			}, 0);
 		};
@@ -611,5 +674,4 @@ angular.module('jouleExplorer')
 		};
 
 		$scope.init();
-
 	});

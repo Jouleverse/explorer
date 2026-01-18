@@ -361,3 +361,7 @@ TODO:
 - new: core checkin view /#/core/checkin. 支持已注销的core id历史签到信息查看
 - release: 0.12.1
 
+2026.1.18
+- improve: add data integrity check for /#/core/checkin. 添加数据完整性校验。对于不完整的月份，自动加载数据并补全。
+- release: 0.12.2
+

@@ -4,7 +4,7 @@
 		<div class="col-md-12">
 			<h1 style="margin-bottom: 20px;">
 				<span class="glyphicon glyphicon-check"></span> POP徽章签到记录
-				<small>按月查看Core ID链上签到统计</small>
+				<small>按月查看Core ID签到统计</small>
 			</h1>
 		</div>
 	</div>
@@ -36,16 +36,16 @@
 								<label>月份导航</label>
 								<div>
 									<div class="btn-group" role="group" style="margin-bottom: 5px;">
-										<button class="btn btn-outline-primary" ng-click="goBack()" ng-disabled="!canGoBack">
+										<button class="btn btn-outline-primary" ng-click="goPreviousMonth()" ng-disabled="!canGoPreviousMonth">
 											<span class="glyphicon glyphicon-chevron-left"></span> 上一月
 										</button>
-										<button class="btn btn-primary" ng-click="loadNextMonth()" 
+										<button class="btn btn-primary" ng-click="loadMore()" 
 																		ng-disabled="isLoading || !hasMoreData">
-											<span ng-if="!isLoading" class="glyphicon glyphicon-arrow-down"></span>
+											<span ng-if="!isLoading" class="glyphicon glyphicon-download"></span>
 											<span ng-if="isLoading" class="glyphicon glyphicon-refresh glyphicon-spin"></span>
-											{{isLoading ? '加载中...' : '加载上一个月'}}
+											{{isLoading ? '加载中...' : '加载更多'}}
 										</button>
-										<button class="btn btn-outline-primary" ng-click="goForward()" ng-disabled="!canGoForward">
+										<button class="btn btn-outline-primary" ng-click="goNextMonth()" ng-disabled="!canGoNextMonth">
 											下一月 <span class="glyphicon glyphicon-chevron-right"></span>
 										</button>
 									</div>
@@ -60,7 +60,7 @@
 										已加载 {{loadedCount}} 条记录 / 共 {{totalRecords}} 条记录
 									</span>
 									<span ng-if="!hasMoreData && loadedCount > 0" class="text-success">
-										<span class="glyphicon glyphicon-ok"></span> 已加载所有月份
+										<span class="glyphicon glyphicon-ok"></span> 已加载所有数据
 									</span>
 								</div>
 							</div>
@@ -71,63 +71,32 @@
 		</div>
 	</div>
 
-	<!-- 历史月份快速导航 -->
-	<div class="row" ng-if="monthHistory && monthHistory.length > 1">
+	<!-- 完整性检查状态 -->
+	<div class="row" ng-if="currentMonthIntegrity">
 		<div class="col-md-12">
-			<div class="card table-card">
-				<div class="card-header">
-					<h5 style="margin: 0;">
-						<span class="glyphicon glyphicon-time"></span> 历史月份快速导航
-					</h5>
-				</div>
-				<div class="card-body">
-					<div class="btn-group" role="group">
-						<button type="button" class="btn btn-outline-secondary" 
-											  ng-repeat="month in monthHistory track by $index"
-											  ng-class="{'btn-primary': $index === historyPosition}"
-											  ng-click="goToHistoryMonth(month.monthKey)">
-							{{month.monthYear}}
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+			<div class="alert" 
+				 ng-class="{
+						   'alert-success': currentMonthIntegrity.status === 'valid',
+						   'alert-warning': currentMonthIntegrity.status === 'warning',
+						   'alert-danger': currentMonthIntegrity.status === 'error',
+						   'alert-info': currentMonthIntegrity.status === 'checking' || currentMonthIntegrity.status === 'loading'
+						   }">
+				<span ng-if="currentMonthIntegrity.status === 'checking' || currentMonthIntegrity.status === 'loading'">
+					<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+				</span>
+				<span ng-if="currentMonthIntegrity.status === 'valid'">
+					<span class="glyphicon glyphicon-ok"></span>
+				</span>
+				<span ng-if="currentMonthIntegrity.status === 'warning'">
+					<span class="glyphicon glyphicon-warning-sign"></span>
+				</span>
+				{{currentMonthIntegrity.message}}
 
-	<!-- 筛选控制面板 -->
-	<div class="row" ng-if="currentMonthStats">
-		<div class="col-md-12">
-			<div class="card table-card">
-				<div class="card-header">
-					<h5 style="margin: 0;"><span class="glyphicon glyphicon-filter"></span> 筛选选项</h5>
-				</div>
-				<div class="card-body">
-					<div class="row">
-						<div class="col-md-6">
-							<div class="form-group">
-								<label for="coreFilter">筛选Core ID</label>
-								<select class="form-control" id="coreFilter" ng-model="selectedCoreId" 
-																			 ng-change="filterByCore()">
-									<option value="">全部Core ID</option>
-									<option ng-repeat="coreId in availableCoreIds" value="{{coreId}}">🆔J{{coreId}}</option>
-								</select>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">
-								<label>月份统计</label>
-								<div>
-									<span class="badge" style="background-color: #007bff; margin-right: 5px;">
-										{{currentMonthStats.totalCheckIns}} 次签到
-									</span>
-									<span class="badge" style="background-color: #6c757d;">
-										{{currentMonthStats.uniqueCores}} 个Core ID
-									</span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+				<button ng-if="currentMonthIntegrity.status === 'warning'" 
+						class="btn btn-sm btn-primary pull-right" 
+						ng-click="reloadCurrentMonth()">
+					<span class="glyphicon glyphicon-refresh"></span> 重新检查
+				</button>
 			</div>
 		</div>
 	</div>
@@ -138,7 +107,13 @@
 			<div class="card table-card">
 				<div class="card-header">
 					<h4 style="margin: 0;">
-						<span class="glyphicon glyphicon-list"></span> {{currentMonthStats.monthYear}} 链上签到统计
+						<span class="glyphicon glyphicon-list"></span> {{currentMonthStats.monthYear}} 签到统计
+						<span class="badge" style="background-color: #007bff; margin-left: 10px;">
+							{{currentMonthStats.totalCheckIns}} 次签到
+						</span>
+						<span class="badge" style="background-color: #6c757d;">
+							{{currentMonthStats.uniqueCores}} 个Core ID
+						</span>
 					</h4>
 				</div>
 				<div class="card-body">
@@ -190,7 +165,7 @@
 					<!-- 无数据提示 -->
 					<div ng-if="currentMonthStats.coreStats.length === 0" class="alert alert-info">
 						<span class="glyphicon glyphicon-info-sign"></span>
-						当前月份没有匹配的签到记录。
+						当前月份没有签到记录。
 					</div>
 				</div>
 			</div>
@@ -202,7 +177,7 @@
 		<div class="col-md-12">
 			<div class="alert alert-info text-center">
 				<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
-				正在加载月份数据，请稍候...
+				正在加载数据，请稍候...
 			</div>
 		</div>
 	</div>
@@ -243,20 +218,5 @@
 	@keyframes spin {
 		0% { transform: rotate(0deg); }
 		100% { transform: rotate(360deg); }
-	}
-	.text-muted {
-		font-size: 0.85em;
-	}
-	.btn-group {
-		flex-wrap: wrap;
-	}
-	.btn-group .btn {
-		margin: 2px;
-	}
-	th, td {
-		vertical-align: middle !important;
-	}
-	.btn-group .btn-primary {
-		font-weight: bold;
 	}
 </style>
