@@ -388,16 +388,25 @@
 
 		// for search box...
         function processRequest() {
-             var requestStr = $("#query")[0].value.split('0x').join('');
+             var requestStr = $("#query")[0].value.split('0x').join('').trim();
 
-			if (JVA.validateJVA(requestStr.toLowerCase()).valid) { // if jva/b32 addr?
-				const decoded = JVA.decodeJVA(requestStr);
-				if (decoded.success) {
-					return goToAddrInfos(decoded.hexAddress);
+			if (requestStr.toLowerCase().match(/\.j$/)) // if jns?
+				return goToJNSInfo(requestStr.replace(/\s/g, ''))
+			else if (requestStr.toLowerCase().match(/^j3/)) { // if jva/b32 addr?
+				const jva = requestStr.toLowerCase().replace(/\s/g, '');
+				if (JVA.validateJVA(jva).valid) {
+					const decoded = JVA.decodeJVA(jva);
+					if (decoded.success) {
+						return goToAddrInfos(decoded.hexAddress);
+					} else {
+						dialogShowHtml('错误', `<p>解码JVA/B32地址 ${requestStr} 失败</p>`)
+						return;
+					}
+				} else {
+					dialogShowHtml('错误', `<p>无效的JVA/B32地址 ${requestStr}</p>`)
+					return;
 				}
 			}
-			else if (requestStr.toLowerCase().match(/\.j$/)) // if jns?
-				return goToJNSInfo(requestStr)
             else if (requestStr.length === 40) // if address?
               return goToAddrInfos('0x'+requestStr)
             else if(requestStr.length === 64) {
@@ -413,7 +422,9 @@
 				'<p>可以试试输入以下内容：</p>' +
 				'<ul><li>区块高度：如 1011228</li>' + 
 				'<li>交易哈希：如 0xe3978e8252c6a993de45bb0c3dc5321be4370be22043e299773df464ed67a830</li>' +
-				'<li>链地址：如 0x3D86Dd50C2f333d3d79Da2DE6bCd5706adD7a20c</li>' + 
+				'<li>链地址：如 j3听值环摆备酚室埔孟室益它叔绘际er7ar</li>' + 
+				'<li>        如 j38krd65xz7vea84ua5t0xhn2hq6ka0gsv2er7ar</li>' + 
+				'<li>        或 0x3D86Dd50C2f333d3d79Da2DE6bCd5706adD7a20c</li>' + 
 				'<li>JNS名字：如 love.j</li>' +
 				'</ul>')
         };
