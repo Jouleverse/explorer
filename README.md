@@ -365,3 +365,6 @@ TODO:
 - improve: add data integrity check for /#/core/checkin. 添加数据完整性校验。对于不完整的月份，自动加载数据并补全。
 - release: 0.12.2
 
+2026.1.19
+- new: introduce jva/b32 encoded jouleverse chain address
+- release: 0.13.0
