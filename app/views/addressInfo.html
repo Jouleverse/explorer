@@ -11,9 +11,9 @@
 			</p>
 		</span>
 		<span data-ng-if="jnsId === undefined">
-			<span style="color:#050">{{ addressId.substr(0,6) + '...' + addressId.substr(-4) }}</span>
+			<span style="color:#050">{{ 'j3...' + checksumTail }}</span>
 			<p>链地址
-			<small>查看链地址信息</small>
+			<small>查看焦耳宇宙坐标信息</small>
 			</p>
 		</span>
 		<!--span class="zoom" ng-style="{ 'display': balance == 0 ? 'inline-block' : 'none' }">
@@ -29,14 +29,22 @@
         <tbody>
         <tr>
 			<th colspan="3" align="left">
-				<span data-ng-if="jns_info !== undefined">
-					<a href="/#/did/{{jns_info.description}}"><img height="14px" src="{{jns_info.image}}" /></a>
-				</span>
-				{{addressId}}
-				<span ng-style="{ 'display': countJTI2 > 0 ? 'inline-block' : 'none' }">
-					<image height="16px" style="margin-top:-3px" src="{{allJTI2[0].tokenInfo.image}}"></image>
-				</span>
-				<span class="pull-right"></span>
+				<div>JVA: <span style="color:var(--primary-dark-color)">{{ profileAddress }}</span></div>
+				<div>B32: <span style="color:var(--info-color)">{{ profileAddressB32 }}</span></div>
+				<div>HEX: <span style="color:#050">{{ addressId }}</span></div>
+				<div ng-style="{ 'display': jns_info !== undefined || allJVCore.length > 0 ? 'inline-block' : 'none' }">DID:
+					<span data-ng-if="jns_info !== undefined">
+						<a href="/#/did/{{jns_info.description}}"><img height="14px" src="{{jns_info.image}}" /></a>
+					</span>
+					<!--span ng-style="{ 'display': countJTI2 > 0 ? 'inline-block' : 'none' }">
+						<image height="16px" style="margin-top:-3px" src="{{allJTI2[0].tokenInfo.image}}"></image>
+					</span-->
+					<span data-ng-if="allJVCore.length > 0">
+						<image height="16px" src="{{allJVCore[0].tokenInfo.image}}"></image>
+						<span style="font-size:small">🆔J{{allJVCore[0].id}}</span>
+					</span>
+					<span class="pull-right"></span>
+				</div>
 			</th>
         </tr>
         </tbody>
@@ -98,11 +106,11 @@
         </tr>
 
 		<tr data-ng-repeat="jvcore in allJVCore">
-		  <td>{{jvcore.tag}}</td>
+		  <td>Core ID: #{{jvcore.id}}</td>
 		  <td><image height="20px" src="{{jvcore.tokenInfo.image}}"></image></td>
 		</tr>
 		<tr data-ng-if="countPOP > 0">
-		    <td>JVCore POP Check-In(s)</td>
+		    <td>Core链上签到</td>
 			<td><span data-ng-repeat="pop in allPOP">
 					<div style="float:left; margin-left:10px;" ng-style="{ 'background-color': pop.is_valid ? 'initial':'gray'}">
 						<div><span style="display:inline-block;"><image id="pop{{pop.id}}" alt="{{pop.tokenInfo.name}}" height="20px" src="{{pop.tokenInfo.image}}"></image></span></div>

@@ -362,9 +362,21 @@ angular.module('jouleExplorer')
 			$scope.addressId = $routeParams.addressId;
 
 			if($scope.addressId !== undefined) {
+				// 编码jouleverse address
+				const jaddr = encodeJVA($scope.addressId);
+				$scope.checksumTail = jaddr.fullFormat.checksumTail;
+				$scope.profileAddress = jaddr.fullAddress;
+				$scope.profileAddressB32 = jaddr.b32Address;
+
 				update(true);
 			} else if ($scope.jnsId !== undefined) {
 				getNSAddress().then(function(addr) {
+					// 编码jouleverse address
+					const jaddr = encodeJVA(addr);
+					$scope.checksumTail = jaddr.fullFormat.checksumTail;
+					$scope.profileAddress = jaddr.fullAddress;
+					$scope.profileAddressB32 = jaddr.b32Address;
+
 					$scope.addressId = addr;
 					// do not use $apply here
 					update(false);
@@ -563,7 +575,7 @@ angular.module('jouleExplorer')
 										} else {
 											var tokenURI = result3;
 											var tokenInfo = parseTokenURI(tokenURI);
-											$scope.allJVCore.push({'tag': tag, 'tokenInfo': tokenInfo});
+											$scope.allJVCore.push({'id': token_id, 'tag': tag, 'tokenInfo': tokenInfo});
 											$scope.$apply(); // inform the data updates !
 										}
 									});
