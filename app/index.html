@@ -390,7 +390,15 @@
         function processRequest() {
              var requestStr = $("#query")[0].value.split('0x').join('');
 
-            if (requestStr.length === 40) // if address?
+			if (JVA.validateJVA(requestStr.toLowerCase()).valid) { // if jva/b32 addr?
+				const decoded = JVA.decodeJVA(requestStr);
+				if (decoded.success) {
+					return goToAddrInfos(decoded.hexAddress);
+				}
+			}
+			else if (requestStr.toLowerCase().match(/\.j$/)) // if jns?
+				return goToJNSInfo(requestStr)
+            else if (requestStr.length === 40) // if address?
               return goToAddrInfos('0x'+requestStr)
             else if(requestStr.length === 64) {
               if(/[0-9a-zA-Z]{64}?/.test(requestStr)) // if tx?
@@ -398,8 +406,6 @@
               else if(/[0-9]{1,7}?/.test(requestStr)) // if block hash?
                 return goToBlockInfos(requestStr)
             }
-			else if (requestStr.toLowerCase().match(/\.j$/)) // if jns?
-				return goToJNSInfo(requestStr)
 			else if(parseInt(requestStr) > 0) // if block number?
 				return goToBlockInfos(parseInt(requestStr)) 
 
@@ -545,7 +551,7 @@
 		<br/>
 		<span>open source. no warranty.</span>
 		<br/>
-		<span>release: 0.13.0</span>
+		<span>release: 0.13.1</span>
         </p>
     </footer>
 </div>

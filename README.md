@@ -368,3 +368,8 @@ TODO:
 2026.1.19
 - new: introduce jva/b32 encoded jouleverse chain address
 - release: 0.13.0
+
+2026.1.20
+- fix: bech32m generator bug
+- new: support search on jva/b32 address
+- release: 0.13.1
