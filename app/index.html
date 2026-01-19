@@ -28,7 +28,7 @@
 	];
 
 	// 生产环境：CDN 路径
-	const prodLibs = [
+	const prodLibs = devLibs; // use self serve until good cdn found [
 		// --- unpkg --- blocked, don't use
 		/*'https://unpkg.com/web3@1.8.2/dist/web3.min.js',
 		'https://unpkg.com/angular@1.8.3/angular.min.js',
@@ -54,14 +54,14 @@
 		'https://cdn.iocdn.cc/npm/bootstrap@3.3.5/dist/js/bootstrap.min.js',
 		'https://cdn.iocdn.cc/npm/bootstrap@3.3.5/dist/css/bootstrap.min.css',*/
 		// --- mirror unpkg ---
-		'https://npm.onmicrosoft.cn/web3@1.8.2/dist/web3.min.js',
+		/*'https://npm.onmicrosoft.cn/web3@1.8.2/dist/web3.min.js',
 		'https://npm.onmicrosoft.cn/angular@1.8.3/angular.min.js',
 		'https://npm.onmicrosoft.cn/angular-ui-bootstrap@0.13.4/ui-bootstrap.min.js',
 		'https://npm.onmicrosoft.cn/angular-route@1.8.3/angular-route.min.js',
 		'https://npm.onmicrosoft.cn/jquery@1.11.3/dist/jquery.min.js',
 		'https://npm.onmicrosoft.cn/bootstrap@3.3.5/dist/js/bootstrap.min.js',
-		'https://npm.onmicrosoft.cn/bootstrap@3.3.5/dist/css/bootstrap.min.css',
-	];
+		'https://npm.onmicrosoft.cn/bootstrap@3.3.5/dist/css/bootstrap.min.css',*/
+	//];
 
 	const appMods = [
 		'app.js',
@@ -497,6 +497,7 @@
   <script src="scripts/crypto/hex.js"></script>
   <script src="scripts/crypto/multiformats-11.0.1.min.js"></script>
   <script src="scripts/crypto/abi-decoder.js"></script>
+  <script src="scripts/crypto/jvaddress.js"></script>
 
 <!--Core-->
 <!--
@@ -545,7 +546,7 @@
 		<br/>
 		<span>open source. no warranty.</span>
 		<br/>
-		<span>release: 0.12.2</span>
+		<span>release: 0.13.0</span>
         </p>
     </footer>
 </div>
