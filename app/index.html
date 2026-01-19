@@ -28,7 +28,7 @@
 	];
 
 	// 生产环境：CDN 路径
-	const prodLibs = devLibs; // use self serve until good cdn found [
+	const prodLibs = [
 		// --- unpkg --- blocked, don't use
 		/*'https://unpkg.com/web3@1.8.2/dist/web3.min.js',
 		'https://unpkg.com/angular@1.8.3/angular.min.js',
@@ -54,14 +54,14 @@
 		'https://cdn.iocdn.cc/npm/bootstrap@3.3.5/dist/js/bootstrap.min.js',
 		'https://cdn.iocdn.cc/npm/bootstrap@3.3.5/dist/css/bootstrap.min.css',*/
 		// --- mirror unpkg ---
-		/*'https://npm.onmicrosoft.cn/web3@1.8.2/dist/web3.min.js',
-		'https://npm.onmicrosoft.cn/angular@1.8.3/angular.min.js',
-		'https://npm.onmicrosoft.cn/angular-ui-bootstrap@0.13.4/ui-bootstrap.min.js',
-		'https://npm.onmicrosoft.cn/angular-route@1.8.3/angular-route.min.js',
-		'https://npm.onmicrosoft.cn/jquery@1.11.3/dist/jquery.min.js',
-		'https://npm.onmicrosoft.cn/bootstrap@3.3.5/dist/js/bootstrap.min.js',
-		'https://npm.onmicrosoft.cn/bootstrap@3.3.5/dist/css/bootstrap.min.css',*/
-	//];
+		'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/web3/1.8.2/web3.min.js',
+		'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/angular.js/1.8.3/angular.min.js',
+		'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/angular-ui-bootstrap/0.13.4/ui-bootstrap.min.js',
+		'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/angular-route/1.8.3/angular-route.min.js',
+		'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/jquery/1.11.3/jquery.min.js',
+		'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js',
+		'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css',  // CSS 文件 */
+	];
 
 	const appMods = [
 		'app.js',
