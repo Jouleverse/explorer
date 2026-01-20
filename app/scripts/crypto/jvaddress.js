@@ -1,11 +1,14 @@
 // Jouleverse Address (JVA) - 支持两种格式
-// 格式1: j3 + 38个Base32字符 (40字符) - 简称 'b32'
-// 格式2: j3 + 15个汉字 + 5个Base32校验字符 (22字符) - 简称 'full'
+// 格式1: j3 + 38个Base32字符 (40字符) - 简称 'b32' (全小写)
+// 格式2: J3 + 15个汉字 + 5个Base32校验字符 (22字符) - 简称 'full' (全大写)
 
 // ============== 常量定义 ==============
 
 // Bech32使用的Base32字符集（原始）
 const BECH32_ALPHABET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+
+// 大写Base32字符集（用于full格式）
+const BECH32_ALPHABET_UPPER = "QPZRY9X8GF2TVDW0S3JN54KHCE6MUA7L";
 
 // Bech32m常数（与Bech32的唯一区别）
 const BECH32M_CONST = 0x2bc830a3;
@@ -18,17 +21,24 @@ const BIP39_CHINESE_CHARS = "的一是在不了有和人这中大为上个国我
 
 // 地址格式常量（简化版）
 const ADDRESS_FORMATS = {
-    B32: 'b32',      // j3 + 38Base32字符 (40字符)
-    FULL: 'full'     // j3 + 15汉字 + 5Base32字符 (22字符)
+    B32: 'b32',      // j3 + 38Base32字符 (40字符，全小写)
+    FULL: 'full'     // J3 + 15汉字 + 5Base32校验字符 (22字符，全大写)
 };
 
 // ============== 初始化字符映射 ==============
 
-// Bech32字符映射
+// Bech32字符映射（小写）
 const BECH32_CHARS_ARRAY = BECH32_ALPHABET.split('');
 const BECH32_CHAR_TO_VALUE = new Map();
 for (let i = 0; i < BECH32_CHARS_ARRAY.length; i++) {
     BECH32_CHAR_TO_VALUE.set(BECH32_CHARS_ARRAY[i], i);
+}
+
+// Bech32字符映射（大写）
+const BECH32_CHARS_ARRAY_UPPER = BECH32_ALPHABET_UPPER.split('');
+const BECH32_CHAR_TO_VALUE_UPPER = new Map();
+for (let i = 0; i < BECH32_CHARS_ARRAY_UPPER.length; i++) {
+    BECH32_CHAR_TO_VALUE_UPPER.set(BECH32_CHARS_ARRAY_UPPER[i], i);
 }
 
 // BIP-39汉字映射
@@ -36,6 +46,92 @@ const BIP39_CHARS_ARRAY = BIP39_CHINESE_CHARS.split('');
 const BIP39_CHAR_TO_INDEX = new Map();
 for (let i = 0; i < BIP39_CHARS_ARRAY.length; i++) {
     BIP39_CHAR_TO_INDEX.set(BIP39_CHARS_ARRAY[i], i);
+}
+
+// ============== 工具函数 ==============
+
+/**
+ * 将Base32字符转换为大写（如果可能）
+ */
+function toUpperBase32(char) {
+    const lowerIndex = BECH32_CHAR_TO_VALUE.get(char);
+    if (lowerIndex !== undefined) {
+        return BECH32_CHARS_ARRAY_UPPER[lowerIndex];
+    }
+    return char; // 如果不是Base32字符，返回原字符
+}
+
+/**
+ * 将Base32字符转换为小写（如果可能）
+ */
+function toLowerBase32(char) {
+    const upperIndex = BECH32_CHAR_TO_VALUE_UPPER.get(char);
+    if (upperIndex !== undefined) {
+        return BECH32_CHARS_ARRAY[upperIndex];
+    }
+    return char; // 如果不是Base32字符，返回原字符
+}
+
+/**
+ * 将full格式地址转换为大写格式
+ */
+function uppercaseFullAddress(fullAddress) {
+    if (!fullAddress || fullAddress.length !== 22) {
+        return fullAddress;
+    }
+    
+    // 确保前缀是J3
+    const prefix = fullAddress.substring(0, 2).toUpperCase();
+    const hanziPart = fullAddress.substring(2, 17);
+    const checksumTail = fullAddress.substring(17);
+    
+    // 将checksum部分转换为大写
+    const checksumUpper = checksumTail.split('').map(toUpperBase32).join('');
+    
+    return prefix + hanziPart + checksumUpper;
+}
+
+/**
+ * 将full格式地址转换为小写格式（用于解码）
+ */
+function lowercaseFullAddress(fullAddress) {
+    if (!fullAddress || fullAddress.length !== 22) {
+        return fullAddress;
+    }
+    
+    // 前缀转换为小写j3
+    const prefix = fullAddress.substring(0, 2).toLowerCase();
+    const hanziPart = fullAddress.substring(2, 17);
+    const checksumTail = fullAddress.substring(17);
+    
+    // 将checksum部分转换为小写
+    const checksumLower = checksumTail.split('').map(toLowerBase32).join('');
+    
+    return prefix + hanziPart + checksumLower;
+}
+
+/**
+ * 标准化地址格式（用于验证和比较）
+ */
+function normalizeAddress(address) {
+    if (!address || address.length < 2) {
+        return address;
+    }
+    
+    if (address.length === 22) {
+        // full格式：前缀转换为大写J3，checksum转换为大写
+        const prefix = address.substring(0, 2).toUpperCase();
+        const hanziPart = address.substring(2, 17);
+        const checksumTail = address.substring(17).toUpperCase();
+        return prefix + hanziPart + checksumTail;
+    } else if (address.length === 40) {
+        // b32格式：前缀保持小写j3，Base32部分保持小写
+        const prefix = address.substring(0, 2).toLowerCase();
+        const base32Part = address.substring(2).toLowerCase();
+        return prefix + base32Part;
+    }
+    
+    return address;
 }
 
 // ============== 核心Bech32/Bech32m函数 ==============
@@ -156,31 +252,41 @@ function bitsToBytes(bits) {
 }
 
 /**
- * 将5-bit数组转换为Base32字符串
+ * 将5-bit数组转换为Base32字符串（可选大小写）
  */
-function fiveBitArrayToBase32(fiveBits) {
+function fiveBitArrayToBase32(fiveBits, uppercase = false) {
     let result = '';
+    const alphabet = uppercase ? BECH32_CHARS_ARRAY_UPPER : BECH32_CHARS_ARRAY;
+    
     for (const value of fiveBits) {
-        if (value >= BECH32_CHARS_ARRAY.length) {
+        if (value >= alphabet.length) {
             throw new Error(`5-bit值超出范围: ${value}`);
         }
-        result += BECH32_CHARS_ARRAY[value];
+        result += alphabet[value];
     }
     return result;
 }
 
 /**
- * 将Base32字符串转换为5-bit数组
+ * 将Base32字符串转换为5-bit数组（支持大小写）
  */
 function base32To5BitArray(base32Str) {
     const fiveBits = [];
+    
     for (const char of base32Str) {
-        const value = BECH32_CHAR_TO_VALUE.get(char);
+        // 先尝试小写，再尝试大写
+        let value = BECH32_CHAR_TO_VALUE.get(char);
+        if (value === undefined) {
+            value = BECH32_CHAR_TO_VALUE_UPPER.get(char);
+        }
+        
         if (value === undefined) {
             throw new Error(`无效的Base32字符: "${char}"`);
         }
+        
         fiveBits.push(value);
     }
+    
     return fiveBits;
 }
 
@@ -292,12 +398,12 @@ function encodeJVA(hexAddress) {
             return { success: false, error: 'Bech32m校验码计算失败' };
         }
 
-        // 生成 b32 格式地址（纯Base32）
+        // 生成 b32 格式地址（纯Base32，全小写）
         const combined5Bit = data5Bit.concat(fullChecksum);
         const base32Part = fiveBitArrayToBase32(combined5Bit);
-        const b32Address = `j3${base32Part}`;
+        const b32Address = `j3${base32Part}`;  // 小写j3
 
-        // 生成 full 格式地址（汉字混合）
+        // 生成 full 格式地址（汉字混合，全大写）
         const checksumFirst = fullChecksum[0];
         const checksumRest = fullChecksum.slice(1);
         
@@ -307,16 +413,16 @@ function encodeJVA(hexAddress) {
         }
         
         const chineseResult = bitsToChinese(addressBits);
-        const checksumTail = fiveBitArrayToBase32(checksumRest);
-        const fullAddress = `j3${chineseResult.text}${checksumTail}`;
+        const checksumTail = fiveBitArrayToBase32(checksumRest, true); // 转换为大写
+        const fullAddress = `J3${chineseResult.text}${checksumTail}`;  // 大写J3
 
         return {
             success: true,
             hexAddress: address,
             
             // 两种格式的地址
-            fullAddress: fullAddress,      // 汉字格式（22字符）
-            b32Address: b32Address,        // Base32格式（40字符）
+            fullAddress: fullAddress,      // 汉字格式（22字符，全大写）
+            b32Address: b32Address,        // Base32格式（40字符，全小写）
             
             // 详细信息
             fullFormat: {
@@ -354,8 +460,10 @@ function decodeJVA(jvaAddress) {
 
         jvaAddress = jvaAddress.trim();
 
-        if (!jvaAddress.startsWith('j3')) {
-            return { success: false, error: '地址必须以j3开头' };
+        // 检查前缀（支持大小写不敏感）
+        const prefix = jvaAddress.substring(0, 2).toLowerCase();
+        if (prefix !== 'j3') {
+            return { success: false, error: '地址必须以j3或J3开头' };
         }
 
         // 自动检测格式
@@ -372,8 +480,8 @@ function decodeJVA(jvaAddress) {
         }
 
         if (format === ADDRESS_FORMATS.B32) {
-            // 解码 b32 格式
-            const base32Part = jvaAddress.substring(2);
+            // 解码 b32 格式（转换为全小写）
+            const base32Part = jvaAddress.substring(2).toLowerCase();
             const combined5Bit = base32To5BitArray(base32Part);
             const data5Bit = combined5Bit.slice(0, 32);
             const receivedChecksum = combined5Bit.slice(32);
@@ -393,15 +501,17 @@ function decodeJVA(jvaAddress) {
                 success: true,
                 hexAddress: hexAddress,
                 originalAddress: jvaAddress,
+                normalizedAddress: `j3${base32Part}`,
                 format: format,
                 checksumValid: true,
                 algorithm: 'bech32m'
             };
             
         } else {
-            // 解码 full 格式
-            const hanziPart = jvaAddress.substring(2, 17);
-            const checksumTail = jvaAddress.substring(17);
+            // 解码 full 格式（转换为小写进行校验）
+            const normalizedAddress = lowercaseFullAddress(jvaAddress);
+            const hanziPart = normalizedAddress.substring(2, 17);
+            const checksumTail = normalizedAddress.substring(17);
             
             const hanziBits = chineseToBits(hanziPart);
             const addressBits = hanziBits.slice(0, 160);
@@ -443,6 +553,7 @@ function decodeJVA(jvaAddress) {
                 success: true,
                 hexAddress: hexAddress,
                 originalAddress: jvaAddress,
+                normalizedAddress: uppercaseFullAddress(jvaAddress), // 返回标准化的大写格式
                 format: format,
                 hanziPart: hanziPart,
                 checksumTail: checksumTail,
@@ -464,8 +575,10 @@ function validateJVA(jvaAddress) {
 
     jvaAddress = jvaAddress.trim();
 
-    if (!jvaAddress.startsWith('j3')) {
-        return { valid: false, error: '地址必须以j3开头' };
+    // 检查前缀（支持大小写不敏感）
+    const prefix = jvaAddress.substring(0, 2).toLowerCase();
+    if (prefix !== 'j3') {
+        return { valid: false, error: '地址必须以j3或J3开头' };
     }
 
     if (jvaAddress.length !== 22 && jvaAddress.length !== 40) {
@@ -485,6 +598,7 @@ function validateJVA(jvaAddress) {
         valid: true,
         hexAddress: decodeResult.hexAddress,
         originalAddress: jvaAddress,
+        normalizedAddress: decodeResult.normalizedAddress,
         format: decodeResult.format,
         checksumValid: decodeResult.checksumValid,
         algorithm: decodeResult.algorithm
@@ -500,18 +614,20 @@ function formatJVA(jvaAddress, separator = ' ') {
         return { success: false, error: validation.error };
     }
 
-    const prefix = jvaAddress.substring(0, 2);
+    // 使用标准化地址进行格式化
+    const normalizedAddress = validation.normalizedAddress || jvaAddress;
+    const prefix = normalizedAddress.substring(0, 2);
     let formatted;
     let groups;
     
     if (validation.format === ADDRESS_FORMATS.B32) {
-        const base32Part = jvaAddress.substring(2);
+        const base32Part = normalizedAddress.substring(2);
         groups = [prefix, ...base32Part.match(/.{1,7}/g)];
         formatted = groups.join(separator);
         
     } else {
-        const hanziPart = jvaAddress.substring(2, 17);
-        const checksumTail = jvaAddress.substring(17);
+        const hanziPart = normalizedAddress.substring(2, 17);
+        const checksumTail = normalizedAddress.substring(17);
         
         const hanziGroups = [];
         for (let i = 0; i < 15; i += 5) {
@@ -526,6 +642,7 @@ function formatJVA(jvaAddress, separator = ' ') {
         success: true,
         formatted: formatted,
         original: jvaAddress,
+        normalized: normalizedAddress,
         format: validation.format,
         groups: groups
     };
@@ -547,14 +664,16 @@ function convertFormat(jvaAddress, targetFormat) {
         return { success: false, error: decodeResult.error };
     }
     
+    // 如果已经是目标格式，返回标准化版本
     if ((decodeResult.format === 'full' && targetFormat === 'full') ||
         (decodeResult.format === 'b32' && targetFormat === 'b32')) {
         return {
             success: true,
             original: jvaAddress,
-            converted: jvaAddress,
+            converted: decodeResult.normalizedAddress || jvaAddress,
             format: targetFormat,
-            hexAddress: decodeResult.hexAddress
+            hexAddress: decodeResult.hexAddress,
+            isNormalized: true
         };
     }
     
@@ -604,9 +723,13 @@ function testJVA() {
 
         console.log(`✅ Full格式: ${encodeResult.fullAddress}`);
         console.log(`   长度: ${encodeResult.fullAddress.length} 字符`);
+        console.log(`   前缀是否大写J3: ${encodeResult.fullAddress.startsWith('J3')}`);
+        console.log(`   Checksum部分是否大写: ${encodeResult.fullAddress.substring(17) === encodeResult.fullAddress.substring(17).toUpperCase()}`);
         
         console.log(`✅ B32格式: ${encodeResult.b32Address}`);
         console.log(`   长度: ${encodeResult.b32Address.length} 字符`);
+        console.log(`   前缀是否小写j3: ${encodeResult.b32Address.startsWith('j3')}`);
+        console.log(`   B32是否全小写: ${encodeResult.b32Address.substring(2) === encodeResult.b32Address.substring(2).toLowerCase()}`);
 
         // 解码测试（两种格式）
         const formats = [
@@ -632,6 +755,11 @@ function testJVA() {
                     console.log('❌ 编码解码一致性验证失败');
                     allTestsPassed = false;
                 }
+                
+                // 检查标准化
+                if (decodeResult.normalizedAddress) {
+                    console.log(`   标准化地址: ${decodeResult.normalizedAddress}`);
+                }
             }
         }
 
@@ -647,8 +775,35 @@ function testJVA() {
             if (result.success) {
                 console.log(`✅ ${conv.desc}: 成功`);
                 console.log(`   转换后: ${result.converted}`);
+                if (conv.to === 'full') {
+                    console.log(`   前缀是否大写J3: ${result.converted.startsWith('J3')}`);
+                    console.log(`   Checksum部分是否大写: ${result.converted.substring(17) === result.converted.substring(17).toUpperCase()}`);
+                } else {
+                    console.log(`   前缀是否小写j3: ${result.converted.startsWith('j3')}`);
+                }
             } else {
                 console.log(`❌ ${conv.desc}: 失败 - ${result.error}`);
+                allTestsPassed = false;
+            }
+        }
+
+        // 测试大小写不敏感的full格式
+        console.log('\n--- 大小写不敏感测试 ---');
+        const fullAddress = encodeResult.fullAddress;
+        // 创建大小写混合的版本
+        const testCases = [
+            { desc: '小写前缀', address: 'j3' + fullAddress.substring(2) },
+            { desc: '大小写混合前缀', address: 'J3' + fullAddress.substring(2, 17) + fullAddress.substring(17).toLowerCase() },
+            { desc: '全小写', address: fullAddress.toLowerCase() }
+        ];
+        
+        for (const testCase of testCases) {
+            const decodeResult = decodeJVA(testCase.address);
+            if (decodeResult.success) {
+                console.log(`✅ ${testCase.desc}解码成功: ${decodeResult.hexAddress}`);
+                console.log(`   标准化为: ${decodeResult.normalizedAddress}`);
+            } else {
+                console.log(`❌ ${testCase.desc}解码失败: ${decodeResult.error}`);
                 allTestsPassed = false;
             }
         }
@@ -662,7 +817,7 @@ function testJVA() {
         '0xinvalid',
         'j3short',
         'j3' + 'q'.repeat(39),
-        'j3' + '的'.repeat(14) + 'qw508',
+        'J3' + '的'.repeat(14) + 'QW508',
         'x1' + 'q'.repeat(38),
     ];
 
@@ -692,8 +847,8 @@ function quickExample() {
     const encoded = encodeJVA(ethAddress);
     if (encoded.success) {
         console.log('✅ 编码成功');
-        console.log('Full格式（汉字）:', encoded.fullAddress);
-        console.log('B32格式（纯Base32）:', encoded.b32Address);
+        console.log('Full格式（全大写）:', encoded.fullAddress);
+        console.log('B32格式（全小写）:', encoded.b32Address);
         console.log('\n长度对比:');
         console.log('  原始地址:', ethAddress.length, '字符');
         console.log('  Full格式:', encoded.fullAddress.length, '字符（缩短', Math.round((1 - 22/42)*100), '%）');
@@ -712,6 +867,12 @@ function quickExample() {
         const b32Decoded = decodeJVA(encoded.b32Address);
         if (fullDecoded.success) console.log('  Full格式解码: ✅ 成功');
         if (b32Decoded.success) console.log('  B32格式解码: ✅ 成功');
+        
+        // 显示大小写特性
+        console.log('\n大小写特性:');
+        console.log('  Full格式前缀:', encoded.fullAddress.substring(0, 2));
+        console.log('  Full格式checksum部分:', encoded.fullAddress.substring(17));
+        console.log('  B32格式前缀:', encoded.b32Address.substring(0, 2));
     }
 }
 
@@ -721,6 +882,7 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         // 常量
         BECH32_ALPHABET,
+        BECH32_ALPHABET_UPPER,
         BECH32M_CONST,
         BIP39_CHINESE_CHARS,
         ADDRESS_FORMATS,
@@ -734,6 +896,9 @@ if (typeof module !== 'undefined' && module.exports) {
         
         // 工具函数
         validateHexAddress,
+        uppercaseFullAddress,
+        lowercaseFullAddress,
+        normalizeAddress,
         
         // 测试函数
         testJVA,
@@ -750,6 +915,9 @@ if (typeof window !== 'undefined') {
         formatJVA,
         convertFormat,
         validateHexAddress,
+        uppercaseFullAddress,
+        lowercaseFullAddress,
+        normalizeAddress,
         testJVA,
         quickExample
     };
