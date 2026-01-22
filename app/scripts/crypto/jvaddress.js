@@ -902,7 +902,15 @@ if (typeof module !== 'undefined' && module.exports) {
         
         // 测试函数
         testJVA,
-        quickExample
+        quickExample,
+
+        // Bech32底层函数（测试用）
+        BECH32_CHAR_TO_VALUE,
+        BECH32_CHAR_TO_VALUE_UPPER, // 如果需要的话
+        bech32Polymod,
+        bech32HRPExpand,
+        bech32mCreateChecksum,
+        bech32mVerifyChecksum
     };
 }
 
