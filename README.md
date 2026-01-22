@@ -373,3 +373,6 @@ TODO:
 - fix: bech32m generator bug
 - new: support search on jva/b32 address
 - release: 0.13.1
+
+2026.1.22
+- new: add bech32m tests and bip39 cn chars tests for jvaddress lib
