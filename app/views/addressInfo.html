@@ -332,3 +332,115 @@
   <!-- end of dialog for double checking & confirming to send wJoule -->
 
 </div>
+
+<!-- 在 addressInfo.html 的源代码显示区域修改为： -->
+<div class="container" style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;"
+					   ng-if="deploymentInfo || sourceCode">
+	<div class="source-code-section">
+		<h3>
+			<button class="btn btn-sm btn-outline-primary"
+					ng-click="toggleSourceCode()"
+					style="margin-right: 10px;">
+				{{showSourceCode ? '隐藏' : '显示'}}合约源代码
+			</button>
+			<span ng-if="deploymentInfo">
+				<small class="text-muted">
+					{{deploymentInfo.tag}}
+					<span class="badge"
+						  ng-class="{'badge-primary': deploymentInfo.network === 'mainnet',
+									'badge-secondary': deploymentInfo.network !== 'mainnet'}">
+						{{deploymentInfo.network}}
+					</span>
+				</small>
+			</span>
+		</h3>
+
+		<div ng-if="showSourceCode">
+			<div ng-if="isLoadingSourceCode" class="alert alert-info">
+				<i class="fa fa-spinner fa-spin"></i> 正在加载源代码...
+			</div>
+
+			<div ng-if="sourceCodeError" class="alert alert-danger">
+				<i class="fa fa-exclamation-triangle"></i> {{sourceCodeError}}
+			</div>
+
+			<div ng-if="sourceCode && !isLoadingSourceCode">
+				<div class="card">
+					<div class="card-header">
+						<div class="d-flex justify-content-between align-items-center">
+							<div>
+								<small>合约文件: {{deploymentInfo.src}}</small>
+								<span class="badge badge-light ml-2">{{deploymentInfo.key}}</span>
+							</div>
+							<div>
+								<button class="btn btn-sm btn-outline-secondary"
+										onclick="copySourceCode()"
+										style="margin-left: 10px;">
+									<i class="fa fa-copy"></i> 复制
+								</button>
+								<button class="btn btn-sm btn-outline-secondary"
+										onclick="downloadSourceCode()">
+									<i class="fa fa-download"></i> 下载
+								</button>
+							</div>
+						</div>
+					</div>
+					<div class="card-body" style="padding: 0;">
+						<pre style="margin: 0; max-height: 600px; overflow: auto;"><code id="contract-source-code" class="language-solidity">{{sourceCode}}</code></pre>
+					</div>
+					<div class="card-footer text-muted">
+						<small>
+							合约地址: {{deploymentInfo.hex}}
+							<span ng-if="deploymentInfo.network === 'mainnet'">
+								| <i class="fa fa-check-circle text-success"></i> 主网部署
+							</span>
+						</small>
+					</div>
+				</div>
+			</div>
+
+			<div ng-if="!sourceCode && !isLoadingSourceCode && !sourceCodeError && deploymentInfo"
+				 class="alert alert-warning">
+				<i class="fa fa-info-circle"></i>
+				无法找到源代码文件: {{deploymentInfo.src}}
+				<br>
+				<small>请检查文件路径是否正确</small>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	// 辅助函数：复制源代码到剪贴板
+	function copySourceCode() {
+		const codeElement = document.getElementById('contract-source-code');
+		if (codeElement) {
+			const textArea = document.createElement('textarea');
+			textArea.value = codeElement.textContent;
+			document.body.appendChild(textArea);
+			textArea.select();
+			document.execCommand('copy');
+			document.body.removeChild(textArea);
+
+			// 显示复制成功提示
+			alert('源代码已复制到剪贴板');
+		}
+	}
+
+	// 辅助函数：下载源代码文件
+	function downloadSourceCode() {
+		const scope = angular.element(document.querySelector('[ng-controller="addressInfoCtrl"]')).scope();
+		if (scope.sourceCode && scope.deploymentInfo) {
+			const blob = new Blob([scope.sourceCode], { type: 'text/plain' });
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = scope.deploymentInfo.src;
+			document.body.appendChild(a);
+			a.click();
+			window.URL.revokeObjectURL(url);
+			document.body.removeChild(a);
+		}
+	}
+</script>
+

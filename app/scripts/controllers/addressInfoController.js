@@ -4,6 +4,18 @@ angular.module('jouleExplorer')
 		var web3 = $rootScope.web3;
 
 		//////////////////////////////////////////////////////////////////////////////
+		// globals for showing source code
+		//////////////////////////////////////////////////////////////////////////////
+		$scope.deploymentInfo = null;
+		$scope.sourceCode = null;
+		$scope.showSourceCode = false;
+		$scope.isLoadingSourceCode = false;
+		$scope.sourceCodeError = null;
+
+		// 设置默认网络为 mainnet
+		const DEFAULT_NETWORK = 'mainnet';
+
+		//////////////////////////////////////////////////////////////////////////////
 		// helpers in page scope                                      //
 		//////////////////////////////////////////////////////////////////////////////
 		
@@ -394,6 +406,9 @@ angular.module('jouleExplorer')
 					$scope.wjBalanceInJoule = result.balanceInJoule;
 				});
 
+				// show source code 新增：检查地址是否是已知的部署地址
+				checkIfDeployedAddress();
+
 				// fix '统计中...'
 				$scope.allCryptoJunks = [];
 				$scope.allFlyingJ = [];
@@ -439,6 +454,99 @@ angular.module('jouleExplorer')
 					getAllJNSVote();
 				});
 			}
+
+			// 新增：检查地址是否是部署地址并获取源代码
+			function checkIfDeployedAddress() {
+				if (!$scope.addressId) return;
+
+				// 使用 deployment_addresses 反向索引检查地址
+				const lc_address = $scope.addressId.toLowerCase();
+
+				// 先在默认网络（mainnet）中查找
+				if (deployment_addresses[DEFAULT_NETWORK] && deployment_addresses[DEFAULT_NETWORK][lc_address]) {
+					$scope.deploymentInfo = deployment_addresses[DEFAULT_NETWORK][lc_address];
+					$scope.deploymentInfo.network = DEFAULT_NETWORK;
+				} else {
+					// 如果在默认网络没找到，则搜索所有网络
+					for (const network in deployment_addresses) {
+						if (network !== DEFAULT_NETWORK &&
+							deployment_addresses[network] &&
+							deployment_addresses[network][lc_address]) {
+							$scope.deploymentInfo = deployment_addresses[network][lc_address];
+							$scope.deploymentInfo.network = network;
+							break;
+						}
+					}
+				}
+
+				// 如果找到部署信息，获取源代码
+				if ($scope.deploymentInfo && $scope.deploymentInfo.src) {
+					$scope.isLoadingSourceCode = true;
+					$scope.sourceCodeError = null;
+					fetchSourceCode($scope.deploymentInfo.src);
+				}
+			}
+
+			// 新增：获取源代码文件
+			function fetchSourceCode(filename) {
+				$scope.isLoadingSourceCode = true;
+
+				// 假设源代码文件在 scripts/contracts/ 目录下
+				const sourcePath = `scripts/contracts/${filename}`;
+
+				$.ajax({
+					url: sourcePath,
+					dataType: 'text',
+					success: function(data) {
+						$scope.$apply(function() {
+							$scope.sourceCode = data;
+							$scope.showSourceCode = true;
+							$scope.isLoadingSourceCode = false;
+
+							// 应用代码高亮
+							setTimeout(applyCodeHighlighting, 100);
+						});
+					},
+					error: function(xhr, status, error) {
+						$scope.$apply(function() {
+							$scope.sourceCode = null;
+							$scope.sourceCodeError = `无法加载源代码文件: ${error}`;
+							$scope.showSourceCode = true;
+							$scope.isLoadingSourceCode = false;
+						});
+					}
+				});
+			}
+
+			// 新增：应用代码高亮
+			function applyCodeHighlighting() {
+				const codeElement = document.getElementById('contract-source-code');
+
+				if (!codeElement || !window.hljs) return;
+
+				// 确保 solidity 语言已注册
+				if (!hljs.getLanguage('solidity')) {
+					console.log('注册 solidity 语言...');
+					// 获取语言定义
+					const langDef = hljsDefineSolidity(hljs);
+					// 注册语言
+					hljs.registerLanguage('solidity', function(hljs) {
+						return langDef;
+					});
+				}
+
+				// 应用高亮
+				hljs.highlightElement(codeElement);
+
+			}
+
+			// 新增：切换源代码显示状态
+			$scope.toggleSourceCode = function() {
+				$scope.showSourceCode = !$scope.showSourceCode;
+				if ($scope.showSourceCode && !$scope.sourceCode && $scope.deploymentInfo) {
+					fetchSourceCode($scope.deploymentInfo.src);
+				}
+			};
 
 			function getAddressInfos(){
 				var deferred = $q.defer();

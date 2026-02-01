@@ -33,27 +33,27 @@ var deployments = {
 		"jti": {
 			"tag": "JTI标识",
 			"hex": "0x826971d988d7d86Fdc9062A3f63E7b18D32Bc8EB",
-			"src": "jns.sol",
+			"src": "jti.sol",
 		},
 		"jti2": {
 			"tag": "JTI标识V2",
 			"hex": "0x7e722837Ff19BE2687c2089DBf70D064fB9622AE",
-			"src": "jti2.sol",
+			"src": "jti2_identity.sol",
 		},
 		"jvcore": {
 			"tag": "Core身份标识",
 			"hex": "0x8d214415b9c5F5E4Cf4CbCfb4a5DEd47fb516392",
-			"src": "jvcore.sol",
+			"src": "JVCore.sol",
 		},
 		"planet": {
 			"tag": "星球",
 			"hex": "0x9c100856f5C60a3ec87Aa408567304DB2AfC241F",
-			"src": "planet.sol",
+			"src": "jti2_planet.sol",
 		},
 		"popbadge": {
 			"tag": "Core签到徽章",
 			"hex": "0xCb1429da13cE40e75519148e796C6D58dD6b1a8E",
-			"src": "popbadge.sol",
+			"src": "POPBadge.sol",
 		},
 		"redpacket": {
 			"tag": "红包",
@@ -63,17 +63,17 @@ var deployments = {
 		"timelock_core": {
 			"tag": "核心时间锁",
 			"hex": "0x628beb88dD440A8c5e4cC89Ab33a041f521e4323",
-			"src": "timelock.sol",
+			"src": "Timelock.sol",
 		},
 		"timelock_eco": {
 			"tag": "生态时间锁",
 			"hex": "0xbb6b53Fadf85B73258cb6A54F1343Ac4D5F99773",
-			"src": "timelock.sol",
+			"src": "Timelock.sol",
 		},
 		"wj": {
 			"tag": "Wrapped Joule",
 			"hex": "0x7fba9BB966189Db8C4fE33B7bf67Bfa24203c6AD",
-			"src": "wj.sol",
+			"src": "WJ.sol",
 		},
 		//--------------------//
 		"genesis": {

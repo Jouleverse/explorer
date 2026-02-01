@@ -502,3 +502,31 @@ a:hover {
 	border: 1px solid;
 	padding: 0 3px 0 3px;
 }
+
+/* 添加到你的CSS文件中 */
+.source-code-section {
+    margin-top: 20px;
+}
+
+.source-code-section pre {
+    max-height: 500px;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.source-code-section code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.source-code-section .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.source-code-section .alert {
+    margin-top: 10px;
+}
