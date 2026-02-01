@@ -548,6 +548,37 @@ angular.module('jouleExplorer')
 				}
 			};
 
+			// 辅助函数：复制源代码到剪贴板
+			$scope.copySourceCode = function() {
+				const codeElement = document.getElementById('contract-source-code');
+				if (codeElement) {
+					const textArea = document.createElement('textarea');
+					textArea.value = codeElement.textContent;
+					document.body.appendChild(textArea);
+					textArea.select();
+					document.execCommand('copy');
+					document.body.removeChild(textArea);
+
+					// 显示复制成功提示
+					alert('源代码已复制到剪贴板');
+				}
+			}
+
+			// 辅助函数：下载源代码文件
+			$scope.downloadSourceCode = function() {
+				if ($scope.sourceCode && $scope.deploymentInfo) {
+					const blob = new Blob([$scope.sourceCode], { type: 'text/plain' });
+					const url = window.URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = $scope.deploymentInfo.src;
+					document.body.appendChild(a);
+					a.click();
+					window.URL.revokeObjectURL(url);
+					document.body.removeChild(a);
+				}
+			}
+
 			function getAddressInfos(){
 				var deferred = $q.defer();
 
@@ -763,7 +794,7 @@ angular.module('jouleExplorer')
 									var tag = token_name + ' #' + token_id;
 									contract.methods.tokenURI(token_id).call(function (err3, result3) {
 										if (err3) {
-											console.log(err3);
+											onsole.log(err3);
 										} else {
 											var tokenURI = result3;
 											var tokenInfo = parseTokenURI(tokenURI);

@@ -380,3 +380,5 @@ TODO:
 2026.2.1
 - new: show solidity source codes for well known contract deployments
 - release: 0.14.0
+- fix: copySourceCode & downloadSourceCode
+- release: 0.14.1
