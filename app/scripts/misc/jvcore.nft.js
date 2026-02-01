@@ -1,4 +1,5 @@
-var jvcore_contract_address = "0x8d214415b9c5F5E4Cf4CbCfb4a5DEd47fb516392"; // mainnet
+//var jvcore_contract_address = "0x8d214415b9c5F5E4Cf4CbCfb4a5DEd47fb516392"; // mainnet
+var jvcore_contract_address = deployments.mainnet.jvcore.hex;
 var jvcore_ABI = [
 	{
 		"inputs": [

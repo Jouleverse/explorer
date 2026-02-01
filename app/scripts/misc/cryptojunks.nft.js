@@ -1,4 +1,5 @@
-var cryptojunks_contract_address = "0x1b1d15726d64c5027b627138f2bf051cc1EF2680"; //mainnet
+//var cryptojunks_contract_address = "0x1b1d15726d64c5027b627138f2bf051cc1EF2680"; //mainnet
+var cryptojunks_contract_address = deployments.mainnet.cryptojunks.hex;
 var cryptojunks_ABI = [
 	{
 		"inputs": [],

@@ -1,4 +1,5 @@
-var jnsdaov_contract_address = "0x9F57e77585E05CA7Def98f3171F448Fc8eb13A83"; // mainnet
+//var jnsdaov_contract_address = "0x9F57e77585E05CA7Def98f3171F448Fc8eb13A83"; // mainnet
+var jnsdaov_contract_address = deployments.mainnet.jnsdaov.hex;
 var jnsdaov_ABI = 
 [
 	{

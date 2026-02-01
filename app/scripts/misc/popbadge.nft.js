@@ -1,4 +1,5 @@
-var pop_contract_address = "0xCb1429da13cE40e75519148e796C6D58dD6b1a8E"; // mainnet
+//var pop_contract_address = "0xCb1429da13cE40e75519148e796C6D58dD6b1a8E"; // mainnet
+var pop_contract_address = deployments.mainnet.popbadge.hex;
 var pop_ABI = [
 	{
 		"inputs": [],

@@ -1,5 +1,6 @@
 //var airdrop_contract_address = "0xdCE492eb481C85286D4eBCC38084B79979758219"; // local test
-var airdrop_contract_address = "0xdA143f617808Db2E223a643104CCEB91Ec6E1C35"; // mainnet
+//var airdrop_contract_address = "0xdA143f617808Db2E223a643104CCEB91Ec6E1C35"; // mainnet
+var airdrop_contract_address = deployments.mainnet.airdrop.hex; // mainnet
 var airdrop_ABI = [
 	{
 		"anonymous": false,
