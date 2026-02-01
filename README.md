@@ -376,3 +376,7 @@ TODO:
 
 2026.1.22
 - new: add bech32m tests and bip39 cn chars tests for jvaddress lib
+
+2026.2.1
+- new: show solidity source codes for well known contract deployments
+- release: 0.14.0
