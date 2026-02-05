@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merkle Proof 生成工具</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+        
+        @media (max-width: 900px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section h2 {
+            color: #3a0ca3;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .textarea-container {
+            margin-bottom: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #4361ee;
+        }
+        
+        .file-upload {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload:hover {
+            border-color: #4361ee;
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .file-upload input {
+            display: none;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e9ecef;
+            border-top: 4px solid #4361ee;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .results {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        .result-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #4361ee;
+        }
+        
+        .result-item.success {
+            border-left-color: #28a745;
+        }
+        
+        .result-item.warning {
+            border-left-color: #ffc107;
+        }
+        
+        .result-item.error {
+            border-left-color: #dc3545;
+        }
+        
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .result-value {
+            font-family: monospace;
+            font-size: 14px;
+            word-break: break-all;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #4361ee;
+            border-bottom-color: #4361ee;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .download-section {
+            text-align: center;
+            padding: 20px;
+            border-top: 2px solid #e9ecef;
+            margin-top: 30px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4361ee, #3a0ca3);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .stat-value {
+            font-size: clamp(1.2rem, 3vw, 2rem); /* 根据视口调整大小 */
+            font-weight: bold;
+            color: #4361ee;
+            margin: 10px 0;
+			word-break: break-word;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+    </style>
+    <script src="../../scripts/crypto/jvaddress.js"></script>
+    <script src="../../scripts/misc/deployments.js"></script>
+    <script src="../../scripts/misc/jvcore.nft.js"></script>
+    <script src="../../scripts/misc/jns.nft.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎁 Merkle Proof 生成工具</h1>
+            <p>用于Joule空投的Merkle Tree生成和验证</p>
+        </div>
+        
+        <div class="content">
+            <!-- 左侧：输入区域 -->
+            <div class="section">
+                <h2>📤 输入空投数据</h2>
+                
+                <!-- 添加RPC连接状态 -->
+                <div id="rpcStatus" class="rpc-status" style="display: none;">
+                    正在连接RPC...
+                </div>
+                
+                <div class="tab-container">
+                    <div class="tabs">
+                        <div class="tab active" onclick="switchTab('paste')">粘贴JSON</div>
+                        <div class="tab" onclick="switchTab('upload')">上传文件</div>
+                    </div>
+                    
+                    <div id="paste-tab" class="tab-content active">
+                        <div class="textarea-container">
+                            <textarea id="jsonInput" placeholder="在此粘贴你的 incentive202408 格式的空投数据...
+例如：
+const incentive202408 = { 'total': 41, 'sum': 12000000, 'list': [
+	['{昵称}', '{Core ID}', '{JNS域名}', '{JVA地址}', {空投数量}],
+	['Koant', 'J0', 'bit.j', 'J3哪弯赏医堆伴桂惜楚晋稀陷碧午浇P0QXD', 660900],
+	['Jacky', 'J9', '', 'J3备际何郭颗尼叹即常击园祝谓摘参ZZAGJ', 76400]
+	...
+] }"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div id="upload-tab" class="tab-content">
+                        <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4361ee" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <p style="margin: 10px 0; color: #4361ee; font-weight: 600;">点击选择JSON文件</p>
+                            <p style="color: #6c757d; font-size: 14px;">支持 .json 格式文件</p>
+                            <input type="file" id="fileInput" accept=".json" onchange="handleFileUpload(event)">
+                        </div>
+                        <div id="fileName" style="text-align: center; margin-top: 10px; color: #495057;"></div>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn" onclick="processData()" id="processBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        验证并生成
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearAll()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        清空
+                    </button>
+                </div>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>正在验证数据并生成Merkle Proof...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧：结果区域 -->
+            <div class="section">
+                <h2>📊 验证结果</h2>
+                
+                <div id="statistics" class="statistics" style="display: none;">
+                    <div class="stat-item">
+                        <div class="stat-label">总地址数</div>
+                        <div class="stat-value" id="totalAddresses">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">总Joule数</div>
+                        <div class="stat-value" id="totalJoules">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">验证通过</div>
+                        <div class="stat-value" id="validCount">0</div>
+                    </div>
+                </div>
+                
+                <div id="results" class="results">
+                    <div class="result-item" id="jsonParseResult">
+                        <div class="result-title">JSON解析状态：等待输入</div>
+                    </div>
+                    <div class="result-item" id="totalCheckResult">
+                        <div class="result-title">数量检查：等待检查</div>
+                    </div>
+                    <div class="result-item" id="addressCheckResult">
+                        <div class="result-title">地址一致性检查：等待检查</div>
+                    </div>
+                    <div class="result-item" id="merkleResult">
+                        <div class="result-title">Merkle Tree生成：等待生成</div>
+                    </div>
+                </div>
+                
+                <div id="merkleRootSection" style="display: none;">
+                    <div class="result-item success">
+                        <div class="result-title">✅ Merkle Root</div>
+                        <div class="result-value" id="merkleRootValue"></div>
+                    </div>
+                </div>
+                
+                <div class="warning-box" id="warningBox" style="display: none;">
+                    <strong>⚠️ 警告：</strong>
+                    <ul id="warningList"></ul>
+                </div>
+                
+                <div class="download-section" id="downloadSection" style="display: none;">
+                    <h3>📥 下载生成的文件</h3>
+                    <div class="btn-group" style="justify-content: center;">
+                        <button class="btn" onclick="downloadFile('merkle-root.txt')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            下载Merkle Root
+                        </button>
+                        <button class="btn" onclick="downloadFile('merkle-proofs.json')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <path d="M16 13H8"></path>
+                                <path d="M16 17H8"></path>
+                                <path d="M10 9H9H8"></path>
+                            </svg>
+                            下载Merkle Proofs
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改库引入方式 -->
+    <script type="module">
+        // 动态导入库
+        async function loadLibraries() {
+            try {
+                // 导入 ethers
+                const ethersModule = await import('https://esm.sh/ethers@6.16.0');
+                window.ethers = ethersModule.ethers;
+                
+                // 导入 Merkle Tree
+                const merkleTreeModule = await import('https://esm.sh/@openzeppelin/merkle-tree@1.0.8');
+                window.StandardMerkleTree = merkleTreeModule.StandardMerkleTree;
+                
+                console.log('✅ 库加载成功');
+                
+                // 更新RPC状态
+                updateRpcStatus('connected', '✅ 库加载成功');
+                
+                // 测试RPC连接
+                await testRpcConnection();
+                
+            } catch (error) {
+                console.error('❌ 库加载失败:', error);
+                updateRpcStatus('error', `❌ 库加载失败: ${error.message}`);
+            }
+        }
+        
+        // 测试RPC连接
+        async function testRpcConnection() {
+            try {
+                const rpcUrl = 'https://rpc.jnsdao.com:8503';
+				const provider = new ethers.JsonRpcProvider(rpcUrl, {
+					chainId: 3666,
+					name: 'Jouleverse Mainnet',
+					ensAddress: null, //TODO: impl JNS registry?
+				});
+                const network = await provider.getNetwork();
+                updateRpcStatus('connected', `✅ 已连接到 ${network.name} (链ID: ${network.chainId})`);
+            } catch (error) {
+                console.error('❌ RPC连接失败:', error);
+                updateRpcStatus('error', `❌ RPC连接失败: ${error.message}`);
+            }
+        }
+        
+        // 更新RPC状态显示
+        function updateRpcStatus(status, message) {
+            const statusElement = document.getElementById('rpcStatus');
+            statusElement.style.display = 'block';
+            statusElement.className = `rpc-status ${status}`;
+            statusElement.textContent = message;
+        }
+        
+        // 初始化加载
+        loadLibraries();
+    </script>
+
+    <script>
+        // 全局变量
+        let merkleTree = null;
+        let merkleRoot = '';
+        let merkleProofs = {};
+        let processingData = null;
+        let provider = null;
+        let coreIdContract = null;
+        let jnsContract = null;
+        
+        // 初始化合约
+        async function initContracts() {
+            try {
+                const RPC_URL = 'https://rpc.jnsdao.com:8503';
+                provider = new ethers.JsonRpcProvider(RPC_URL);
+                
+                // 假设你有 CoreID 和 JNS 合约的地址
+                // 这里使用你的 deployment.js 中定义的地址
+                const CORE_ID_ADDRESS = deployments.mainnet.jvcore.hex;
+                const JNS_ADDRESS = deployments.mainnet.jns.hex;
+                
+                // 如果 deployment.js 中有导出，可以直接使用
+                if (CORE_ID_ADDRESS) {
+                    const coreIdABI = [
+                        "function ownerOf(uint256 tokenId) view returns (address)"
+                    ];
+                    coreIdContract = new ethers.Contract(CORE_ID_ADDRESS, coreIdABI, provider);
+                }
+                
+                if (JNS_ADDRESS) {
+                    const jnsABI = [
+                        "function name2addr(string memory name) view returns (address)"
+                    ];
+                    jnsContract = new ethers.Contract(JNS_ADDRESS, jnsABI, provider);
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('初始化合约失败:', error);
+                return false;
+            }
+        }
+        
+        // 查询Core ID地址
+        async function getCoreIdAddress(coreId) {
+            try {
+                if (!coreIdContract) {
+                    throw new Error('Core ID合约未初始化');
+                }
+                
+                // 移除J前缀，获取tokenId
+                const tokenId = parseInt(coreId.substring(1));
+                if (isNaN(tokenId)) {
+                    throw new Error(`无效的Core ID: ${coreId}`);
+                }
+                
+                const address = await coreIdContract.ownerOf(tokenId);
+                return address.toLowerCase();
+            } catch (error) {
+                throw new Error(`查询Core ID地址失败: ${error.message}`);
+            }
+        }
+        
+        // 查询JNS域名地址
+        async function getJnsAddress(jnsDomain) {
+            try {
+                if (!jnsContract) {
+                    throw new Error('JNS合约未初始化');
+                }
+                
+                // 移除.j后缀
+                const name = jnsDomain.endsWith('.j') ? jnsDomain.slice(0, -2) : jnsDomain;
+                if (!name) {
+                    throw new Error('空的JNS域名');
+                }
+                
+                const address = await jnsContract.name2addr(name);
+                return address.toLowerCase();
+            } catch (error) {
+                throw new Error(`查询JNS地址失败: ${error.message}`);
+            }
+        }
+        
+        // 切换标签页
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelector(`.tab[onclick*="${tabName}"]`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+        
+        // 处理文件上传
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            document.getElementById('fileName').textContent = `已选择: ${file.name}`;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('jsonInput').value = e.target.result;
+                switchTab('paste');
+            };
+            reader.readAsText(file);
+        }
+        
+        // 更新进度条
+        function updateProgress(percent) {
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+        
+        // 更新结果项
+        function updateResultItem(id, title, message, type = 'info') {
+            const item = document.getElementById(id);
+            item.className = `result-item ${type}`;
+            item.innerHTML = `
+                <div class="result-title">
+                    ${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'} ${title}
+                </div>
+                <div class="result-value">${message}</div>
+            `;
+        }
+        
+        // 添加警告信息
+        function addWarning(message) {
+            const warningBox = document.getElementById('warningBox');
+            const warningList = document.getElementById('warningList');
+            
+            if (warningBox.style.display === 'none') {
+                warningBox.style.display = 'block';
+            }
+            
+            const li = document.createElement('li');
+            li.textContent = message;
+            warningList.appendChild(li);
+        }
+        
+        // 清空所有警告
+        function clearWarnings() {
+            document.getElementById('warningBox').style.display = 'none';
+            document.getElementById('warningList').innerHTML = '';
+        }
+        
+        // 核心数据处理函数
+        async function processData() {
+            // 检查库是否已加载
+            if (!window.StandardMerkleTree || !window.ethers) {
+                alert('请等待库加载完成后再试');
+                return;
+            }
+            
+            // 重置状态
+            clearWarnings();
+            document.getElementById('merkleRootSection').style.display = 'none';
+            document.getElementById('downloadSection').style.display = 'none';
+            document.getElementById('statistics').style.display = 'none';
+            
+            // 显示加载动画
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+            updateProgress(10);
+            
+            try {
+                // 初始化合约
+                updateProgress(20);
+                updateResultItem('jsonParseResult', '初始化合约连接：', '连接中...');
+                
+                const contractsInitialized = await initContracts();
+                if (!contractsInitialized) {
+                    updateResultItem('jsonParseResult', '初始化合约连接：', '❌ 合约初始化失败，使用模拟数据', 'warning');
+                    addWarning('合约初始化失败，使用模拟数据进行验证');
+                } else {
+                    updateResultItem('jsonParseResult', '初始化合约连接：', '✅ 连接成功', 'success');
+                }
+                
+                updateProgress(30);
+                updateResultItem('jsonParseResult', 'JSON解析状态：', '解析中...');
+                
+                const input = document.getElementById('jsonInput').value.trim();
+                if (!input) {
+                    throw new Error('请输入JSON数据');
+                }
+                
+                let jsonData;
+                try {
+                    const match = input.match(/const incentive202408\s*=\s*(\{[\s\S]*?\})/);
+                    if (match) {
+                        const jsonStr = match[1]
+                            .replace(/'/g, '"')
+                            .replace(/(\w+):/g, '"$1":')
+                            .replace(/,\s*\]/g, ']')
+                            .replace(/,\s*\}/g, '}');
+                        
+                        jsonData = JSON.parse(jsonStr);
+                    } else {
+                        jsonData = JSON.parse(input);
+                    }
+                } catch (e) {
+                    throw new Error(`JSON解析失败: ${e.message}`);
+                }
+                
+                updateResultItem('jsonParseResult', 'JSON解析状态：', '✅ 解析成功', 'success');
+                updateProgress(40);
+                
+                // 验证基本结构
+                if (!jsonData.total || !jsonData.sum || !Array.isArray(jsonData.list)) {
+                    throw new Error('数据格式错误：缺少 total、sum 或 list 字段');
+                }
+                
+                processingData = {
+                    total: jsonData.total,
+                    sum: jsonData.sum,
+                    list: [],
+                    statistics: {
+                        totalProcessed: 0,
+                        totalJoule: 0,
+                        validAddresses: 0,
+                        warnings: 0,
+                        errors: 0
+                    }
+                };
+                
+                updateProgress(45);
+                updateResultItem('addressCheckResult', '地址一致性检查：', '验证中...');
+                
+                // 处理每个项目
+                for (let i = 0; i < jsonData.list.length; i++) {
+                    const item = jsonData.list[i];
+                    if (!Array.isArray(item) || item.length < 5) {
+                        addWarning(`第 ${i+1} 行数据格式错误，已跳过`);
+                        processingData.statistics.errors++;
+                        continue;
+                    }
+                    
+                    const [nickname, coreId, jnsDomain, jvaAddress, jouleAmount] = item;
+                    
+                    try {
+                        // 验证Core ID
+                        if (!coreId.startsWith('J')) {
+                            throw new Error(`Core ID格式错误: ${coreId}`);
+                        }
+                        
+                        // 验证Joule数量
+                        if (typeof jouleAmount !== 'number' || jouleAmount <= 0) {
+                            throw new Error(`无效的Joule数量: ${jouleAmount}`);
+                        }
+                        
+                        // 解码JVA地址
+                        let hexAddress;
+                        try {
+                            const decoded = JVA.decodeJVA(jvaAddress);
+                            hexAddress = decoded.hexAddress.toLowerCase();
+                        } catch (e) {
+                            throw new Error(`JVA解码失败: ${e.message}`);
+                        }
+                        
+                        // 查询Core ID地址
+                        let coreAddress;
+                        try {
+                            coreAddress = await getCoreIdAddress(coreId);
+                        } catch (error) {
+                            addWarning(`${nickname} (${coreId})：无法查询Core ID地址: ${error.message}`);
+                            coreAddress = null;
+                        }
+                        
+                        // 查询JNS地址（如果存在）
+                        let jnsAddress = null;
+                        if (jnsDomain && jnsDomain.trim()) {
+                            try {
+                                jnsAddress = await getJnsAddress(jnsDomain);
+                            } catch (error) {
+                                addWarning(`${nickname} (${coreId})：无法查询JNS地址: ${error.message}`);
+                            }
+                        } else {
+							// 如果 JNS 域名为空
+							addWarning(`${nickname} (${coreId})：JNS域名缺失`);
+							processingData.statistics.warnings++;
+							// 注意：这里不设置 isConsistent = false，因为 JNS 缺失是允许的
+						}
+                        
+                        // 检查地址一致性
+                        const warnings = [];
+                        let isConsistent = true;
+                        
+                        if (coreAddress && coreAddress !== hexAddress) {
+                            warnings.push(`Core ID地址与空投地址不一致`);
+                            isConsistent = false;
+                        }
+                        
+                        if (jnsAddress && jnsAddress !== hexAddress) {
+                            warnings.push(`JNS地址与空投地址不一致`);
+                            isConsistent = false;
+                        }
+                        
+                        if (!coreAddress && !jnsAddress) {
+                            warnings.push(`无法验证地址，使用JVA地址`);
+                        }
+                        
+                        // 记录警告
+                        if (warnings.length > 0) {
+                            addWarning(`${nickname} (${coreId})：${warnings.join('，')}`);
+                            processingData.statistics.warnings++;
+                        }
+                        
+                        // 添加到处理列表
+                        processingData.list.push({
+                            nickname,
+                            coreId,
+                            jnsDomain,
+                            jvaAddress,
+                            jouleAmount,
+                            hexAddress,
+                            coreAddress,
+                            jnsAddress,
+                            isConsistent,
+                            warnings: warnings,
+                            index: processingData.list.length
+                        });
+                        
+                        processingData.statistics.totalJoule += jouleAmount;
+                        processingData.statistics.validAddresses++;
+                        
+                    } catch (error) {
+                        addWarning(`第 ${i+1} 行处理失败: ${error.message}`);
+                        processingData.statistics.errors++;
+                    }
+                    
+                    // 更新进度
+                    updateProgress(45 + ((i + 1) / jsonData.list.length) * 30);
+                }
+                
+                updateProgress(75);
+                
+                // 验证总数和总和
+                updateResultItem('totalCheckResult', '数量检查：', '检查中...');
+                
+                const totalValid = processingData.list.length;
+                const sumValid = processingData.statistics.totalJoule;
+                
+                let totalCheckMessage = '';
+                let totalCheckType = 'success';
+                
+                if (totalValid === jsonData.total) {
+                    totalCheckMessage += `✅ 地址总数一致: ${totalValid}`;
+                } else {
+                    totalCheckMessage += `❌ 地址总数不一致: 预期 ${jsonData.total}, 实际 ${totalValid}`;
+                    totalCheckType = 'error';
+                    processingData.statistics.errors++;
+                }
+                
+                totalCheckMessage += `<br>`;
+                
+                if (sumValid === jsonData.sum) {
+                    totalCheckMessage += `✅ Joule总数一致: ${sumValid.toLocaleString()}`;
+                } else {
+                    totalCheckMessage += `❌ Joule总数不一致: 预期 ${jsonData.sum.toLocaleString()}, 实际 ${sumValid.toLocaleString()}`;
+                    totalCheckType = 'error';
+                    processingData.statistics.errors++;
+                }
+                
+                updateResultItem('totalCheckResult', '数量检查：', totalCheckMessage, totalCheckType);
+                updateProgress(80);
+                
+                // 更新统计信息
+                document.getElementById('statistics').style.display = 'grid';
+                document.getElementById('totalAddresses').textContent = totalValid;
+                document.getElementById('totalJoules').textContent = sumValid.toLocaleString();
+                document.getElementById('validCount').textContent = totalValid;
+                
+                // 生成Merkle Tree
+                updateResultItem('merkleResult', 'Merkle Tree生成：', '生成中...');
+                
+                // 准备数据：[address, amount]
+                const leafValues = processingData.list.map(item => [
+                    item.hexAddress.toLowerCase(),
+                    item.jouleAmount.toString()
+                ]);
+                
+                // 使用OpenZeppelin Merkle Tree库
+                merkleTree = window.StandardMerkleTree.of(leafValues, ["address", "uint256"]);
+                merkleRoot = merkleTree.root;
+                
+                updateProgress(90);
+                
+                // 生成所有证明
+                merkleProofs = {};
+                for (const [i, v] of merkleTree.entries()) {
+                    const proof = merkleTree.getProof(i);
+                    const address = v[0];
+                    
+                    merkleProofs[address] = {
+                        index: i,
+                        amount: v[1],
+                        proof: proof,
+                        hexAddress: address,
+                        coreId: processingData.list[i].coreId,
+                        nickname: processingData.list[i].nickname
+                    };
+                }
+                
+                updateResultItem('merkleResult', 'Merkle Tree生成：', 
+                    `✅ 生成成功，共 ${leafValues.length} 个地址`, 'success');
+                updateProgress(100);
+                
+                // 显示结果
+                document.getElementById('merkleRootSection').style.display = 'block';
+                document.getElementById('merkleRootValue').textContent = merkleRoot;
+                
+                // 显示下载选项
+                document.getElementById('downloadSection').style.display = 'block';
+                
+                updateResultItem('addressCheckResult', '地址一致性检查：',
+                    `✅ 完成检查，有效地址: ${processingData.statistics.validAddresses}, ` +
+                    `警告: ${processingData.statistics.warnings}, ` +
+                    `错误: ${processingData.statistics.errors}`, 
+                    processingData.statistics.errors > 0 ? 'warning' : 'success');
+                
+            } catch (error) {
+                updateResultItem('jsonParseResult', '处理状态：', 
+                    `❌ 错误: ${error.message}`, 'error');
+                console.error('处理失败:', error);
+            } finally {
+                // 隐藏加载动画
+                loading.style.display = 'none';
+                updateProgress(0);
+            }
+        }
+        
+        // 下载文件
+        function downloadFile(filename) {
+            if (!merkleTree) {
+                alert('请先生成Merkle Tree');
+                return;
+            }
+            
+            let content, blob, url;
+            
+            if (filename === 'merkle-root.txt') {
+                content = merkleRoot;
+                blob = new Blob([content], { type: 'text/plain' });
+                url = URL.createObjectURL(blob);
+            } else if (filename === 'merkle-proofs.json') {
+                content = JSON.stringify({
+                    merkleRoot: merkleRoot,
+                    generationTime: new Date().toISOString(),
+                    totalAddresses: processingData.list.length,
+                    totalJoule: processingData.statistics.totalJoule,
+                    proofs: merkleProofs
+                }, null, 2);
+                blob = new Blob([content], { type: 'application/json' });
+                url = URL.createObjectURL(blob);
+            }
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // 清空所有
+        function clearAll() {
+            document.getElementById('jsonInput').value = '';
+            document.getElementById('fileName').textContent = '';
+            document.getElementById('warningBox').style.display = 'none';
+            document.getElementById('warningList').innerHTML = '';
+            document.getElementById('merkleRootSection').style.display = 'none';
+            document.getElementById('downloadSection').style.display = 'none';
+            document.getElementById('statistics').style.display = 'none';
+            
+            updateResultItem('jsonParseResult', 'JSON解析状态：', '等待输入');
+            updateResultItem('totalCheckResult', '数量检查：', '等待检查');
+            updateResultItem('addressCheckResult', '地址一致性检查：', '等待检查');
+            updateResultItem('merkleResult', 'Merkle Tree生成：', '等待生成');
+        }
+        
+        // 页面加载完成后的初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('jsonInput').value = '';
+        });
+    </script>
+</body>
+</html>
