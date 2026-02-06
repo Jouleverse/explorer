@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jouleverse 工具集 | Blockchain Explorer</title>
+	<link rel="stylesheet" href="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!--link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"-->
+    <link rel="stylesheet" href="../styles/main.css">
+    <style>
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-light-color);
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary-color);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .tools-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .tools-category {
+            margin-bottom: 40px;
+        }
+
+        .category-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-light-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .category-title i {
+            margin-right: 12px;
+            color: var(--primary-color);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .tool-card {
+            background: var(--card-background-color);
+            border-radius: 16px;
+            box-shadow: var(--shadow-card);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.2s ease;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tool-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-4px);
+            border-color: rgba(235, 23, 39, 0.15);
+        }
+
+        .tool-card-header {
+            padding: 20px 24px;
+            background-color: rgba(235, 23, 39, 0.03);
+            border-bottom: 1px solid var(--border-light-color);
+        }
+
+        .tool-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0 0 5px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .tool-card-title i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .tool-card-path {
+            font-family: "Fira Code", "Roboto Mono", monospace;
+            font-size: 13px;
+            color: var(--text-tertiary-color);
+            margin: 0;
+            word-break: break-all;
+        }
+
+        .tool-card-body {
+            padding: 20px 24px;
+            flex-grow: 1;
+        }
+
+        .tool-card-description {
+            color: var(--text-secondary-color);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .tool-card-footer {
+            padding: 0 24px 20px 24px;
+            margin-top: auto;
+        }
+
+        .tool-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+            width: 100%;
+            text-align: center;
+        }
+
+        .tool-link:hover {
+            background-color: var(--primary-dark-color);
+            box-shadow: 0 4px 12px rgba(235, 23, 39, 0.35);
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+
+        .tool-link i {
+            margin-right: 8px;
+        }
+
+        .coming-soon-badge {
+            display: inline-block;
+            background-color: var(--warning-color);
+            color: white;
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-left: 10px;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-tertiary-color);
+            background-color: var(--surface-color);
+            border-radius: 12px;
+            border: 1px dashed var(--border-color);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: var(--border-color);
+        }
+
+        .empty-state p {
+            margin-bottom: 0;
+            font-size: 16px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-light-color);
+            color: var(--text-tertiary-color);
+            font-size: 14px;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-title {
+                font-size: 28px;
+            }
+            
+            .page-subtitle {
+                font-size: 16px;
+            }
+        }
+
+        /* 导航链接样式 */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--primary-color);
+            font-weight: 500;
+            margin-bottom: 20px;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: var(--primary-dark-color);
+            text-decoration: underline;
+        }
+
+        .back-link i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="tools-container">
+        <!-- 返回链接 -->
+        <a href="/" class="back-link">
+            <i class="fa fa-arrow-left"></i> 返回区块链浏览器主页
+        </a>
+        
+        <!-- 页面标题区域 -->
+        <div class="page-header">
+            <h1 class="page-title">Jouleverse 工具集</h1>
+            <p class="page-subtitle">
+                访问 Jouleverse 区块链生态系统的各种实用工具，包括合约交互、空投管理等功能。
+            </p>
+        </div>
+        
+        <!-- 工具分类1: 核心工具 -->
+        <div class="tools-category">
+            <h2 class="category-title">
+                <i class="fa fa-cube"></i> 合约工具
+            </h2>
+            <div class="tools-grid">
+                <!-- 核心合约交互工具集 -->
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <h3 class="tool-card-title">
+                            <i class="fa fa-cogs"></i> 核心合约交互工具集
+                        </h3>
+                        <p class="tool-card-path">/tools/core/index.html</p>
+                    </div>
+                    <div class="tool-card-body">
+                        <p class="tool-card-description">
+                            提供与Jouleverse核心合约交互的完整工具集，包括合约部署、函数调用、事件查询等功能。
+                        </p>
+                    </div>
+                    <div class="tool-card-footer">
+                        <a href="./core/index.html" class="tool-link">
+                            <i class="fa fa-external-link"></i> 打开工具
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 其他合约交互工具集 -->
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <h3 class="tool-card-title">
+                            <i class="fa fa-exchange"></i> 其他合约交互工具集
+                        </h3>
+                        <p class="tool-card-path">/tools/contractx/index.html</p>
+                    </div>
+                    <div class="tool-card-body">
+                        <p class="tool-card-description">
+                            与Jouleverse生态系统中的其他智能合约进行交互，支持多种合约类型和自定义ABI。
+                        </p>
+                    </div>
+                    <div class="tool-card-footer">
+                        <a href="./contractx/index.html" class="tool-link">
+                            <i class="fa fa-external-link"></i> 打开工具
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 工具分类3: 空投工具 -->
+        <div class="tools-category">
+            <h2 class="category-title">
+                <i class="fa fa-gift"></i> 空投管理工具
+            </h2>
+            <div class="tools-grid">
+                <!-- Core空投工具集-默克尔证明生成工具 -->
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <h3 class="tool-card-title">
+                            <i class="fa fa-tree"></i> 默克尔证明生成工具
+                        </h3>
+                        <p class="tool-card-path">/tools/airdrop/merkle-proof-generator.html</p>
+                    </div>
+                    <div class="tool-card-body">
+                        <p class="tool-card-description">
+                            为Core空投生成默克尔证明，验证空投资格并生成可在链上验证的证明文件。
+                        </p>
+                    </div>
+                    <div class="tool-card-footer">
+                        <a href="./airdrop/merkle-proof-generator.html" class="tool-link">
+                            <i class="fa fa-external-link"></i> 打开工具
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 工具分类4: 即将推出 (示例，方便未来扩展) -->
+        <div class="tools-category">
+            <h2 class="category-title">
+                <i class="fa fa-clock-o"></i> 即将推出
+                <span class="coming-soon-badge">开发中</span>
+            </h2>
+            <div class="tools-grid">
+                <!-- 示例工具1 -->
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <h3 class="tool-card-title">
+                            <i class="fa fa-line-chart"></i> 数据分析面板
+                        </h3>
+                        <p class="tool-card-path">/tools/analytics/index.html</p>
+                    </div>
+                    <div class="tool-card-body">
+                        <p class="tool-card-description">
+                            Jouleverse区块链数据可视化分析工具，提供交易量、地址增长、合约活动等关键指标。
+                        </p>
+                    </div>
+                    <div class="tool-card-footer">
+                        <button class="tool-link" style="background-color: var(--disabled-color); cursor: not-allowed;" disabled>
+                            <i class="fa fa-clock-o"></i> 即将推出
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 示例工具2 -->
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <h3 class="tool-card-title">
+                            <i class="fa fa-lock"></i> 多签钱包管理
+                        </h3>
+                        <p class="tool-card-path">/tools/multisig/index.html</p>
+                    </div>
+                    <div class="tool-card-body">
+                        <p class="tool-card-description">
+                            多签钱包创建、管理和交易签名工具，支持多种多签方案和权限配置。
+                        </p>
+                    </div>
+                    <div class="tool-card-footer">
+                        <button class="tool-link" style="background-color: var(--disabled-color); cursor: not-allowed;" disabled>
+                            <i class="fa fa-clock-o"></i> 即将推出
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 空状态示例，当某个分类没有工具时显示 -->
+                <!--
+                <div class="empty-state">
+                    <i class="fa fa-wrench"></i>
+                    <p>该分类下暂无可用工具</p>
+                </div>
+                -->
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <div class="footer">
+            <p>Jouleverse Blockchain Explorer &copy; <span id="current-year"></span> | 工具版本 1.0.0</p>
+            <p>如有问题或建议，请通过项目GitHub仓库反馈</p>
+        </div>
+    </div>
+
+    <script>
+        // 设置当前年份
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // 简单页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const toolCards = document.querySelectorAll('.tool-card');
+            toolCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(10px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 + index * 50);
+            });
+        });
+        
+        // 未来扩展：可以在这里添加工具搜索功能
+        // 示例搜索功能框架
+        /*
+        function filterTools(searchTerm) {
+            const toolCards = document.querySelectorAll('.tool-card');
+            const categories = document.querySelectorAll('.tools-category');
+            
+            toolCards.forEach(card => {
+                const title = card.querySelector('.tool-card-title').textContent.toLowerCase();
+                const description = card.querySelector('.tool-card-description').textContent.toLowerCase();
+                const path = card.querySelector('.tool-card-path').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || path.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 隐藏没有可见工具的分类
+            categories.forEach(category => {
+                const visibleTools = category.querySelectorAll('.tool-card[style="display: block"]');
+                if (visibleTools.length === 0) {
+                    category.style.display = 'none';
+                } else {
+                    category.style.display = 'block';
+                }
+            });
+        }
+        */
+    </script>
+</body>
+</html>
