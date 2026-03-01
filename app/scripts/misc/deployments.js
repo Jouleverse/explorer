@@ -14,6 +14,19 @@ var deployments = {
 			"tag": "飞翔的J合约",
 			"hex": "0x045B997B5E05DF9795985aB9e6720d94557255BE",
 			"src": "flyingj.sol",
+			"solc": {
+				"version": "0.8.0",
+				"evmVersion": "istanbul",
+				"optimizer": {
+					"enabled": true,
+					"runs": 200
+				},
+				"contract": "FlyingJ",
+				"params": [
+					"Flying J",
+					"FLYING-J"
+				]
+			}
 		},
 		"jns": {
 			"tag": "JNS合约",
