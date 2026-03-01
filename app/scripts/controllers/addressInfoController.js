@@ -1,5 +1,5 @@
 angular.module('jouleExplorer')
-	.controller('addressInfoCtrl', function ($rootScope, $scope, $location, $routeParams, $q) {
+	.controller('addressInfoCtrl', function ($rootScope, $scope, $location, $routeParams, $q, contractVerificationService) {
 
 		var web3 = $rootScope.web3;
 
@@ -362,6 +362,117 @@ angular.module('jouleExplorer')
 
 		};
 
+		//////////////////////////////////////////////////////////////////////////////
+		// 合约验证相关
+		//////////////////////////////////////////////////////////////////////////////
+		$scope.verificationResult = null;
+		$scope.isVerifying = false;
+		$scope.verificationError = null;
+		$scope.showVerificationDetails = false;
+		$scope.compilerVersion = null;
+		$scope.contractName = null;
+
+		/**
+		 * 验证合约源码与链上字节码的一致性
+		 */
+		$scope.verifyContract = function() {
+			if (!$scope.sourceCode || !$scope.deploymentInfo) {
+				$scope.verificationError = '缺少源码或部署信息';
+				return;
+			}
+
+			$scope.isVerifying = true;
+			$scope.verificationError = null;
+			$scope.verificationResult = null;
+
+			// 从 deploymentInfo 中获取编译配置
+			const solcConfig = $scope.deploymentInfo.solc || {};
+
+			const compileParams = {
+				version: solcConfig.version || '0.8.0',
+				contractName: solcConfig.contract,
+				optimizer: solcConfig.optimizer || { enabled: true, runs: 200 },
+				evmVersion: solcConfig.evmVersion || 'istanbul',
+				constructorArgs: solcConfig.params || []  // 使用 solc.params 作为构造函数参数
+			};
+
+			console.log('编译参数:', compileParams);
+
+			// 获取链上字节码
+			contractVerificationService.getOnChainBytecode($scope.addressId, web3)
+				.then(function(onChainBytecode) {
+					// 编译源码，传入配置的 solc 版本
+					return contractVerificationService.compileSource(
+						$scope.sourceCode,
+						compileParams.contractName,
+						compileParams.version,
+						compileParams.optimizer,
+						compileParams.evmVersion,
+						compileParams.constructorArgs
+					)
+						.then(function(compilationResult) {
+							return {
+								onChain: onChainBytecode,
+								compiled: compilationResult
+							};
+						});
+				})
+				.then(function(result) {
+					// 比对字节码
+					const comparison = contractVerificationService.compareBytecodes(
+						result.compiled.bytecode,
+						result.onChain
+					);
+
+					$scope.verificationResult = {
+						...comparison,
+						compiledBytecode: result.compiled.bytecode,
+						onChainBytecode: result.onChain,
+						compilerVersion: result.compiled.version,
+						configuredVersion: compileParams.version,
+						evmVersion: result.compiled.evmVersion || compileParams.evmVersion,
+						optimizer: result.compiled.optimizer || compileParams.optimizer,
+						contractName: result.compiled.contractName,
+						constructorArgs: compileParams.constructorArgs,  // 显示构造函数参数
+						verificationTime: new Date().toLocaleString()
+					};
+
+					$scope.isVerifying = false;
+					$scope.showVerificationDetails = true;
+
+					// 自动滚动到验证结果区域
+					setTimeout(function() {
+						const element = document.getElementById('verification-result');
+						if (element) {
+							element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+						}
+					}, 100);
+				})
+				.catch(function(error) {
+					$scope.verificationError = error.message || error.toString();
+					$scope.isVerifying = false;
+				});
+		};
+
+		/**
+		 * 切换验证详情显示
+		 */
+		$scope.toggleVerificationDetails = function() {
+			$scope.showVerificationDetails = !$scope.showVerificationDetails;
+		};
+
+		/**
+		 * 格式化字节码显示
+		 */
+		$scope.formatBytecode = function(bytecode, maxLength = 100) {
+			if (!bytecode) return '';
+			if (bytecode.length <= maxLength) return bytecode;
+
+			const head = bytecode.substring(0, maxLength);
+			const tail = bytecode.substring(bytecode.length - maxLength);
+
+			return `${head}...${tail}`;
+		};
 
 		//////////////////////////////////////////////////////////////////////////////
 		// read functionalities in page scope                                       //
@@ -490,6 +601,10 @@ angular.module('jouleExplorer')
 			// 新增：获取源代码文件
 			function fetchSourceCode(filename) {
 				$scope.isLoadingSourceCode = true;
+				// 重置验证状态
+				$scope.verificationResult = null;
+				$scope.verificationError = null;
+				$scope.showVerificationDetails = false;
 
 				// 假设源代码文件在 scripts/contracts/ 目录下
 				const sourcePath = `scripts/contracts/${filename}`;

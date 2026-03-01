@@ -19,6 +19,15 @@ var deployments = {
 			"tag": "JNS合约",
 			"hex": "0xf8AbF36Bb2dc525b1E566d6B42F6Fd1BB2035b89",
 			"src": "jns.sol",
+			"solc": {
+				"version": "0.8.0",  // 编译器版本
+				"evmVersion": "istanbul",  // EVM版本
+				"optimizer": {  // 优化器设置
+					"enabled": true,
+					"runs": 200
+				},
+				"contract": "JNS"
+			}
 		},
 		"jnsdaov": {
 			"tag": "JNSDAO加V",
@@ -59,6 +68,19 @@ var deployments = {
 			"tag": "红包",
 			"hex": "0x0dc46592ACf76e149B108BDe2E56D8429a2D6046",
 			"src": "redpacket.sol",
+			"solc": {
+				"version": "0.8.0",  // 编译器版本
+				"evmVersion": "istanbul",  // EVM版本
+				"optimizer": {  // 优化器设置
+					"enabled": true,
+					"runs": 200
+				},
+				"contract": "RedPacketJoule",
+				"params": [
+					"0x7fba9BB966189Db8C4fE33B7bf67Bfa24203c6AD",
+					"0x826971d988d7d86Fdc9062A3f63E7b18D32Bc8EB"
+				]
+			}
 		},
 		"timelock_core": {
 			"tag": "核心时间锁",
@@ -126,7 +148,8 @@ for (const network in deployments) {
 						key: contractKey,
 						tag: contract.tag || contractKey,
 						src: contract.src,
-						hex: contract.hex
+						hex: contract.hex,
+						solc: contract.solc
 					};
 				}
 			}
