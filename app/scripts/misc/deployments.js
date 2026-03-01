@@ -26,7 +26,11 @@ var deployments = {
 					"enabled": true,
 					"runs": 200
 				},
-				"contract": "JNS"
+				"contract": "JNS",
+				"params": [
+					"J Name Service",
+					"JNS"
+				]
 			}
 		},
 		"jnsdaov": {
