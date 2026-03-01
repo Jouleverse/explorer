@@ -132,6 +132,20 @@ var deployments = {
 			"tag": "创世金库",
 			"hex": "0x3B717119878E2db1AA7df46F5AdcF9766A01706F",
 			"src": "multisig-wallet.sol",
+			"solc": {
+				"version": "0.4.18",  // 编译器版本
+				"evmVersion": "istanbul",  // EVM版本
+				"optimizer": {  // 优化器设置
+					"enabled": true,
+					"runs": 200
+				},
+				"contract": "MultiSigWalletWithDailyLimit",
+				"params": [
+					["0x40791e9888D4B8D8f0d75262aBD131ed613189Db","0xa2029982158382e5f60e7df51593a6309bc9ba1c","0xB313C0de794F530Ab08e0a71C31Ee022e875Fe76"],
+					"2",
+					"100000000000000000"
+				]
+			}
 		},
 		"ecofund1": {
 			"tag": "生态基金1号",
