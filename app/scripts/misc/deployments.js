@@ -9,6 +9,19 @@ var deployments = {
 			"tag": "CryptoJunks合约",
 			"hex": "0x1b1d15726d64c5027b627138f2bf051cc1EF2680",
 			"src": "cryptojunks.sol",
+			"solc": {
+				"version": "0.8.0",
+				"evmVersion": "istanbul",
+				"optimizer": {
+					"enabled": true,
+					"runs": 200
+				},
+				"contract": "CryptoJunks",
+				"params": [
+					"CryptoJunks",
+					"JUNK"
+				]
+			}
 		},
 		"flyingj": {
 			"tag": "飞翔的J合约",
