@@ -4,7 +4,7 @@ angular.module('jouleExplorer')
        var web3 = $rootScope.web3;
 	
 		$scope.address2tag = function (address) {
-			return __getAddressTag(address);
+			return getAddressTag(address);
 		}
 
         $scope.init=function()

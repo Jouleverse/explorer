@@ -1,7 +1,19 @@
 angular.module('jouleExplorer')
-	.controller('addressInfoCtrl', function ($rootScope, $scope, $location, $routeParams, $q) {
+	.controller('addressInfoCtrl', function ($rootScope, $scope, $location, $routeParams, $q, contractVerificationService) {
 
 		var web3 = $rootScope.web3;
+
+		//////////////////////////////////////////////////////////////////////////////
+		// globals for showing source code
+		//////////////////////////////////////////////////////////////////////////////
+		$scope.deploymentInfo = null;
+		$scope.sourceCode = null;
+		$scope.showSourceCode = false;
+		$scope.isLoadingSourceCode = false;
+		$scope.sourceCodeError = null;
+
+		// 设置默认网络为 mainnet
+		const DEFAULT_NETWORK = 'mainnet';
 
 		//////////////////////////////////////////////////////////////////////////////
 		// helpers in page scope                                      //
@@ -350,6 +362,117 @@ angular.module('jouleExplorer')
 
 		};
 
+		//////////////////////////////////////////////////////////////////////////////
+		// 合约验证相关
+		//////////////////////////////////////////////////////////////////////////////
+		$scope.verificationResult = null;
+		$scope.isVerifying = false;
+		$scope.verificationError = null;
+		$scope.showVerificationDetails = false;
+		$scope.compilerVersion = null;
+		$scope.contractName = null;
+
+		/**
+		 * 验证合约源码与链上字节码的一致性
+		 */
+		$scope.verifyContract = function() {
+			if (!$scope.sourceCode || !$scope.deploymentInfo) {
+				$scope.verificationError = '缺少源码或部署信息';
+				return;
+			}
+
+			$scope.isVerifying = true;
+			$scope.verificationError = null;
+			$scope.verificationResult = null;
+
+			// 从 deploymentInfo 中获取编译配置
+			const solcConfig = $scope.deploymentInfo.solc || {};
+
+			const compileParams = {
+				version: solcConfig.version || '0.8.0',
+				contractName: solcConfig.contract,
+				optimizer: solcConfig.optimizer || { enabled: true, runs: 200 },
+				evmVersion: solcConfig.evmVersion || 'istanbul',
+				constructorArgs: solcConfig.params || []  // 使用 solc.params 作为构造函数参数
+			};
+
+			console.log('编译参数:', compileParams);
+
+			// 获取链上字节码
+			contractVerificationService.getOnChainBytecode($scope.addressId, web3)
+				.then(function(onChainBytecode) {
+					// 编译源码，传入配置的 solc 版本
+					return contractVerificationService.compileSource(
+						$scope.sourceCode,
+						compileParams.contractName,
+						compileParams.version,
+						compileParams.optimizer,
+						compileParams.evmVersion,
+						compileParams.constructorArgs
+					)
+						.then(function(compilationResult) {
+							return {
+								onChain: onChainBytecode,
+								compiled: compilationResult
+							};
+						});
+				})
+				.then(function(result) {
+					// 比对字节码
+					const comparison = contractVerificationService.compareBytecodes(
+						result.compiled.bytecode,
+						result.onChain
+					);
+
+					$scope.verificationResult = {
+						...comparison,
+						compiledBytecode: result.compiled.bytecode,
+						onChainBytecode: result.onChain,
+						compilerVersion: result.compiled.version,
+						configuredVersion: compileParams.version,
+						evmVersion: result.compiled.evmVersion || compileParams.evmVersion,
+						optimizer: result.compiled.optimizer || compileParams.optimizer,
+						contractName: result.compiled.contractName,
+						constructorArgs: compileParams.constructorArgs,  // 显示构造函数参数
+						verificationTime: new Date().toLocaleString()
+					};
+
+					$scope.isVerifying = false;
+					$scope.showVerificationDetails = true;
+
+					// 自动滚动到验证结果区域
+					setTimeout(function() {
+						const element = document.getElementById('verification-result');
+						if (element) {
+							element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+						}
+					}, 100);
+				})
+				.catch(function(error) {
+					$scope.verificationError = error.message || error.toString();
+					$scope.isVerifying = false;
+				});
+		};
+
+		/**
+		 * 切换验证详情显示
+		 */
+		$scope.toggleVerificationDetails = function() {
+			$scope.showVerificationDetails = !$scope.showVerificationDetails;
+		};
+
+		/**
+		 * 格式化字节码显示
+		 */
+		$scope.formatBytecode = function(bytecode, maxLength = 100) {
+			if (!bytecode) return '';
+			if (bytecode.length <= maxLength) return bytecode;
+
+			const head = bytecode.substring(0, maxLength);
+			const tail = bytecode.substring(bytecode.length - maxLength);
+
+			return `${head}...${tail}`;
+		};
 
 		//////////////////////////////////////////////////////////////////////////////
 		// read functionalities in page scope                                       //
@@ -393,6 +516,9 @@ angular.module('jouleExplorer')
 					$scope.wjBalance = result.balance;
 					$scope.wjBalanceInJoule = result.balanceInJoule;
 				});
+
+				// show source code 新增：检查地址是否是已知的部署地址
+				checkIfDeployedAddress();
 
 				// fix '统计中...'
 				$scope.allCryptoJunks = [];
@@ -440,6 +566,134 @@ angular.module('jouleExplorer')
 				});
 
 				getAllBoredApes();
+			}
+
+			// 新增：检查地址是否是部署地址并获取源代码
+			function checkIfDeployedAddress() {
+				if (!$scope.addressId) return;
+
+				// 使用 deployment_addresses 反向索引检查地址
+				const lc_address = $scope.addressId.toLowerCase();
+
+				// 先在默认网络（mainnet）中查找
+				if (deployment_addresses[DEFAULT_NETWORK] && deployment_addresses[DEFAULT_NETWORK][lc_address]) {
+					$scope.deploymentInfo = deployment_addresses[DEFAULT_NETWORK][lc_address];
+					$scope.deploymentInfo.network = DEFAULT_NETWORK;
+				} else {
+					// 如果在默认网络没找到，则搜索所有网络
+					for (const network in deployment_addresses) {
+						if (network !== DEFAULT_NETWORK &&
+							deployment_addresses[network] &&
+							deployment_addresses[network][lc_address]) {
+							$scope.deploymentInfo = deployment_addresses[network][lc_address];
+							$scope.deploymentInfo.network = network;
+							break;
+						}
+					}
+				}
+
+				// 如果找到部署信息，获取源代码
+				if ($scope.deploymentInfo && $scope.deploymentInfo.src) {
+					$scope.isLoadingSourceCode = true;
+					$scope.sourceCodeError = null;
+					fetchSourceCode($scope.deploymentInfo.src);
+				}
+			}
+
+			// 新增：获取源代码文件
+			function fetchSourceCode(filename) {
+				$scope.isLoadingSourceCode = true;
+				// 重置验证状态
+				$scope.verificationResult = null;
+				$scope.verificationError = null;
+				$scope.showVerificationDetails = false;
+
+				// 假设源代码文件在 scripts/contracts/ 目录下
+				const sourcePath = `scripts/contracts/${filename}`;
+
+				$.ajax({
+					url: sourcePath,
+					dataType: 'text',
+					success: function(data) {
+						$scope.$apply(function() {
+							$scope.sourceCode = data;
+							$scope.showSourceCode = true;
+							$scope.isLoadingSourceCode = false;
+
+							// 应用代码高亮
+							setTimeout(applyCodeHighlighting, 100);
+						});
+					},
+					error: function(xhr, status, error) {
+						$scope.$apply(function() {
+							$scope.sourceCode = null;
+							$scope.sourceCodeError = `无法加载源代码文件: ${error}`;
+							$scope.showSourceCode = true;
+							$scope.isLoadingSourceCode = false;
+						});
+					}
+				});
+			}
+
+			// 新增：应用代码高亮
+			function applyCodeHighlighting() {
+				const codeElement = document.getElementById('contract-source-code');
+
+				if (!codeElement || !window.hljs) return;
+
+				// 确保 solidity 语言已注册
+				if (!hljs.getLanguage('solidity')) {
+					console.log('注册 solidity 语言...');
+					// 获取语言定义
+					const langDef = hljsDefineSolidity(hljs);
+					// 注册语言
+					hljs.registerLanguage('solidity', function(hljs) {
+						return langDef;
+					});
+				}
+
+				// 应用高亮
+				hljs.highlightElement(codeElement);
+
+			}
+
+			// 新增：切换源代码显示状态
+			$scope.toggleSourceCode = function() {
+				$scope.showSourceCode = !$scope.showSourceCode;
+				if ($scope.showSourceCode && !$scope.sourceCode && $scope.deploymentInfo) {
+					fetchSourceCode($scope.deploymentInfo.src);
+				}
+			};
+
+			// 辅助函数：复制源代码到剪贴板
+			$scope.copySourceCode = function() {
+				const codeElement = document.getElementById('contract-source-code');
+				if (codeElement) {
+					const textArea = document.createElement('textarea');
+					textArea.value = codeElement.textContent;
+					document.body.appendChild(textArea);
+					textArea.select();
+					document.execCommand('copy');
+					document.body.removeChild(textArea);
+
+					// 显示复制成功提示
+					alert('源代码已复制到剪贴板');
+				}
+			}
+
+			// 辅助函数：下载源代码文件
+			$scope.downloadSourceCode = function() {
+				if ($scope.sourceCode && $scope.deploymentInfo) {
+					const blob = new Blob([$scope.sourceCode], { type: 'text/plain' });
+					const url = window.URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = $scope.deploymentInfo.src;
+					document.body.appendChild(a);
+					a.click();
+					window.URL.revokeObjectURL(url);
+					document.body.removeChild(a);
+				}
 			}
 
 			function getAddressInfos(){
@@ -657,7 +911,7 @@ angular.module('jouleExplorer')
 									var tag = token_name + ' #' + token_id;
 									contract.methods.tokenURI(token_id).call(function (err3, result3) {
 										if (err3) {
-											console.log(err3);
+											onsole.log(err3);
 										} else {
 											var tokenURI = result3;
 											var tokenInfo = parseTokenURI(tokenURI);

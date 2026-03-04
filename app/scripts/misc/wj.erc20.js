@@ -1,4 +1,5 @@
-var wj_contract_address = "0x7fba9BB966189Db8C4fE33B7bf67Bfa24203c6AD"; // mainnet
+//var wj_contract_address = "0x7fba9BB966189Db8C4fE33B7bf67Bfa24203c6AD"; // mainnet
+var wj_contract_address = deployments.mainnet.wj.hex;
 var wj_ABI = [
     {
       "inputs": [],

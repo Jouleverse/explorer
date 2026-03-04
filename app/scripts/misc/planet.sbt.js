@@ -1,4 +1,5 @@
-var planet_contract_address = "0x9c100856f5C60a3ec87Aa408567304DB2AfC241F"; // mainnet
+//var planet_contract_address = "0x9c100856f5C60a3ec87Aa408567304DB2AfC241F"; // mainnet
+var planet_contract_address = deployments.mainnet.planet.hex;
 var planet_ABI = [
 	{
 		"inputs": [

@@ -1,5 +1,6 @@
 //var jns_contract_address = "0x2fA943b1aF8ecA7177d62B71e0C41f092c6795c2"; // mainnet V1
-var jns_contract_address = "0xf8AbF36Bb2dc525b1E566d6B42F6Fd1BB2035b89"; // mainnet V2
+//var jns_contract_address = "0xf8AbF36Bb2dc525b1E566d6B42F6Fd1BB2035b89"; // mainnet V2
+var jns_contract_address = deployments.mainnet.jns.hex;
 var jns_ABI = [
 	{
 		"anonymous": false,

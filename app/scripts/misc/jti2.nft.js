@@ -1,4 +1,5 @@
-var jti2_contract_address = "0x7e722837Ff19BE2687c2089DBf70D064fB9622AE"; // mainnet
+//var jti2_contract_address = "0x7e722837Ff19BE2687c2089DBf70D064fB9622AE"; // mainnet
+var jti2_contract_address = deployments.mainnet.jti2.hex;
 var jti2_ABI = [
 	{
 		"inputs": [

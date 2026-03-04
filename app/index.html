@@ -29,31 +29,7 @@
 
 	// 生产环境：CDN 路径
 	const prodLibs = [
-		// --- unpkg --- blocked, don't use
-		/*'https://unpkg.com/web3@1.8.2/dist/web3.min.js',
-		'https://unpkg.com/angular@1.8.3/angular.min.js',
-		'https://unpkg.com/angular-ui-bootstrap@0.13.4/ui-bootstrap.min.js',
-		'https://unpkg.com/angular-route@1.8.3/angular-route.min.js',
-		'https://unpkg.com/jquery@1.11.3/dist/jquery.min.js',
-		'https://unpkg.com/bootstrap@3.3.5/dist/js/bootstrap.min.js',
-		'https://unpkg.com/bootstrap@3.3.5/dist/css/bootstrap.min.css', */
-		// --- bootcdn ---
-		/*'https://cdn.bootcdn.net/ajax/libs/web3/1.8.2/web3.min.js',
-		'https://cdn.bootcdn.net/ajax/libs/angular.js/1.8.3/angular.min.js',
-		'https://cdn.bootcdn.net/ajax/libs/angular-ui-bootstrap/0.13.4/ui-bootstrap.min.js',
-		'https://cdn.bootcdn.net/ajax/libs/angular-route/1.8.3/angular-route.min.js',
-		'https://cdn.bootcdn.net/ajax/libs/jquery/1.11.3/jquery.min.js',
-		'https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js',
-		'https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css',  // CSS 文件 */
-		// --- iocdn --- out of service?
-		/*'https://cdn.iocdn.cc/npm/web3@1.8.2/dist/web3.min.js',
-		'https://cdn.iocdn.cc/npm/angular@1.8.3/angular.min.js',
-		'https://cdn.iocdn.cc/npm/angular-ui-bootstrap@0.13.4/ui-bootstrap.min.js',
-		'https://cdn.iocdn.cc/npm/angular-route@1.8.3/angular-route.min.js',
-		'https://cdn.iocdn.cc/npm/jquery@1.11.3/dist/jquery.min.js',
-		'https://cdn.iocdn.cc/npm/bootstrap@3.3.5/dist/js/bootstrap.min.js',
-		'https://cdn.iocdn.cc/npm/bootstrap@3.3.5/dist/css/bootstrap.min.css',*/
-		// --- mirror unpkg ---
+		// --- mirror unpkg/cdnjs ---
 		'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/web3/1.8.2/web3.min.js',
 		'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/angular.js/1.8.3/angular.min.js',
 		'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/angular-ui-bootstrap/0.13.4/ui-bootstrap.min.js',
@@ -61,11 +37,23 @@
 		'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/jquery/1.11.3/jquery.min.js',
 		'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js',
 		'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css',  // CSS 文件 */
+		// Font Awesome
+		//'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/font-awesome/5.15.4/css/all.min.css',
+		// Highlight.js 代码高亮库
+		//'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css',
+		//'https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/highlight.js/11.8.0/highlight.min.js',
+		//'https://cdn.jsdelivr.net/npm/highlightjs-solidity@1.0.6/solidity.min.js',
+
 	];
 
 	const appMods = [
 		'app.js',
+		'scripts/mirrors/cdnjs/ajax/libs/font-awesome/5.15.4/css/all.min.css',
+		'scripts/mirrors/cdnjs/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css',
+		'scripts/mirrors/cdnjs/ajax/libs/highlight.js/11.8.0/highlight.min.js',
+		'scripts/mirrors/npm/highlightjs-solidity@1.0.6/solidity.min.js',
 		'scripts/controllers/mainController.js',
+		'scripts/services/contractVerificationService.js',
 		'scripts/controllers/addressInfoController.js',
 		'scripts/controllers/blockInfosController.js',
 		'scripts/controllers/transactionInfosController.js',
@@ -492,6 +480,7 @@
 
 
 <!--Misc-->
+  <script src="scripts/misc/deployments.js"></script>
   <script src="scripts/misc/wj.erc20.js"></script>
   <script src="scripts/misc/flyingj.sbt.js"></script>
   <script src="scripts/misc/jnsdaov.sbt.js"></script>
@@ -503,7 +492,6 @@
   <script src="scripts/misc/jvcore.nft.js"></script>
   <script src="scripts/misc/popbadge.nft.js"></script>
   <script src="scripts/misc/airdrop.js"></script>
-  <script src="scripts/misc/well-known.js"></script>
   <script src="scripts/misc/cryptojunks.nft.js"></script>
   <script src="scripts/misc/redpacket.js"></script>
   <script src="scripts/misc/timelock.js"></script>
@@ -565,7 +553,9 @@
 		<br/>
 		<span>open source. no warranty.</span>
 		<br/>
-		<span>release: 0.13.1</span>
+		<span>release: 0.15.0</span>
+		<br/>
+		<span style="font-size:small"><a href="/tools">tools</span>
         </p>
     </footer>
 </div>

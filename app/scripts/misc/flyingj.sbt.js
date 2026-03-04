@@ -1,5 +1,6 @@
 //var flyingj_contract_address = "0x90e80F7b22cb70F95A01fDdED77239583E19F033"; // local test
-var flyingj_contract_address = "0x045B997B5E05DF9795985aB9e6720d94557255BE"; // mainnet
+//var flyingj_contract_address = "0x045B997B5E05DF9795985aB9e6720d94557255BE"; // mainnet
+var flyingj_contract_address = deployments.mainnet.flyingj.hex;
 var flyingj_ABI = [
 	{
 		"anonymous": false,
