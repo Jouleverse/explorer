@@ -491,7 +491,7 @@ const incentive202408 = { 'total': 41, 'sum': 12000000, 'list': [
         // 测试RPC连接
         async function testRpcConnection() {
             try {
-                const rpcUrl = 'https://rpc.jnsdao.com:8503';
+                const rpcUrl = 'https://rpc.jnsdao.com';
 				const provider = new ethers.JsonRpcProvider(rpcUrl, {
 					chainId: 3666,
 					name: 'Jouleverse Mainnet',
@@ -530,7 +530,7 @@ const incentive202408 = { 'total': 41, 'sum': 12000000, 'list': [
         // 初始化合约
         async function initContracts() {
             try {
-                const RPC_URL = 'https://rpc.jnsdao.com:8503';
+                const RPC_URL = 'https://rpc.jnsdao.com';
                 provider = new ethers.JsonRpcProvider(RPC_URL);
                 
                 // 假设你有 CoreID 和 JNS 合约的地址

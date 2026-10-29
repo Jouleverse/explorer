@@ -20,8 +20,8 @@ angular.module('jouleExplorer', ['ngRoute','ui.bootstrap'])
 
     var web3 = new Web3();
     var hostname = location.hostname;
-    var PORT = 8503;
-    var rpc_service = `https://rpc.jnsdao.com:${PORT}`;
+    // 正式端点：无端口（443）。旧的 :8503 是过渡期端点，已废弃处不再使用
+    var rpc_service = 'https://rpc.jnsdao.com';
 
     // 决定最终使用的RPC
     var finalRpc = rpc_service;
